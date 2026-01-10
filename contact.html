@@ -154,6 +154,20 @@
         box-shadow:0 7px 20px rgba(0,255,0,0.7);
     }
 
+    /* Bekräftelsemeddelande */
+    #confirmationMessage {
+        display: none;
+        margin-top: 20px;
+        padding: 20px;
+        border: 2px solid #00ff00;
+        box-shadow: 0 0 20px #00ff00;
+        background: rgba(0,0,0,0.2);
+        color: #00ff00;
+        font-weight: bold;
+        font-family: 'Poppins', sans-serif;
+        text-align: center;
+    }
+
     footer {
         background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
         padding:20px;
@@ -180,7 +194,8 @@
     <!-- Ikon ovanför formuläret -->
     <span class="contact-icon">📩</span>
 
-    <form action="https://formsubmit.co/krisztian@noxlab.se" method="POST" class="contact-form">
+    <!-- Formulär utan action -->
+    <form id="contactForm" class="contact-form">
         <div class="form-group">
             <input type="text" name="name" placeholder="Fullständigt namn" required>
         </div>
@@ -194,11 +209,31 @@
             <button type="submit" class="btn">Skicka meddelande</button>
         </div>
     </form>
+
+    <!-- Bekräftelsemeddelande -->
+    <div id="confirmationMessage">
+        Tack för ditt meddelande! Vi hör av oss inom 24 timmar.
+    </div>
 </main>
 
 <footer>
     &copy; 2026 Made By Krisztian
 </footer>
 
+<script>
+// JavaScript som hanterar formuläret
+document.getElementById('contactForm').addEventListener('submit', function(e){
+    e.preventDefault(); // Stoppar formuläret från att skickas till server
+
+    // Visa bekräftelsemeddelandet
+    const messageDiv = document.getElementById('confirmationMessage');
+    messageDiv.style.display = 'block';
+
+    // Rensa formuläret
+    this.reset();
+});
+</script>
+
 </body>
 </html>
+
