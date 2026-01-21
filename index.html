@@ -94,9 +94,9 @@ h1 {
 
 .subtitle {
   margin: 16px 0 30px;
-  font-size: 15px;
-  line-height: 1.6;
-  opacity: 0.82;
+  font-size: 16px;
+  line-height: 1.7;
+  opacity: 0.9;
   text-align: center;
 }
 
@@ -113,10 +113,11 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px 18px;
+  gap: 10px;
+  padding: 16px 22px;
   border-radius: 18px;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 900;
   text-decoration: none;
   color: #111;
   white-space: nowrap;
@@ -125,21 +126,36 @@ h1 {
     0 18px 40px rgba(0,0,0,0.55),
     inset 0 0 0 1px rgba(255,255,255,0.15);
   background: linear-gradient(135deg, var(--gold), #ff9f1c);
+  animation: pulse 3.2s ease-in-out infinite;
 }
 
 .card:hover {
-  transform: translateY(-4px) scale(1.02);
+  transform: translateY(-4px) scale(1.03);
+  box-shadow:
+    0 22px 50px rgba(0,0,0,0.6),
+    inset 0 0 0 1px rgba(255,255,255,0.2);
 }
 
 .card:active {
   transform: scale(0.97);
 }
 
+@keyframes pulse {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+.card .price {
+  font-size: 13px;
+  font-weight: 800;
+  opacity: 0.9;
+}
+
 .trust {
   margin-top: 26px;
   font-size: 13px;
-  opacity: 0.7;
-  line-height: 1.7;
+  opacity: 0.75;
+  line-height: 1.8;
   text-align: center;
 }
 
@@ -167,14 +183,16 @@ footer {
   <div class="cta-hint">Tap to unlock instant access ↓</div>
 
   <!-- SINGLE CTA -->
- <a href="https://buy.stripe.com/6oU14pgM87Oi2SpgWJd3i06" class="card">
-  Buy now
-</a>
+  <a href="https://buy.stripe.com/6oU14pgM87Oi2SpgWJd3i06" class="card" target="_blank" rel="noopener">
+    <span>NOXLAB Digital Guide</span>
+    <span class="price">• $8,70</span>
+    <span>→</span>
+  </a>
 
   <div class="trust">
     ✔ Instant digital access<br>
-    ✔ One-time purchase<br>
-    ✔ If you found this page, you’re already ahead.
+    ✔ Secure payment via Stripe<br>
+    ✔ No refunds (one-time purchase)
   </div>
 
   <footer>
