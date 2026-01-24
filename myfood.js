@@ -29,6 +29,22 @@ const foodCitySelect = document.getElementById("foodCity");
 let myFoods = [];
 let countriesData = []; // För att hålla länder och städer
 
+// --- Firebase-konfiguration och initialisering ---
+// Här är din Firebase-konfiguration, jag lägger inte till någon annan funktionalitet
+const firebaseConfig = {
+  apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
+  authDomain: "global-food-share.firebaseapp.com",
+  projectId: "global-food-share",
+  storageBucket: "global-food-share.firebasestorage.app",
+  messagingSenderId: "902107453892",
+  appId: "1:902107453892:web:dd9625974b8744cc94ac91",
+  measurementId: "G-S1G7JY0TH5"
+};
+
+// Initiera Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore(app);
+
 // --- Hämta alla länder och städer från API ---
 async function loadCountries() {
   try {
