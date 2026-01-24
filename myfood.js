@@ -27,9 +27,9 @@ const foodCitySelect = document.getElementById("foodCity");
 
 // --- Mat-data ---
 let myFoods = [];
+let countriesData = []; // För att hålla länder och städer
 
-// --- Ladda länder och städer ---
-let countriesData = [];
+// --- Hämta alla länder och städer från API ---
 async function loadCountries() {
   try {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
@@ -49,11 +49,14 @@ async function loadCountries() {
 }
 loadCountries();
 
+// --- Ladda städer när ett land väljs ---
 foodCountrySelect.addEventListener("change", () => {
   const selectedCountry = foodCountrySelect.value;
   foodCitySelect.innerHTML = '<option value="">Select City</option>';
   foodCitySelect.disabled = true;
+
   if (!selectedCountry) return;
+
   const countryObj = countriesData.find(c => c.country === selectedCountry);
   if (countryObj && countryObj.cities.length) {
     countryObj.cities.forEach(city => {
@@ -152,5 +155,5 @@ function renderMyFoods() {
   });
 }
 
-// --- Initial load av mat --- 
+// --- Initial load av mat ---
 loadUserFoods();
