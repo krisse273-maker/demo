@@ -114,12 +114,12 @@ addFoodForm.addEventListener("submit", async (e) => {
   }
 
   const newFood = {
-    title: foodTitleInput.value,
-    country: foodCountrySelect.value,
-    city: foodCitySelect.value,
-    emoji: selectedEmoji,
-    user: currentUser.email,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp() // Firebase timestamp
+    title: foodTitleInput.value,                       // Matens namn
+    country: foodCountrySelect.value,                   // Landet maten kommer ifrån
+    city: foodCitySelect.value,                         // Staden maten kommer ifrån
+    emoji: selectedEmoji,                               // Emoji som representerar maten
+    user: currentUser.email,                            // Användarens e-postadress
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()  // Firebase timestamp
   };
 
   // --- Lägg till i Firebase Firestore ---
