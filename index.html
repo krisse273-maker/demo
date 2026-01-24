@@ -1,68 +1,108 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Global Food Share</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header>
-    <h1>🌍 Global Food Share</h1>
-    <p id="welcomeMsg">Welcome! Find and share food near you!</p>
-    <button id="logoutBtn" style="margin-top: 1rem; padding: 0.5rem 1rem; border-radius: 6px; border:none; background-color: white; color: #4CAF50; cursor:pointer;">Log Out</button>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Global Food Share</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <h1>🌍 Global Food Share</h1>
+      <p id="welcomeMsg">Welcome! Find and share food near you!</p>
+      <button
+        id="logoutBtn"
+        style="
+          margin-top: 1rem;
+          padding: 0.5rem 1rem;
+          border-radius: 6px;
+          border: none;
+          background-color: white;
+          color: #4caf50;
+          cursor: pointer;
+        "
+      >
+        Log Out
+      </button>
+    </header>
 
-  <section class="filters">
-    <h2>Filter by Location</h2>
-    <div class="filter-group">
-      <label for="country">Country:</label>
-      <select id="country">
-        <option value="">Select country</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label for="city">City:</label>
-      <select id="city" disabled>
-        <option value="">Select city</option>
-      </select>
-    </div>
-    <!-- Filter & My Food List knappar -->
-    <div style="margin-top: 1rem;">
-      <button id="filterBtn" style="padding: 0.5rem 1rem; border-radius: 6px; border:none; background-color: #4CAF50; color: white; cursor:pointer;">Search</button>
-      <button id="myFoodBtn" style="padding: 0.5rem 1rem; border-radius: 6px; border:none; background-color: #FF9800; color: white; cursor:pointer; margin-left: 0.5rem;">My Food List</button>
-    </div>
-  </section>
+    <section class="filters">
+      <h2>Filter by Location</h2>
+      <div class="filter-group">
+        <label for="country">Country:</label>
+        <select id="country">
+          <option value="">Select country</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="city">City:</label>
+        <select id="city" disabled>
+          <option value="">Select city</option>
+        </select>
+      </div>
+      <!-- Filter & My Food List knappar -->
+      <div style="margin-top: 1rem">
+        <button
+          id="filterBtn"
+          style="
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+          "
+        >
+          Search
+        </button>
+        <button
+          id="myFoodBtn"
+          style="
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            background-color: #ff9800;
+            color: white;
+            cursor: pointer;
+            margin-left: 0.5rem;
+          "
+        >
+          My Food List
+        </button>
+      </div>
+    </section>
 
-  <section class="food-list">
-    <h2>Available Food</h2>
-    <!-- Här lägger vi till den globala listan -->
-    <div class="global-food-list"></div>
-  </section>
+    <section class="food-list">
+      <h2>Available Food</h2>
+      <!-- Här lägger vi till den globala listan -->
+      <div class="global-food-list"></div>
+    </section>
 
-  <footer>
-    <p>&copy; 2026 Global Food Share</p>
-  </footer>
+    <footer>
+      <p>&copy; 2026 Global Food Share</p>
+    </footer>
 
-  <script src="app.js"></script>
-  <script>
-    // --- Visa global food list ---
-    const globalListDiv = document.querySelector(".global-food-list");
-    const allFoods = JSON.parse(localStorage.getItem("allFoods")) || [];
+    <script src="app.js"></script>
+    <script>
+      //Används inte? //Frank
+      // --- Visa global food list ---
+      /*  const globalListDiv = document.querySelector(".global-food-list");
+      const allFoods = JSON.parse(localStorage.getItem("allFoods")) || [];
 
-    if(allFoods.length === 0){
-      globalListDiv.innerHTML = "<p>No foods added yet.</p>";
-    } else {
-      allFoods.forEach(food => {
-        const div = document.createElement("div");
-        div.classList.add("food-item");
-        div.innerHTML = `<span class="icon">${food.emoji}</span>
+      if (allFoods.length === 0) {
+        globalListDiv.innerHTML = "<p>No foods added yet.</p>";
+      } else {
+        allFoods.forEach((food) => {
+          const div = document.createElement("div");
+          div.classList.add("food-item");
+          div.innerHTML = `<span class="icon">${food.emoji}</span>
                          <h3>${food.title}</h3>
                          <p>${food.city}, ${food.country}</p>
                          <small>Added by: ${food.user}</small>`;
-        globalListDiv.appendChild(div);
-      });
-    }
-  </script>
-</body>
+          globalListDiv.appendChild(div);
+        });
+      }*/
+    </script>
+  </body>
 </html>

@@ -23,7 +23,7 @@ const foodList = document.querySelector(".food-list");
 const myFoodBtn = document.getElementById("myFoodBtn");
 
 // --- Hämta globala matobjekt från localStorage ---
-let foodItems = JSON.parse(localStorage.getItem("globalFoods")) || [];
+let foodItems = JSON.parse(localStorage.getItem("allFoods")) || [];
 
 // --- Hämta alla länder och städer från API ---
 let countriesData = [];
@@ -33,7 +33,7 @@ async function loadCountries() {
     const data = await res.json();
     countriesData = data.data;
 
-    countriesData.forEach(c => {
+    countriesData.forEach((c) => {
       const option = document.createElement("option");
       option.value = c.country;
       option.textContent = c.country;
@@ -54,9 +54,9 @@ countrySelect.addEventListener("change", () => {
 
   if (!selectedCountry) return;
 
-  const countryObj = countriesData.find(c => c.country === selectedCountry);
+  const countryObj = countriesData.find((c) => c.country === selectedCountry);
   if (countryObj && countryObj.cities.length) {
-    countryObj.cities.forEach(city => {
+    countryObj.cities.forEach((city) => {
       const option = document.createElement("option");
       option.value = city;
       option.textContent = city;
@@ -74,7 +74,7 @@ function renderFoodItems(items) {
     return;
   }
 
-  items.forEach(item => {
+  items.forEach((item) => {
     const div = document.createElement("div");
     div.classList.add("food-item");
 
@@ -88,7 +88,9 @@ function renderFoodItems(items) {
 
     const btn = div.querySelector(".messageBtn");
     btn.addEventListener("click", () => {
-      alert(`Contact info for ${item.title}:\nEmail: ${item.user || "example@example.com"}`);
+      alert(
+        `Contact info for ${item.title}:\nEmail: ${item.user || "example@example.com"}`,
+      );
     });
 
     foodList.appendChild(div);
@@ -103,9 +105,10 @@ filterBtn.addEventListener("click", () => {
   const country = countrySelect.value;
   const city = citySelect.value;
 
-  const filtered = foodItems.filter(item => {
-    return (!country || item.country === country) &&
-           (!city || item.city === city);
+  const filtered = foodItems.filter((item) => {
+    return (
+      (!country || item.country === country) && (!city || item.city === city)
+    );
   });
 
   renderFoodItems(filtered);
@@ -122,7 +125,7 @@ const emojiPickerBtn = document.getElementById("emojiPickerBtn");
 const emojiPicker = document.getElementById("emojiPicker");
 
 // Första gången sätts emojiPicker på "none" så den inte syns
-emojiPicker.style.display = "none"; 
+emojiPicker.style.display = "none";
 
 // 1. Växla mellan att visa eller dölja emoji-pickern när knappen trycks
 emojiPickerBtn.addEventListener("click", () => {
@@ -138,15 +141,15 @@ emojiPickerBtn.addEventListener("click", () => {
 const emojiPickerSpans = document.querySelectorAll("#emojiPicker span");
 
 // 3. Lägg till eventlyssnare på varje emoji i emoji-picker
-emojiPickerSpans.forEach(span => {
+emojiPickerSpans.forEach((span) => {
   span.addEventListener("click", () => {
     // Här kan du göra något med den valda emojin
     console.log(`Vald emoji: ${span.textContent}`);
-    
+
     // Exempel: Uppdatera ett input-fält med den valda emojin
     // Om du har ett input-fält där emojin ska visas, använd detta:
     document.getElementById("foodTitle").value = span.textContent;
-    
+
     // Stäng emoji-pickern när en emoji är vald
     emojiPicker.style.display = "none";
   });

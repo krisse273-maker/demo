@@ -23,12 +23,17 @@ loginBtn.addEventListener("click", async () => {
 
   // Hasha lösenordet samma som vid registrering
   const enc = new TextEncoder();
-  const hashBuffer = await crypto.subtle.digest('SHA-256', enc.encode(password));
+  const hashBuffer = await crypto.subtle.digest(
+    "SHA-256",
+    enc.encode(password),
+  );
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  const hashedPassword = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 
   // Kolla om e-posten finns
-  const user = users.find(u => u.email === email);
+  const user = users.find((u) => u.email === email);
   if (!user) {
     msgElem.textContent = "This account does not exist!";
     return;
