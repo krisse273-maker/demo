@@ -122,9 +122,11 @@ addFoodForm.addEventListener("submit", async (e) => {
     timestamp: firebase.firestore.FieldValue.serverTimestamp()  // Firebase timestamp
   };
 
+  console.log("New food to add:", newFood);  // Kontrollera vad som skickas till Firestore
+
   // --- Lägg till i Firebase Firestore ---
   try {
-    await firebase.firestore().collection("foods").add(newFood);
+    await db.collection("foods").add(newFood);
     alert("Food item added successfully!");
 
     // --- Uppdatera användarens matlista ---
@@ -134,15 +136,15 @@ addFoodForm.addEventListener("submit", async (e) => {
     emojiPickerBtn.textContent = "Select your food Emoji";
     foodCitySelect.disabled = true;
   } catch (error) {
-    console.error("Error adding food: ", error);
+    console.error("Error adding food: ", error);  // Logga det faktiska felet här
     alert("Failed to add food!");
   }
 });
 
 // --- Ladda användarens matlista från Firestore ---
-async function loadUserFoods() {
+ function loadUserFoods() {
   try {
-    const querySnapshot = await firebase.firestore().collection("foods")
+    const querySnapshot = await db.collection("foods")
       .where("user", "==", currentUser.email)
       .get();
 
@@ -175,4 +177,4 @@ function renderMyFoods() {
 }
 
 // --- Initial load av mat ---
-loadUserFoods();
+ loadUserFoods();
