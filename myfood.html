@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css">
 
   <style>
+    /* Din CSS-kod för stilning här */
     body { 
       font-family: 'Segoe UI', sans-serif; 
       margin: 0; 
@@ -189,7 +190,7 @@
       <span>🧁</span><span>🍦</span><span>🍩</span><span>🍪</span>
       <span>🍫</span><span>🍿</span><span>🥯</span><span>🥖</span>
       <span>🥙</span><span>🥬</span><span>🥒</span><span>🥕</span>
-      <span>🌽</span><span>🍅</span><span></span><span>🧂</span>
+      <span>🌽</span><span>🍅</span><span>🧂</span>
       <span>🍹</span><span>🍺</span><span>🍷</span><span>🥤</span>
       <span>🐟</span><span>🦪</span><span>🦐</span><span>🦑</span>
     </div>
@@ -212,22 +213,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-<script>
-  // Emoji Picker
-  const emojiPickerBtn = document.getElementById("emojiPickerBtn");
-  const emojiPicker = document.getElementById("emojiPicker");
-  const foodTitleInput = document.getElementById("foodTitle");
-
-  emojiPicker.style.display = "none";  // Dölja pickern först
-
-  // Växla mellan att visa eller dölja emoji-pickern
-  emojiPickerBtn.addEventListener("click", () => {
-    if (emojiPicker.style.display === "none") {
-      emojiPicker.style.display = "flex";
-    } else {
-      emojiPicker.style.display = "none";
-    }
-  });
-
-  // Lägg till emoji i inputfältet när man klickar på en
-  emojiPicker.addEventListener("click
+<script src="myfood.js"></script> <!-- Länka till din JavaScript-fil här -->
+</body>
+</html>
