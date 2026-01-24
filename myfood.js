@@ -1,5 +1,9 @@
 // --- Kontrollera om användaren är inloggad ---
 const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+// Logga användaren för att kontrollera om de är autentiserade
+console.log(currentUser);  // Lägg till här för att logga användaren
+
 if (!currentUser) {
   window.location.href = "login.html";
 }
@@ -30,7 +34,6 @@ let myFoods = [];
 let countriesData = []; // För att hålla länder och städer
 
 // --- Firebase-konfiguration och initialisering ---
-// Här är din Firebase-konfiguration, jag lägger inte till någon annan funktionalitet
 const firebaseConfig = {
   apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
   authDomain: "global-food-share.firebaseapp.com",
