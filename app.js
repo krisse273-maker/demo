@@ -65,11 +65,17 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Dummy matlista
-  const allFoods = [
-    { title: "Burger", country: "United States", city: "New York", emoji: "🍔", user: "test@example.com" },
-    { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
-  ];
+  // Hämta sparad mat från localStorage, annars använd dummy-lista
+  let allFoods = JSON.parse(localStorage.getItem("allFoods")) || [];
+
+  if (!allFoods.length) {
+    allFoods = [
+      { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
+      { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
+      { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
+    ];
+    localStorage.setItem("allFoods", JSON.stringify(allFoods));
+  }
 
   function renderFoodItems(items) {
     foodList.innerHTML = "";
@@ -91,7 +97,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Filtrering
+  // Filtrering (ingen förändring)
   filterBtn.addEventListener("click", () => {
     const country = countrySelect.value;
     const city = citySelect.value;
@@ -108,22 +114,11 @@ window.addEventListener("DOMContentLoaded", () => {
     window.location.href = "myfood.html";
   });
 
-// Init
-loadCountries().then(() => {
-  console.log("Countries loaded.");
+  // Init
+  loadCountries().then(() => {
+    console.log("Countries loaded.");
+  });
+
+  // Rendera mat direkt på sidan
+  renderFoodItems(allFoods);
 });
-
-// Hämta sparad mat från localStorage, annars använd dummy-lista
-let savedFoods = JSON.parse(localStorage.getItem("allFoods")) || [];
-
-if (!savedFoods.length) {
-  savedFoods = [
-    { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
-    { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
-    { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
-  ];
-  localStorage.setItem("allFoods", JSON.stringify(savedFoods));
-}
-
-// Rendera mat direkt på sidan
-renderFoodItems(savedFoods);
