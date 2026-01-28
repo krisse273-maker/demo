@@ -7,20 +7,17 @@ window.addEventListener("DOMContentLoaded", async () => {
   const headerP = document.getElementById("welcomeMsg");
   const logoutBtn = document.getElementById("logoutBtn");
 
-  // Kontrollera att användaren är inloggad
+  // Kontrollera inloggad användare
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-  if (!currentUser) {
-    window.location.href = "login.html";
-  } else {
-    headerP.textContent = `Welcome, ${currentUser.name}! Find and share food near you!`;
-  }
+  if (!currentUser) window.location.href = "login.html";
+  headerP.textContent = `Welcome, ${currentUser.name}! Find and share food near you!`;
 
   logoutBtn.addEventListener("click", () => {
     localStorage.removeItem("currentUser");
     window.location.href = "login.html";
   });
 
-  // --- Länder och städer ---
+  // --- Länder/städer ---
   let countriesData = [];
   try {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
@@ -59,7 +56,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     citySelect.disabled = false;
   });
 
-  // --- Global matlista ---
+  // --- Hämta global mat från localStorage ---
   let allFoods = JSON.parse(localStorage.getItem("allFoods")) || [];
 
   function renderFoodItems(items) {
