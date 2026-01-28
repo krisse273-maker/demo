@@ -63,6 +63,7 @@ window.addEventListener("DOMContentLoaded", () => {
       citySelect.disabled = false;
     }
   });
+  
 
   // Dummy matlista (kan sen hämta från Firestore)
   const allFoods = [
@@ -111,3 +112,4 @@ window.addEventListener("DOMContentLoaded", () => {
   loadCountries();
   renderFoodItems(allFoods);
 });
+
