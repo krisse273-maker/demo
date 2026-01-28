@@ -1,3 +1,19 @@
+// --- Firebase-konfiguration ---
+const firebaseConfig = {
+  apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
+  authDomain: "global-food-share.firebaseapp.com",
+  projectId: "global-food-share",
+  storageBucket: "global-food-share.appspot.com",
+  messagingSenderId: "902107453892",
+  appId: "1:902107453892:web:dd9625974b8744cc94ac91"
+};
+
+// Initiera Firebase om det inte redan finns
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
+
 window.addEventListener("DOMContentLoaded", async () => {
   const countrySelect = document.getElementById("country");
   const citySelect = document.getElementById("city");
@@ -6,23 +22,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   const myFoodBtn = document.getElementById("myFoodBtn");
   const headerP = document.getElementById("welcomeMsg");
   const logoutBtn = document.getElementById("logoutBtn");
-
-  // --- Firebase-konfiguration ---
-  const firebaseConfig = {
-    apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
-    authDomain: "global-food-share.firebaseapp.com",
-    projectId: "global-food-share",
-    storageBucket: "global-food-share.appspot.com",
-    messagingSenderId: "902107453892",
-    appId: "1:902107453892:web:dd9625974b8744cc94ac91"
-  };
-
-  // Initiera Firebase
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-
-  const db = firebase.firestore();
 
   // Kontrollera inloggad användare
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -34,7 +33,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "login.html";
   });
 
-  // --- Länder/städer ---
+  // --- Länder och städer ---
   let countriesData = [];
   try {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
@@ -76,6 +75,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   // --- Hämta all mat från alla användares items ---
   async function getAllFoods() {
     try {
+      // collectionGroup hämtar alla "items" subcollections
       const snapshot = await db.collectionGroup("items").get();
       const allFoods = snapshot.docs.map(doc => {
         const data = doc.data();
@@ -94,7 +94,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // --- Render function ---
+  // --- Render-funktion ---
   function renderFoodItems(items) {
     foodList.innerHTML = "";
     if (!items.length) {
@@ -119,7 +119,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   let allFoods = await getAllFoods();
   renderFoodItems(allFoods);
 
-  // --- Filterknapp ---
+  // --- Filter-knapp ---
   filterBtn.addEventListener("click", () => {
     const country = countrySelect.value;
     const city = citySelect.value;
