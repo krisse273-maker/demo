@@ -20,7 +20,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   const filterBtn = document.getElementById("filterBtn");
   const foodList = document.querySelector(".global-food-list");
   const myFoodBtn = document.getElementById("myFoodBtn");
-  const headerP = document.getElementById("welcomeMsg");
   const logoutBtn = document.getElementById("logoutBtn");
 
   // --- Länder/städer ---
@@ -77,9 +76,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   let allFoods = []; // aktuell global lista
 
   db.collectionGroup("items")
-  .where("timestamp", "!=", null)
-  .orderBy("timestamp", "desc")
-  .onSnapshot(snapshot => {
+    .orderBy("timestamp", "desc")
+    .onSnapshot(snapshot => {
       allFoods = snapshot.docs.map(doc => {
         const data = doc.data();
         return {
@@ -87,11 +85,13 @@ window.addEventListener("DOMContentLoaded", async () => {
           city: data.city || "",
           country: data.country || "",
           emoji: data.emoji || "🍽️",
-          user: data.user || "Anonymous"
+          user: data.user || "Anonymous",
+          timestamp: data.timestamp || null
         };
       });
 
-      renderFoodItems(allFoods);
+      console.log("Fetched foods:", allFoods); // kolla att du får data
+      renderFoodItems(allFoods); // rendera maten direkt
     }, err => {
       console.error("Error fetching global foods:", err);
     });
@@ -130,4 +130,3 @@ window.addEventListener("DOMContentLoaded", async () => {
     renderFoodItems(filtered);
   });
 });
-
