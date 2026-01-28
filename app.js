@@ -1,13 +1,13 @@
-// --- DOM-element ---
-const headerP = document.getElementById("welcomeMsg");
-const logoutBtn = document.getElementById("logoutBtn");
+// DOM-element
 const countrySelect = document.getElementById("country");
 const citySelect = document.getElementById("city");
 const filterBtn = document.getElementById("filterBtn");
 const foodList = document.querySelector(".global-food-list");
 const myFoodBtn = document.getElementById("myFoodBtn");
+const headerP = document.getElementById("welcomeMsg");
+const logoutBtn = document.getElementById("logoutBtn");
 
-// --- Kontrollera inloggning ---
+// Kontrollera login
 const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 if (!currentUser) {
   window.location.href = "login.html";
@@ -15,26 +15,13 @@ if (!currentUser) {
   headerP.textContent = `Welcome, ${currentUser.name}! Find and share food near you!`;
 }
 
-// --- Logga ut ---
+// Log out
 logoutBtn.addEventListener("click", () => {
   localStorage.removeItem("currentUser");
   window.location.href = "login.html";
 });
 
-// --- Firebase ---
-const firebaseConfig = {
-  apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1w",
-  authDomain: "global-food-share.firebaseapp.com",
-  projectId: "global-food-share",
-  storageBucket: "global-food-share.firebasestorage.app",
-  messagingSenderId: "902107453892",
-  appId: "1:902107453892:web:dd9625974b8744cc94ac91",
-  measurementId: "G-S1G7JY0TH5",
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// --- Länder och städer ---
+// Länder/städer
 let countriesData = [];
 
 async function loadCountries() {
@@ -42,6 +29,8 @@ async function loadCountries() {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
     const data = await res.json();
     countriesData = data.data;
+
+    console.log("Fetched countries:", countriesData); // debug
 
     countrySelect.innerHTML = '<option value="">Select country</option>';
 
@@ -57,7 +46,7 @@ async function loadCountries() {
   }
 }
 
-// --- Visa städer ---
+// Visa städer
 countrySelect.addEventListener("change", () => {
   const selectedCountry = countrySelect.value;
   citySelect.innerHTML = '<option value="">Select city</option>';
@@ -77,20 +66,12 @@ countrySelect.addEventListener("change", () => {
   }
 });
 
-// --- Ladda matposter ---
-async function loadAllFoods() {
-  try {
-    const snapshot = await db.collectionGroup("items").orderBy("timestamp", "desc").get();
-    const allFoods = snapshot.docs.map(doc => doc.data());
-    localStorage.setItem("allFoods", JSON.stringify(allFoods));
-    renderFoodItems(allFoods);
-  } catch (err) {
-    console.error("Failed to load foods:", err);
-    foodList.innerHTML = "<p>Failed to load food items.</p>";
-  }
-}
+// Dummy matlista (sen kan du hämta från Firestore)
+const allFoods = [
+  { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
+  { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
+];
 
-// --- Rendera matposter ---
 function renderFoodItems(items) {
   foodList.innerHTML = "";
   if (!items.length) {
@@ -106,22 +87,15 @@ function renderFoodItems(items) {
       <h3>${item.title}</h3>
       <p>Location: ${item.city}, ${item.country}</p>
       <p>Shared by: ${item.user || "Anonymous"}</p>
-      <button class="messageBtn">Contact User</button>
     `;
-
-    div.querySelector(".messageBtn").addEventListener("click", () => {
-      alert(`Contact info for ${item.title}:\nEmail: ${item.user || "example@example.com"}`);
-    });
-
     foodList.appendChild(div);
   });
 }
 
-// --- Filtrering ---
+// Filtrering
 filterBtn.addEventListener("click", () => {
   const country = countrySelect.value;
   const city = citySelect.value;
-  const allFoods = JSON.parse(localStorage.getItem("allFoods")) || [];
 
   const filtered = allFoods.filter(item => {
     return (!country || item.country === country) && (!city || item.city === city);
@@ -130,11 +104,11 @@ filterBtn.addEventListener("click", () => {
   renderFoodItems(filtered);
 });
 
-// --- My Food List ---
+// My Food List knapp
 myFoodBtn.addEventListener("click", () => {
   window.location.href = "myfood.html";
 });
 
-// --- Init ---
+// Init
 loadCountries();
-loadAllFoods();
+renderFoodItems(allFoods);
