@@ -7,6 +7,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const headerP = document.getElementById("welcomeMsg");
   const logoutBtn = document.getElementById("logoutBtn");
 
+  // --- Kontrollera inloggad användare ---
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   if (!currentUser) window.location.href = "login.html";
   headerP.textContent = `Welcome, ${currentUser.name}! Find and share food near you!`;
@@ -16,7 +17,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "login.html";
   });
 
-  // Länder/städer
+  // --- Länder och städer ---
   let countriesData = [];
   try {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
@@ -71,18 +72,35 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   let allFoods = [];
 
-  async function loadAllFoods() {
+  // --- Hämta global mat ---
+  async function loadGlobalFoods() {
     try {
-      // Hämta alla mat-items från alla användare
-      const snapshot = await db.collectionGroup("items").orderBy("timestamp", "desc").get();
-      allFoods = snapshot.docs.map(doc => doc.data());
+      allFoods = [];
+
+      // Hämta alla användares mat
+      const usersSnapshot = await db.collection("foods").get();
+
+      for (const userDoc of usersSnapshot.docs) {
+        const itemsSnapshot = await db
+          .collection("foods")
+          .doc(userDoc.id)
+          .collection("items")
+          .orderBy("timestamp", "desc")
+          .get();
+
+        itemsSnapshot.docs.forEach(itemDoc => {
+          allFoods.push(itemDoc.data());
+        });
+      }
+
       renderFoodItems(allFoods);
     } catch (err) {
-      console.error("Error fetching foods:", err);
-      foodList.innerHTML = "<p>Failed to load foods.</p>";
+      console.error("Error fetching global foods:", err);
+      foodList.innerHTML = "<p>Failed to load food items.</p>";
     }
   }
 
+  // --- Rendera mat ---
   function renderFoodItems(items) {
     foodList.innerHTML = "";
     if (!items.length) {
@@ -103,9 +121,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
+  // --- Filter ---
   filterBtn.addEventListener("click", () => {
     const country = countrySelect.value;
     const city = citySelect.value;
+
     const filtered = allFoods.filter(f =>
       (!country || f.country === country) &&
       (!city || f.city === city)
@@ -117,11 +137,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "myfood.html";
   });
 
-  firebase.auth().onAuthStateChanged(async user => {
-    if (!user) {
-      window.location.href = "login.html";
-      return;
-    }
-    await loadAllFoods();
-  });
+  // --- Kör initialt ---
+  loadGlobalFoods();
 });
