@@ -22,19 +22,6 @@ window.addEventListener("DOMContentLoaded", () => {
     window.location.href = "login.html";
   });
 
-  // --- Se till att alltid ha mat i localStorage ---
-  if (!localStorage.getItem("allFoods")) {
-    const dummyFoods = [
-      { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
-      { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
-      { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
-    ];
-    localStorage.setItem("allFoods", JSON.stringify(dummyFoods));
-  }
-
-  // --- Hämta allFoods från localStorage ---
-  let allFoods = JSON.parse(localStorage.getItem("allFoods"));
-
   // Länder/städer
   let countriesData = [];
 
@@ -76,7 +63,52 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Render-funktion
+  // --- Hämta mat från Firebase ---
+  let allFoods = [];
+
+  firebase.auth().onAuthStateChanged(async (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    try {
+      const snapshot = await firebase.firestore()
+        .collectionGroup("items")
+        .orderBy("timestamp", "desc")
+        .get();
+
+      allFoods = snapshot.docs.map(doc => doc.data());
+
+      // Om Firebase är tom, använd dummy-lista
+      if (!allFoods.length) {
+        allFoods = [
+          { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
+          { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
+          { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
+        ];
+      }
+
+      localStorage.setItem("allFoods", JSON.stringify(allFoods));
+      renderFoodItems(allFoods);
+
+    } catch (err) {
+      console.error("Failed to load food items:", err);
+
+      // fallback dummy
+      if (!allFoods.length) {
+        allFoods = [
+          { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
+          { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
+          { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
+        ];
+        localStorage.setItem("allFoods", JSON.stringify(allFoods));
+      }
+      renderFoodItems(allFoods);
+    }
+  });
+
+  // --- Render-funktion ---
   function renderFoodItems(items) {
     foodList.innerHTML = "";
     if (!items.length) {
@@ -97,7 +129,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Filtrering
+  // --- Filtrering ---
   filterBtn.addEventListener("click", () => {
     const country = countrySelect.value;
     const city = citySelect.value;
@@ -109,14 +141,11 @@ window.addEventListener("DOMContentLoaded", () => {
     renderFoodItems(filtered);
   });
 
-  // My Food knapp
+  // --- My Food knapp ---
   myFoodBtn.addEventListener("click", () => {
     window.location.href = "myfood.html";
   });
 
   // Init
   loadCountries().then(() => console.log("Countries loaded."));
-
-  // Rendera direkt
-  renderFoodItems(allFoods);
 });
