@@ -135,6 +135,7 @@ addFoodForm.addEventListener("submit", async (e) => {
         city: newFood.city,
         emoji: newFood.emoji,
         user: newFood.user,
+        ownerId: user.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
       alert("Food item added successfully!");
