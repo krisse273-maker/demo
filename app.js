@@ -7,7 +7,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   const headerP = document.getElementById("welcomeMsg");
   const logoutBtn = document.getElementById("logoutBtn");
 
-  // Kontrollera inloggad användare
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   if (!currentUser) window.location.href = "login.html";
   headerP.textContent = `Welcome, ${currentUser.name}! Find and share food near you!`;
@@ -17,7 +16,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "login.html";
   });
 
-  // --- Länder/städer ---
+  // Länder/städer
   let countriesData = [];
   try {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
@@ -56,8 +55,33 @@ window.addEventListener("DOMContentLoaded", async () => {
     citySelect.disabled = false;
   });
 
-  // --- Hämta global mat från localStorage ---
-  let allFoods = JSON.parse(localStorage.getItem("allFoods")) || [];
+  // --- Firebase init ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
+    authDomain: "global-food-share.firebaseapp.com",
+    projectId: "global-food-share",
+    storageBucket: "global-food-share.firebasestorage.app",
+    messagingSenderId: "902107453892",
+    appId: "1:902107453892:web:dd9625974b8744cc94ac91",
+    measurementId: "G-S1G7JY0TH5",
+  };
+
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore(app);
+
+  let allFoods = [];
+
+  async function loadAllFoods() {
+    try {
+      // Hämta alla mat-items från alla användare
+      const snapshot = await db.collectionGroup("items").orderBy("timestamp", "desc").get();
+      allFoods = snapshot.docs.map(doc => doc.data());
+      renderFoodItems(allFoods);
+    } catch (err) {
+      console.error("Error fetching foods:", err);
+      foodList.innerHTML = "<p>Failed to load foods.</p>";
+    }
+  }
 
   function renderFoodItems(items) {
     foodList.innerHTML = "";
@@ -82,7 +106,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   filterBtn.addEventListener("click", () => {
     const country = countrySelect.value;
     const city = citySelect.value;
-
     const filtered = allFoods.filter(f =>
       (!country || f.country === country) &&
       (!city || f.city === city)
@@ -90,9 +113,15 @@ window.addEventListener("DOMContentLoaded", async () => {
     renderFoodItems(filtered);
   });
 
-  renderFoodItems(allFoods);
-
   myFoodBtn.addEventListener("click", () => {
     window.location.href = "myfood.html";
+  });
+
+  firebase.auth().onAuthStateChanged(async user => {
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
+    await loadAllFoods();
   });
 });
