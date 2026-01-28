@@ -65,10 +65,11 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Hämta sparad mat från localStorage, annars använd dummy-lista
-  let allFoods = JSON.parse(localStorage.getItem("allFoods")) || [];
+  // --- Hämta sparad mat från localStorage, annars använd dummy-lista ---
+  let allFoods = JSON.parse(localStorage.getItem("allFoods"));
 
-  if (!allFoods.length) {
+  if (!allFoods || !allFoods.length) {
+    // Om det inte finns mat i localStorage, lägg in dummy
     allFoods = [
       { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
       { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
@@ -77,6 +78,7 @@ window.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("allFoods", JSON.stringify(allFoods));
   }
 
+  // --- Render-funktion ---
   function renderFoodItems(items) {
     foodList.innerHTML = "";
     if (!items.length) {
@@ -97,7 +99,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Filtrering (ingen förändring)
+  // --- Filtrering (oförändrad) ---
   filterBtn.addEventListener("click", () => {
     const country = countrySelect.value;
     const city = citySelect.value;
@@ -114,11 +116,9 @@ window.addEventListener("DOMContentLoaded", () => {
     window.location.href = "myfood.html";
   });
 
-  // Init
-  loadCountries().then(() => {
-    console.log("Countries loaded.");
-  });
+  // --- Init ---
+  loadCountries().then(() => console.log("Countries loaded."));
 
-  // Rendera mat direkt på sidan
+  // --- Rendera mat direkt på sidan ---
   renderFoodItems(allFoods);
 });
