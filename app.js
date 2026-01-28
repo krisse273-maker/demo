@@ -31,6 +31,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
       countriesData = data.data;
 
+      // Fyll i country dropdown
       countrySelect.innerHTML = '<option value="">Select country</option>';
       countriesData.forEach(c => {
         const option = document.createElement("option");
@@ -63,11 +64,10 @@ window.addEventListener("DOMContentLoaded", () => {
       citySelect.disabled = false;
     }
   });
-  
 
-  // Dummy matlista (kan sen hämta från Firestore)
+  // Dummy matlista
   const allFoods = [
-    { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
+    { title: "Burger", country: "United States", city: "New York", emoji: "🍔", user: "test@example.com" },
     { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
   ];
 
@@ -109,7 +109,8 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   // Init
-  loadCountries();
+  loadCountries().then(() => {
+    console.log("Countries loaded.");
+  });
   renderFoodItems(allFoods);
 });
-
