@@ -8,7 +8,7 @@ const firebaseConfig = {
   appId: "1:902107453892:web:dd9625974b8744cc94ac91"
 };
 
-// Initiera Firebase om det inte redan finns
+// Initiera Firebase
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -33,7 +33,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "login.html";
   });
 
-  // --- Länder och städer ---
+  // --- Länder/städer ---
   let countriesData = [];
   try {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
@@ -75,7 +75,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   // --- Hämta all mat från alla användares items ---
   async function getAllFoods() {
     try {
-      // collectionGroup hämtar alla "items" subcollections
+      // CollectionGroup hämtar alla "items" från alla users
       const snapshot = await db.collectionGroup("items").get();
       const allFoods = snapshot.docs.map(doc => {
         const data = doc.data();
@@ -94,7 +94,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // --- Render-funktion ---
+  // --- Render function ---
   function renderFoodItems(items) {
     foodList.innerHTML = "";
     if (!items.length) {
@@ -119,7 +119,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   let allFoods = await getAllFoods();
   renderFoodItems(allFoods);
 
-  // --- Filter-knapp ---
+  // --- Filterknapp ---
   filterBtn.addEventListener("click", () => {
     const country = countrySelect.value;
     const city = citySelect.value;
