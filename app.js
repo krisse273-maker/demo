@@ -15,7 +15,7 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 
 window.addEventListener("DOMContentLoaded", async () => {
-  // --- DOM-element ---
+  // DOM-element
   const countrySelect = document.getElementById("country");
   const citySelect = document.getElementById("city");
   const filterBtn = document.getElementById("filterBtn");
@@ -27,7 +27,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   let countriesData = [];
 
-  // --- Ladda länder och städer ---
+  // --- Ladda länder/städer ---
   try {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
     const data = await res.json();
@@ -65,20 +65,17 @@ window.addEventListener("DOMContentLoaded", async () => {
     citySelect.disabled = false;
   });
 
-  // --- Firebase Auth check ---
+  // --- Vänta på att användaren är inloggad ---
   firebase.auth().onAuthStateChanged(user => {
     if (!user) {
-      // Ingen inloggad → tvinga login
       window.location.href = "login.html";
       return;
     }
 
     // --- Välkomsttext ---
-    if (welcomeP) {
-      welcomeP.textContent = `Welcome, ${user.displayName || "User"}! Find and share food near you!`;
-    }
+    welcomeP.textContent = `Welcome, ${user.displayName || "User"}! Find and share food near you!`;
 
-    // --- Logout knapp ---
+    // --- Logout ---
     logoutBtn.addEventListener("click", async () => {
       await firebase.auth().signOut();
       window.location.href = "login.html";
@@ -138,52 +135,49 @@ window.addEventListener("DOMContentLoaded", async () => {
             city: data.city || "",
             country: data.country || "",
             emoji: data.emoji || "🍽️",
-            user: "User", // anonymiserat
-            timestamp: data.timestamp || null
+            user: "User" // anonymiserat
           };
         });
 
         renderFoodItems(allFoods);
-      }, err => {
-        console.error("Error fetching global foods:", err);
       });
-  });
 
-  // --- Render function ---
-  function renderFoodItems(items) {
-    foodList.innerHTML = "";
-    if (!items.length) {
-      foodList.innerHTML = "<p>No food found.</p>";
-      return;
-    }
+    // --- Filterknapp ---
+    filterBtn.addEventListener("click", () => {
+      const country = countrySelect.value;
+      const city = citySelect.value;
 
-    items.forEach(item => {
-      const div = document.createElement("div");
-      div.classList.add("food-item");
-      div.innerHTML = `
-        <span class="icon">${item.emoji}</span>
-        <h3>${item.title}</h3>
-        <p>Location: ${item.city}, ${item.country}</p>
-        <p>Shared by: ${item.user}</p>
-      `;
-      foodList.appendChild(div);
+      const allDivs = Array.from(document.querySelectorAll(".food-item"));
+      const filtered = allDivs.filter(div => {
+        const loc = div.querySelector("p:nth-child(2)").textContent.split(", ");
+        const divCity = loc[0];
+        const divCountry = loc[1];
+        return (!country || divCountry === country) && (!city || divCity === city);
+      });
+
+      foodList.innerHTML = "";
+      filtered.forEach(f => foodList.appendChild(f));
     });
+
+  }); // end onAuthStateChanged
+}); // end DOMContentLoaded
+
+function renderFoodItems(items) {
+  const foodList = document.querySelector(".global-food-list");
+  foodList.innerHTML = "";
+  if (!items.length) {
+    foodList.innerHTML = "<p>No food found.</p>";
+    return;
   }
-
-  // --- Filterknapp ---
-  filterBtn.addEventListener("click", () => {
-    const country = countrySelect.value;
-    const city = citySelect.value;
-
-    const items = Array.from(document.querySelectorAll(".food-item"));
-    const filtered = items.filter(div => {
-      const loc = div.querySelector("p:nth-child(2)").textContent.split(", ");
-      const divCity = loc[0];
-      const divCountry = loc[1];
-      return (!country || divCountry === country) && (!city || divCity === city);
-    });
-
-    foodList.innerHTML = "";
-    filtered.forEach(f => foodList.appendChild(f));
+  items.forEach(item => {
+    const div = document.createElement("div");
+    div.classList.add("food-item");
+    div.innerHTML = `
+      <span class="icon">${item.emoji}</span>
+      <h3>${item.title}</h3>
+      <p>${item.city}, ${item.country}</p>
+      <p>Shared by: ${item.user}</p>
+    `;
+    foodList.appendChild(div);
   });
-});
+}
