@@ -56,35 +56,34 @@ window.addEventListener("DOMContentLoaded", async () => {
     citySelect.disabled = false;
   });
 
-  // --- Hämta all mat från Firestore ---
+  // --- Hämta all mat från alla användares items ---
   async function getAllFoods() {
-    const allFoods = [];
     try {
-      const usersSnapshot = await firebase.firestore().collection("foods").get();
+      const snapshot = await firebase.firestore().collectionGroup("items").get();
+      console.log("Fetched items count:", snapshot.docs.length);
 
-      for (const userDoc of usersSnapshot.docs) {
-        const userId = userDoc.id;
-        const itemsSnapshot = await firebase.firestore()
-          .collection("foods")
-          .doc(userId)
-          .collection("items")
-          .get();
+      const allFoods = snapshot.docs.map(doc => {
+        const data = doc.data();
+        console.log("Item data:", data);
+        return {
+          title: data.title || "",
+          city: data.city || "",
+          country: data.country || "",
+          emoji: data.emoji || "🍽️",
+          user: data.user || "Anonymous"
+        };
+      });
 
-        for (const itemDoc of itemsSnapshot.docs) {
-          const data = itemDoc.data();
-          allFoods.push({
-            title: data.title || "",
-            city: data.city || "",
-            country: data.country || "",
-            emoji: data.emoji || "🍽️",
-            user: data.user || "Anonymous"
-          });
-        }
+      if (allFoods.length === 0) {
+        console.warn("⚠️ No items found. Kontrollera att subcollections heter 'items' och ligger under /foods/{userId}/items");
       }
+
+      return allFoods;
     } catch (err) {
       console.error("Error fetching all foods:", err);
+      alert("Failed to fetch foods. Check console for details.");
+      return [];
     }
-    return allFoods;
   }
 
   // --- Render function ---
@@ -110,6 +109,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // --- Ladda all mat direkt ---
   let allFoods = await getAllFoods();
+  console.log("All foods array:", allFoods);
   renderFoodItems(allFoods);
 
   // --- Filterknapp ---
