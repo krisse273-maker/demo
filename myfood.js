@@ -30,8 +30,9 @@ const foodCitySelect = document.getElementById("foodCity");
 // --- Mat-data ---
 let myFoods = [];
 let countriesData = [];
+let firebaseUser = null; // kommer hålla auth-user
 
-// --- Firebase-konfiguration och initialisering ---
+// --- Firebase-konfiguration ---
 const firebaseConfig = {
   apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
   authDomain: "global-food-share.firebaseapp.com",
@@ -60,7 +61,6 @@ async function loadCountries() {
     });
   } catch (err) {
     console.error("Failed to load countries:", err);
-    alert("Could not load countries data. Try refreshing the page.");
   }
 }
 loadCountries();
@@ -101,10 +101,9 @@ emojiPicker.addEventListener("click", (e) => {
 // --- Lägg till mat ---
 addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  if (!selectedEmoji) {
-    alert("Please select an emoji for your food!");
-    return;
-  }
+  if (!selectedEmoji) return alert("Please select an emoji!");
+
+  if (!firebaseUser) return alert("User not logged in");
 
   const newFood = {
     title: foodTitleInput.value,
@@ -115,74 +114,68 @@ addFoodForm.addEventListener("submit", async (e) => {
     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
   };
 
-  firebase.auth().onAuthStateChanged(async (user) => {
-    if (!user) return;
+  try {
+    await db.collection("foods").doc(firebaseUser.uid).collection("items").add({
+      ...newFood,
+      ownerId: firebaseUser.uid,
+    });
 
-    try {
-      await db.collection("foods").doc(user.uid).collection("items").add({
-        ...newFood,
-        ownerId: user.uid,
-      });
+    addFoodForm.reset();
+    selectedEmoji = "";
+    emojiPickerBtn.textContent = "Select your food Emoji";
+    foodCitySelect.disabled = true;
 
-      loadUserFoods();
-      addFoodForm.reset();
-      selectedEmoji = "";
-      emojiPickerBtn.textContent = "Select your food Emoji";
-      foodCitySelect.disabled = true;
-      alert("Food item added successfully!");
-    } catch (error) {
-      console.error("Error adding food: ", error);
-      alert("Failed to add food!");
-    }
-  });
+    await loadUserFoods();
+    alert("Food item added successfully!");
+  } catch (err) {
+    console.error("Error adding food:", err);
+    alert("Failed to add food!");
+  }
 });
 
 // --- Ladda användarens matlista ---
 async function loadUserFoods() {
-  firebase.auth().onAuthStateChanged(async (user) => {
-    if (!user) return;
+  if (!firebaseUser) return;
 
-    try {
-      const snapshot = await db
-        .collection("foods")
-        .doc(user.uid)
-        .collection("items")
-        .orderBy("timestamp", "desc")
-        .get();
+  try {
+    const snapshot = await db
+      .collection("foods")
+      .doc(firebaseUser.uid)
+      .collection("items")
+      .orderBy("timestamp", "desc")
+      .get();
 
-      myFoods = snapshot.docs.map((doc) => doc.data());
+    myFoods = snapshot.docs.map((doc) => doc.data());
 
-      if (!myFoods.length) {
-        // Fallback dummy-lista
-        myFoods = [
-          { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
-          { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
-          { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
-        ];
-      }
-
-      localStorage.setItem("allFoods", JSON.stringify(myFoods));
-      renderMyFoods();
-    } catch (error) {
-      console.error("Error loading user foods: ", error);
-
-      // Fallback dummy-lista om Firebase failar
+    if (!myFoods.length) {
       myFoods = [
         { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
         { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
         { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
       ];
-      localStorage.setItem("allFoods", JSON.stringify(myFoods));
-      renderMyFoods();
     }
-  });
+
+    localStorage.setItem("allFoods", JSON.stringify(myFoods));
+    renderMyFoods();
+  } catch (err) {
+    console.error("Error loading foods:", err);
+
+    // fallback dummy
+    myFoods = [
+      { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
+      { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
+      { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
+    ];
+    localStorage.setItem("allFoods", JSON.stringify(myFoods));
+    renderMyFoods();
+  }
 }
 
 // --- Rendera matlista ---
 function renderMyFoods() {
   myFoodList.innerHTML = "";
 
-  if (myFoods.length === 0) {
+  if (!myFoods.length) {
     myFoodList.innerHTML = `<p class="no-food">You don't have any food listed yet.</p>`;
     return;
   }
@@ -199,7 +192,13 @@ function renderMyFoods() {
   });
 }
 
-// --- Initial load ---
-window.onload = async () => {
+// --- Vänta på Firebase Auth ---
+firebase.auth().onAuthStateChanged(async (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  firebaseUser = user;
   await loadUserFoods();
-};
+});
