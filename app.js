@@ -21,6 +21,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const foodList = document.querySelector(".global-food-list");
   const myFoodBtn = document.getElementById("myFoodBtn");
   const logoutBtn = document.getElementById("logoutBtn");
+  const addFoodBtn = document.getElementById("addFoodBtn"); // knapp i formuläret
 
   // --- Länder/städer ---
   let countriesData = [];
@@ -72,6 +73,44 @@ window.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "myfood.html";
   });
 
+  // --- Lägg till matpost ---
+  if (addFoodBtn) {
+    addFoodBtn.addEventListener("click", async () => {
+      const titleInput = document.getElementById("title");
+      const cityInput = document.getElementById("city");
+      const countryInput = document.getElementById("country");
+      const emojiInput = document.getElementById("emoji");
+
+      const user = firebase.auth().currentUser;
+      if (!user) return alert("Du måste vara inloggad!");
+
+      try {
+        await db.collection("foods")
+                .doc(user.uid)
+                .collection("items")
+                .add({
+                  title: titleInput.value,
+                  city: cityInput.value,
+                  country: countryInput.value,
+                  emoji: emojiInput.value || "🍽️",
+                  user: user.email,
+                  ownerId: user.uid, // VIKTIGT för write-regeln
+                  timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+        alert("Maten lades till!");
+        // rensa formuläret
+        titleInput.value = "";
+        cityInput.value = "";
+        countryInput.value = "";
+        emojiInput.value = "";
+      } catch (err) {
+        console.error("Error adding food:", err);
+        alert("Det gick inte lägga till maten. Kolla console.");
+      }
+    });
+  }
+
   // --- Global real-time food list ---
   let allFoods = []; // aktuell global lista
 
@@ -90,8 +129,8 @@ window.addEventListener("DOMContentLoaded", async () => {
         };
       });
 
-      console.log("Fetched foods:", allFoods); // kolla att du får data
-      renderFoodItems(allFoods); // rendera maten direkt
+      console.log("Fetched foods:", allFoods);
+      renderFoodItems(allFoods);
     }, err => {
       console.error("Error fetching global foods:", err);
     });
@@ -130,4 +169,3 @@ window.addEventListener("DOMContentLoaded", async () => {
     renderFoodItems(filtered);
   });
 });
-
