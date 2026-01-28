@@ -23,16 +23,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   const headerP = document.getElementById("welcomeMsg");
   const logoutBtn = document.getElementById("logoutBtn");
 
-  // Kontrollera inloggad användare
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-  if (!currentUser) window.location.href = "login.html";
-  headerP.textContent = `Welcome, ${currentUser.name}! Find and share food near you!`;
-
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("currentUser");
-    window.location.href = "login.html";
-  });
-
   // --- Länder/städer ---
   let countriesData = [];
   try {
@@ -72,12 +62,24 @@ window.addEventListener("DOMContentLoaded", async () => {
     citySelect.disabled = false;
   });
 
-  // --- Hämta all mat från alla användares items ---
-  async function getAllFoods() {
-    try {
-      // CollectionGroup hämtar alla "items" från alla users
-      const snapshot = await db.collectionGroup("items").get();
-      const allFoods = snapshot.docs.map(doc => {
+  // --- Logout knapp ---
+  logoutBtn.addEventListener("click", async () => {
+    await firebase.auth().signOut();
+    window.location.href = "login.html";
+  });
+
+  // --- Navigera till myfood.html ---
+  myFoodBtn.addEventListener("click", () => {
+    window.location.href = "myfood.html";
+  });
+
+  // --- Global real-time food list ---
+  let allFoods = []; // aktuell global lista
+
+  db.collectionGroup("items")
+    .orderBy("timestamp", "desc") // nyast först
+    .onSnapshot(snapshot => {
+      allFoods = snapshot.docs.map(doc => {
         const data = doc.data();
         return {
           title: data.title || "",
@@ -87,12 +89,11 @@ window.addEventListener("DOMContentLoaded", async () => {
           user: data.user || "Anonymous"
         };
       });
-      return allFoods;
-    } catch (err) {
-      console.error("Error fetching all foods:", err);
-      return [];
-    }
-  }
+
+      renderFoodItems(allFoods);
+    }, err => {
+      console.error("Error fetching global foods:", err);
+    });
 
   // --- Render function ---
   function renderFoodItems(items) {
@@ -115,10 +116,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // --- Ladda all mat direkt ---
-  let allFoods = await getAllFoods();
-  renderFoodItems(allFoods);
-
   // --- Filterknapp ---
   filterBtn.addEventListener("click", () => {
     const country = countrySelect.value;
@@ -128,10 +125,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       (!country || f.country === country) &&
       (!city || f.city === city)
     );
-    renderFoodItems(filtered);
-  });
 
-  myFoodBtn.addEventListener("click", () => {
-    window.location.href = "myfood.html";
+    renderFoodItems(filtered);
   });
 });
