@@ -15,6 +15,7 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 
 window.addEventListener("DOMContentLoaded", async () => {
+  // --- DOM-element ---
   const countrySelect = document.getElementById("country");
   const citySelect = document.getElementById("city");
   const filterBtn = document.getElementById("filterBtn");
@@ -22,10 +23,11 @@ window.addEventListener("DOMContentLoaded", async () => {
   const myFoodBtn = document.getElementById("myFoodBtn");
   const logoutBtn = document.getElementById("logoutBtn");
   const addFoodBtn = document.getElementById("addFoodBtn");
+  const welcomeP = document.getElementById("welcomeMsg");
 
   let countriesData = [];
 
-  // --- Länder/städer ---
+  // --- Ladda länder och städer ---
   try {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
     const data = await res.json();
@@ -63,11 +65,17 @@ window.addEventListener("DOMContentLoaded", async () => {
     citySelect.disabled = false;
   });
 
-  // --- Firebase Auth-check ---
-  firebase.auth().onAuthStateChanged(async user => {
+  // --- Firebase Auth check ---
+  firebase.auth().onAuthStateChanged(user => {
     if (!user) {
-      window.location.href = "login.html"; // tvinga login
+      // Ingen inloggad → tvinga login
+      window.location.href = "login.html";
       return;
+    }
+
+    // --- Välkomsttext ---
+    if (welcomeP) {
+      welcomeP.textContent = `Welcome, ${user.displayName || "User"}! Find and share food near you!`;
     }
 
     // --- Logout knapp ---
@@ -81,13 +89,17 @@ window.addEventListener("DOMContentLoaded", async () => {
       window.location.href = "myfood.html";
     });
 
-    // --- Lägg till matpost ---
+    // --- Lägg till mat ---
     if (addFoodBtn) {
       addFoodBtn.addEventListener("click", async () => {
         const titleInput = document.getElementById("title");
         const cityInput = document.getElementById("city");
         const countryInput = document.getElementById("country");
         const emojiInput = document.getElementById("emoji");
+
+        if (!titleInput.value || !cityInput.value || !countryInput.value) {
+          return alert("Please fill in all fields!");
+        }
 
         try {
           await db.collection("foods")
@@ -110,7 +122,7 @@ window.addEventListener("DOMContentLoaded", async () => {
           emojiInput.value = "";
         } catch (err) {
           console.error("Error adding food:", err);
-          alert("Det gick inte lägga till maten. Kolla console.");
+          alert("Could not add food. Check console.");
         }
       });
     }
@@ -163,9 +175,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     const country = countrySelect.value;
     const city = citySelect.value;
 
-    const filtered = Array.from(document.querySelectorAll(".food-item")).filter(f => {
-      const divCountry = f.querySelector("p:nth-child(2)").textContent.split(", ")[1];
-      const divCity = f.querySelector("p:nth-child(2)").textContent.split(", ")[0];
+    const items = Array.from(document.querySelectorAll(".food-item"));
+    const filtered = items.filter(div => {
+      const loc = div.querySelector("p:nth-child(2)").textContent.split(", ");
+      const divCity = loc[0];
+      const divCountry = loc[1];
       return (!country || divCountry === country) && (!city || divCity === city);
     });
 
