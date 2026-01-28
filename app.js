@@ -56,38 +56,38 @@ window.addEventListener("DOMContentLoaded", async () => {
     citySelect.disabled = false;
   });
 
-  // --- Hämta ALLA användares mat från Firestore ---
-  const db = firebase.firestore();
-  let allFoods = [];
-
-  async function fetchAllFoods() {
+  // --- Hämta all mat från Firestore ---
+  async function getAllFoods() {
+    const allFoods = [];
     try {
-      allFoods = [];
-      const usersSnapshot = await db.collection("foods").get();
+      const usersSnapshot = await firebase.firestore().collection("foods").get();
 
       for (const userDoc of usersSnapshot.docs) {
         const userId = userDoc.id;
-        const itemsSnapshot = await db.collection("foods").doc(userId).collection("items").get();
+        const itemsSnapshot = await firebase.firestore()
+          .collection("foods")
+          .doc(userId)
+          .collection("items")
+          .get();
 
-        itemsSnapshot.forEach(itemDoc => {
+        for (const itemDoc of itemsSnapshot.docs) {
           const data = itemDoc.data();
           allFoods.push({
             title: data.title || "",
             city: data.city || "",
             country: data.country || "",
             emoji: data.emoji || "🍽️",
-            user: data.user || "Anonymous",
+            user: data.user || "Anonymous"
           });
-        });
+        }
       }
-
-      renderFoodItems(allFoods);
     } catch (err) {
-      console.error("Failed to fetch all foods:", err);
-      foodList.innerHTML = "<p>Could not load foods. Try again later.</p>";
+      console.error("Error fetching all foods:", err);
     }
+    return allFoods;
   }
 
+  // --- Render function ---
   function renderFoodItems(items) {
     foodList.innerHTML = "";
     if (!items.length) {
@@ -108,6 +108,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
+  // --- Ladda all mat direkt ---
+  let allFoods = await getAllFoods();
+  renderFoodItems(allFoods);
+
+  // --- Filterknapp ---
   filterBtn.addEventListener("click", () => {
     const country = countrySelect.value;
     const city = citySelect.value;
@@ -122,7 +127,4 @@ window.addEventListener("DOMContentLoaded", async () => {
   myFoodBtn.addEventListener("click", () => {
     window.location.href = "myfood.html";
   });
-
-  // Kör direkt
-  fetchAllFoods();
 });
