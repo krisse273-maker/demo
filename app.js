@@ -76,7 +76,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   let allFoods = []; // aktuell global lista
 
   db.collectionGroup("items")
-    .orderBy("timestamp", "desc")
+    //.orderBy("timestamp", "desc")
     .onSnapshot(snapshot => {
       allFoods = snapshot.docs.map(doc => {
         const data = doc.data();
@@ -130,3 +130,4 @@ window.addEventListener("DOMContentLoaded", async () => {
     renderFoodItems(filtered);
   });
 });
+
