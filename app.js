@@ -7,6 +7,23 @@ window.addEventListener("DOMContentLoaded", async () => {
   const headerP = document.getElementById("welcomeMsg");
   const logoutBtn = document.getElementById("logoutBtn");
 
+  // --- Firebase-konfiguration ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
+    authDomain: "global-food-share.firebaseapp.com",
+    projectId: "global-food-share",
+    storageBucket: "global-food-share.appspot.com",
+    messagingSenderId: "902107453892",
+    appId: "1:902107453892:web:dd9625974b8744cc94ac91"
+  };
+
+  // Initiera Firebase
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+
+  const db = firebase.firestore();
+
   // Kontrollera inloggad användare
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   if (!currentUser) window.location.href = "login.html";
@@ -59,12 +76,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   // --- Hämta all mat från alla användares items ---
   async function getAllFoods() {
     try {
-      const snapshot = await firebase.firestore().collectionGroup("items").get();
-      console.log("Fetched items count:", snapshot.docs.length);
-
+      const snapshot = await db.collectionGroup("items").get();
       const allFoods = snapshot.docs.map(doc => {
         const data = doc.data();
-        console.log("Item data:", data);
         return {
           title: data.title || "",
           city: data.city || "",
@@ -73,15 +87,9 @@ window.addEventListener("DOMContentLoaded", async () => {
           user: data.user || "Anonymous"
         };
       });
-
-      if (allFoods.length === 0) {
-        console.warn("⚠️ No items found. Kontrollera att subcollections heter 'items' och ligger under /foods/{userId}/items");
-      }
-
       return allFoods;
     } catch (err) {
       console.error("Error fetching all foods:", err);
-      alert("Failed to fetch foods. Check console for details.");
       return [];
     }
   }
@@ -109,7 +117,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // --- Ladda all mat direkt ---
   let allFoods = await getAllFoods();
-  console.log("All foods array:", allFoods);
   renderFoodItems(allFoods);
 
   // --- Filterknapp ---
