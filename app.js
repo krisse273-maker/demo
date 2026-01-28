@@ -22,6 +22,19 @@ window.addEventListener("DOMContentLoaded", () => {
     window.location.href = "login.html";
   });
 
+  // --- Se till att alltid ha mat i localStorage ---
+  if (!localStorage.getItem("allFoods")) {
+    const dummyFoods = [
+      { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
+      { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
+      { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
+    ];
+    localStorage.setItem("allFoods", JSON.stringify(dummyFoods));
+  }
+
+  // --- Hämta allFoods från localStorage ---
+  let allFoods = JSON.parse(localStorage.getItem("allFoods"));
+
   // Länder/städer
   let countriesData = [];
 
@@ -31,7 +44,6 @@ window.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
       countriesData = data.data;
 
-      // Fyll i country dropdown
       countrySelect.innerHTML = '<option value="">Select country</option>';
       countriesData.forEach(c => {
         const option = document.createElement("option");
@@ -45,7 +57,6 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Visa städer
   countrySelect.addEventListener("change", () => {
     const selectedCountry = countrySelect.value;
     citySelect.innerHTML = '<option value="">Select city</option>';
@@ -65,20 +76,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- Hämta sparad mat från localStorage, annars använd dummy-lista ---
-  let allFoods = JSON.parse(localStorage.getItem("allFoods"));
-
-  if (!allFoods || !allFoods.length) {
-    // Om det inte finns mat i localStorage, lägg in dummy
-    allFoods = [
-      { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
-      { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
-      { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
-    ];
-    localStorage.setItem("allFoods", JSON.stringify(allFoods));
-  }
-
-  // --- Render-funktion ---
+  // Render-funktion
   function renderFoodItems(items) {
     foodList.innerHTML = "";
     if (!items.length) {
@@ -99,7 +97,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- Filtrering (oförändrad) ---
+  // Filtrering
   filterBtn.addEventListener("click", () => {
     const country = countrySelect.value;
     const city = citySelect.value;
@@ -111,14 +109,14 @@ window.addEventListener("DOMContentLoaded", () => {
     renderFoodItems(filtered);
   });
 
-  // My Food List knapp
+  // My Food knapp
   myFoodBtn.addEventListener("click", () => {
     window.location.href = "myfood.html";
   });
 
-  // --- Init ---
+  // Init
   loadCountries().then(() => console.log("Countries loaded."));
 
-  // --- Rendera mat direkt på sidan ---
+  // Rendera direkt
   renderFoodItems(allFoods);
 });
