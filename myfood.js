@@ -115,10 +115,14 @@ addFoodForm.addEventListener("submit", async (e) => {
   };
 
   try {
-    await db.collection("foods").doc(firebaseUser.uid).collection("items").add({
-      ...newFood,
-      ownerId: firebaseUser.uid,
-    });
+    const newDocRef = await db.collection("foods").doc(firebaseUser.uid).collection("items").add({
+  ...newFood,
+  ownerId: firebaseUser.uid,
+});
+
+// Vänta tills server-timestamp är satt (valfritt, men bra)
+await db.doc(newDocRef.path).get();
+
 
     addFoodForm.reset();
     selectedEmoji = "";
@@ -202,3 +206,4 @@ firebase.auth().onAuthStateChanged(async (user) => {
   firebaseUser = user;
   await loadUserFoods();
 });
+
