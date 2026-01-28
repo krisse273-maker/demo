@@ -1,39 +1,51 @@
-// --- Kolla om användaren är inloggad ---
+// --- DOM-element ---
+const headerP = document.getElementById("welcomeMsg");
+const logoutBtn = document.getElementById("logoutBtn");
+const countrySelect = document.getElementById("country");
+const citySelect = document.getElementById("city");
+const filterBtn = document.getElementById("filterBtn");
+const foodList = document.querySelector(".global-food-list");
+const myFoodBtn = document.getElementById("myFoodBtn");
+
+// --- Kontrollera inloggning ---
 const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 if (!currentUser) {
   window.location.href = "login.html";
+} else {
+  headerP.textContent = `Welcome, ${currentUser.name}! Find and share food near you!`;
 }
 
-// --- Hälsa användaren i header ---
-const headerP = document.getElementById("welcomeMsg");
-headerP.textContent = `Welcome, ${currentUser.name}! Find and share food near you!`;
-
-// --- Log Out knapp ---
-const logoutBtn = document.getElementById("logoutBtn");
+// --- Logga ut ---
 logoutBtn.addEventListener("click", () => {
   localStorage.removeItem("currentUser");
   window.location.href = "login.html";
 });
 
-// --- DOM-element ---
-const countrySelect = document.getElementById("country");
-const citySelect = document.getElementById("city");
-const filterBtn = document.getElementById("filterBtn");
-const foodList = document.querySelector(".food-list");
-const myFoodBtn = document.getElementById("myFoodBtn");
+// --- Firebase ---
+const firebaseConfig = {
+  apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1w",
+  authDomain: "global-food-share.firebaseapp.com",
+  projectId: "global-food-share",
+  storageBucket: "global-food-share.firebasestorage.app",
+  messagingSenderId: "902107453892",
+  appId: "1:902107453892:web:dd9625974b8744cc94ac91",
+  measurementId: "G-S1G7JY0TH5",
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-// --- Hämta globala matobjekt från localStorage ---
-let foodItems = JSON.parse(localStorage.getItem("allFoods")) || [];
-
-// --- Hämta alla länder och städer från API ---
+// --- Länder och städer ---
 let countriesData = [];
+
 async function loadCountries() {
   try {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
     const data = await res.json();
     countriesData = data.data;
 
-    countriesData.forEach((c) => {
+    countrySelect.innerHTML = '<option value="">Select country</option>';
+
+    countriesData.forEach(c => {
       const option = document.createElement("option");
       option.value = c.country;
       option.textContent = c.country;
@@ -41,12 +53,11 @@ async function loadCountries() {
     });
   } catch (err) {
     console.error("Failed to load countries:", err);
-    alert("Could not load countries data. Try refreshing the page.");
+    alert("Could not load countries. Refresh the page.");
   }
 }
-loadCountries();
 
-// --- Ladda städer när ett land väljs ---
+// --- Visa städer ---
 countrySelect.addEventListener("change", () => {
   const selectedCountry = countrySelect.value;
   citySelect.innerHTML = '<option value="">Select city</option>';
@@ -54,9 +65,9 @@ countrySelect.addEventListener("change", () => {
 
   if (!selectedCountry) return;
 
-  const countryObj = countriesData.find((c) => c.country === selectedCountry);
+  const countryObj = countriesData.find(c => c.country === selectedCountry);
   if (countryObj && countryObj.cities.length) {
-    countryObj.cities.forEach((city) => {
+    countryObj.cities.forEach(city => {
       const option = document.createElement("option");
       option.value = city;
       option.textContent = city;
@@ -66,18 +77,30 @@ countrySelect.addEventListener("change", () => {
   }
 });
 
-// --- Rendera matobjekt ---
+// --- Ladda matposter ---
+async function loadAllFoods() {
+  try {
+    const snapshot = await db.collectionGroup("items").orderBy("timestamp", "desc").get();
+    const allFoods = snapshot.docs.map(doc => doc.data());
+    localStorage.setItem("allFoods", JSON.stringify(allFoods));
+    renderFoodItems(allFoods);
+  } catch (err) {
+    console.error("Failed to load foods:", err);
+    foodList.innerHTML = "<p>Failed to load food items.</p>";
+  }
+}
+
+// --- Rendera matposter ---
 function renderFoodItems(items) {
   foodList.innerHTML = "";
-  if (items.length === 0) {
-    foodList.innerHTML = "<p>No food found for this filter.</p>";
+  if (!items.length) {
+    foodList.innerHTML = "<p>No food found.</p>";
     return;
   }
 
-  items.forEach((item) => {
+  items.forEach(item => {
     const div = document.createElement("div");
     div.classList.add("food-item");
-
     div.innerHTML = `
       <span class="icon">${item.emoji || "🍽️"}</span>
       <h3>${item.title}</h3>
@@ -86,71 +109,32 @@ function renderFoodItems(items) {
       <button class="messageBtn">Contact User</button>
     `;
 
-    const btn = div.querySelector(".messageBtn");
-    btn.addEventListener("click", () => {
-      alert(
-        `Contact info for ${item.title}:\nEmail: ${item.user || "example@example.com"}`,
-      );
+    div.querySelector(".messageBtn").addEventListener("click", () => {
+      alert(`Contact info for ${item.title}:\nEmail: ${item.user || "example@example.com"}`);
     });
 
     foodList.appendChild(div);
   });
 }
 
-// --- Initial render ---
-renderFoodItems(foodItems);
-
-// --- Filterknapp ---
+// --- Filtrering ---
 filterBtn.addEventListener("click", () => {
   const country = countrySelect.value;
   const city = citySelect.value;
+  const allFoods = JSON.parse(localStorage.getItem("allFoods")) || [];
 
-  const filtered = foodItems.filter((item) => {
-    return (
-      (!country || item.country === country) && (!city || item.city === city)
-    );
+  const filtered = allFoods.filter(item => {
+    return (!country || item.country === country) && (!city || item.city === city);
   });
 
   renderFoodItems(filtered);
 });
 
-// --- My Food List knapp ---
+// --- My Food List ---
 myFoodBtn.addEventListener("click", () => {
   window.location.href = "myfood.html";
 });
 
-// --- Emoji Picker ---
-// Hämta emoji-picker-knappen och emoji-picker div
-const emojiPickerBtn = document.getElementById("emojiPickerBtn");
-const emojiPicker = document.getElementById("emojiPicker");
-
-// Första gången sätts emojiPicker på "none" så den inte syns
-emojiPicker.style.display = "none";
-
-// 1. Växla mellan att visa eller dölja emoji-pickern när knappen trycks
-emojiPickerBtn.addEventListener("click", () => {
-  // Om emojiPicker är doldt, visa den. Om den är synlig, göm den.
-  if (emojiPicker.style.display === "none") {
-    emojiPicker.style.display = "flex";
-  } else {
-    emojiPicker.style.display = "none";
-  }
-});
-
-// 2. Hämta alla emojis i emoji-picker
-const emojiPickerSpans = document.querySelectorAll("#emojiPicker span");
-
-// 3. Lägg till eventlyssnare på varje emoji i emoji-picker
-emojiPickerSpans.forEach((span) => {
-  span.addEventListener("click", () => {
-    // Här kan du göra något med den valda emojin
-    console.log(`Vald emoji: ${span.textContent}`);
-
-    // Exempel: Uppdatera ett input-fält med den valda emojin
-    // Om du har ett input-fält där emojin ska visas, använd detta:
-    document.getElementById("foodTitle").value = span.textContent;
-
-    // Stäng emoji-pickern när en emoji är vald
-    emojiPicker.style.display = "none";
-  });
-});
+// --- Init ---
+loadCountries();
+loadAllFoods();
