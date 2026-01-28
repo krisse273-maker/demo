@@ -8,6 +8,16 @@ if (!currentUser) {
   window.location.href = "login.html";
 }
 
+// --- Lägg till dummy-mat i localStorage om det inte finns ---
+if (!localStorage.getItem("allFoods")) {
+  const dummyFoods = [
+    { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
+    { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
+    { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
+  ];
+  localStorage.setItem("allFoods", JSON.stringify(dummyFoods));
+}
+
 // --- Hälsa användaren ---
 const headerP = document.getElementById("welcomeMsg");
 headerP.textContent = `Welcome, ${currentUser.name}! Here’s your food list.`;
@@ -30,7 +40,7 @@ const foodCountrySelect = document.getElementById("foodCountry");
 const foodCitySelect = document.getElementById("foodCity");
 
 // --- Mat-data ---
-let myFoods = [];
+let myFoods = JSON.parse(localStorage.getItem("allFoods")) || [];
 let countriesData = []; // För att hålla länder och städer
 
 // --- Firebase-konfiguration och initialisering ---
@@ -169,7 +179,8 @@ async function loadUserFoods() {
         .get();
       myFoods = snapshot.docs.map((doc) => doc.data());
 
-      localStorage.setItem("allFoods", JSON.stringify(myFoods));
+      // Spara alltid i localStorage så index.html har något att rendera
+      localStorage.setItem("allFoods", JSON.stringify(myFoods.length ? myFoods : myFoods));
 
       console.log("User foods loaded:", myFoods);
       renderMyFoods();
@@ -188,15 +199,12 @@ function renderMyFoods() {
     return;
   }
 
-  const div = document.createElement("div");
-  div.classList.add("food-item");
-
-  myFoods.forEach((myFoods) => {
+  myFoods.forEach((foodItem) => {
     const div = document.createElement("div");
     div.classList.add("food-item");
-    div.innerHTML = `<span class="icon">${myFoods.emoji}</span>
-                     <h3>${myFoods.title}</h3>
-                     <p>${myFoods.city}, ${myFoods.country}</p>`;
+    div.innerHTML = `<span class="icon">${foodItem.emoji}</span>
+                     <h3>${foodItem.title}</h3>
+                     <p>${foodItem.city}, ${foodItem.country}</p>`;
     myFoodList.appendChild(div);
   });
 }
