@@ -7,7 +7,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const headerP = document.getElementById("welcomeMsg");
   const logoutBtn = document.getElementById("logoutBtn");
 
-  // --- Kontrollera inloggad användare ---
+  // Kontrollera inloggad användare
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   if (!currentUser) window.location.href = "login.html";
   headerP.textContent = `Welcome, ${currentUser.name}! Find and share food near you!`;
@@ -17,7 +17,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "login.html";
   });
 
-  // --- Länder och städer ---
+  // --- Länder/städer ---
   let countriesData = [];
   try {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
@@ -56,51 +56,38 @@ window.addEventListener("DOMContentLoaded", async () => {
     citySelect.disabled = false;
   });
 
-  // --- Firebase init ---
-  const firebaseConfig = {
-    apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
-    authDomain: "global-food-share.firebaseapp.com",
-    projectId: "global-food-share",
-    storageBucket: "global-food-share.firebasestorage.app",
-    messagingSenderId: "902107453892",
-    appId: "1:902107453892:web:dd9625974b8744cc94ac91",
-    measurementId: "G-S1G7JY0TH5",
-  };
-
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore(app);
-
+  // --- Hämta ALLA användares mat från Firestore ---
+  const db = firebase.firestore();
   let allFoods = [];
 
-  // --- Hämta global mat ---
-  async function loadGlobalFoods() {
+  async function fetchAllFoods() {
     try {
       allFoods = [];
-
-      // Hämta alla användares mat
       const usersSnapshot = await db.collection("foods").get();
 
       for (const userDoc of usersSnapshot.docs) {
-        const itemsSnapshot = await db
-          .collection("foods")
-          .doc(userDoc.id)
-          .collection("items")
-          .orderBy("timestamp", "desc")
-          .get();
+        const userId = userDoc.id;
+        const itemsSnapshot = await db.collection("foods").doc(userId).collection("items").get();
 
-        itemsSnapshot.docs.forEach(itemDoc => {
-          allFoods.push(itemDoc.data());
+        itemsSnapshot.forEach(itemDoc => {
+          const data = itemDoc.data();
+          allFoods.push({
+            title: data.title || "",
+            city: data.city || "",
+            country: data.country || "",
+            emoji: data.emoji || "🍽️",
+            user: data.user || "Anonymous",
+          });
         });
       }
 
       renderFoodItems(allFoods);
     } catch (err) {
-      console.error("Error fetching global foods:", err);
-      foodList.innerHTML = "<p>Failed to load food items.</p>";
+      console.error("Failed to fetch all foods:", err);
+      foodList.innerHTML = "<p>Could not load foods. Try again later.</p>";
     }
   }
 
-  // --- Rendera mat ---
   function renderFoodItems(items) {
     foodList.innerHTML = "";
     if (!items.length) {
@@ -112,16 +99,15 @@ window.addEventListener("DOMContentLoaded", async () => {
       const div = document.createElement("div");
       div.classList.add("food-item");
       div.innerHTML = `
-        <span class="icon">${item.emoji || "🍽️"}</span>
+        <span class="icon">${item.emoji}</span>
         <h3>${item.title}</h3>
         <p>Location: ${item.city}, ${item.country}</p>
-        <p>Shared by: ${item.user || "Anonymous"}</p>
+        <p>Shared by: ${item.user}</p>
       `;
       foodList.appendChild(div);
     });
   }
 
-  // --- Filter ---
   filterBtn.addEventListener("click", () => {
     const country = countrySelect.value;
     const city = citySelect.value;
@@ -137,6 +123,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "myfood.html";
   });
 
-  // --- Kör initialt ---
-  loadGlobalFoods();
+  // Kör direkt
+  fetchAllFoods();
 });
