@@ -108,9 +108,22 @@ window.addEventListener("DOMContentLoaded", () => {
     window.location.href = "myfood.html";
   });
 
-  // Init
-  loadCountries().then(() => {
-    console.log("Countries loaded.");
-  });
-  renderFoodItems(allFoods);
+// Init
+loadCountries().then(() => {
+  console.log("Countries loaded.");
 });
+
+// Hämta sparad mat från localStorage, annars använd dummy-lista
+let savedFoods = JSON.parse(localStorage.getItem("allFoods")) || [];
+
+if (!savedFoods.length) {
+  savedFoods = [
+    { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
+    { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
+    { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
+  ];
+  localStorage.setItem("allFoods", JSON.stringify(savedFoods));
+}
+
+// Rendera mat direkt på sidan
+renderFoodItems(savedFoods);
