@@ -107,17 +107,28 @@ window.addEventListener("DOMContentLoaded", async () => {
         foodList.innerHTML = "<p>No food found.</p>";
         return;
       }
+
       items.forEach(item => {
         let timeStr = "Unknown time";
+
         if (item.timestamp) {
-          const date = item.timestamp.toDate();
-          // Format: YYYY-MM-DD HH:MM (utan sekunder)
-          const year = date.getFullYear();
-          const month = String(date.getMonth() + 1).padStart(2, "0");
-          const day = String(date.getDate()).padStart(2, "0");
-          const hours = String(date.getHours()).padStart(2, "0");
-          const minutes = String(date.getMinutes()).padStart(2, "0");
-          timeStr = `${year}-${month}-${day} ${hours}:${minutes}`;
+          let dateObj;
+
+          // Om Firestore Timestamp
+          if (item.timestamp.toDate) {
+            dateObj = item.timestamp.toDate();
+          } else {
+            // Annars anta redan JS Date eller sträng
+            dateObj = new Date(item.timestamp);
+          }
+
+          const year = dateObj.getFullYear();
+          const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+          const day = String(dateObj.getDate()).padStart(2, "0");
+          const hours = String(dateObj.getHours()).padStart(2, "0");
+          const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+
+          timeStr = `${year}-${month}-${day} ${hours}:${minutes}`; // UTAN SEKUNDER
         }
 
         const div = document.createElement("div");
