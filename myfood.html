@@ -47,6 +47,10 @@
   <div class="my-food-list"></div>
 
   <form id="addFoodForm">
+    <!-- Food Name först -->
+    <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="50" required />
+
+    <!-- Emoji -->
     <button type="button" id="emojiPickerBtn">Select your food Emoji</button>
     <div id="emojiPicker">
       <span>🍔</span><span>🍟</span><span>🌭</span><span>🥪</span>
@@ -61,6 +65,7 @@
       <span>🦪</span><span>🦐</span><span>🦑</span>
     </div>
 
+    <!-- Country & City -->
     <select id="foodCountry" required>
       <option value="">Select Country</option>
     </select>
@@ -68,9 +73,6 @@
     <select id="foodCity" disabled required>
       <option value="">Select City</option>
     </select>
-
-    <!-- Lagt till för foodTitle -->
-    <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="50" required />
 
     <button type="submit">Add Food</button>
   </form>
