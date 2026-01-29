@@ -1,6 +1,5 @@
 // --- Kontrollera om användaren är inloggad ---
-const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-console.log(currentUser);
+let currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
 if (!currentUser) {
   window.location.href = "login.html";
@@ -12,9 +11,9 @@ headerP.textContent = `Welcome, ${currentUser.name}! Here’s your food list.`;
 
 // --- Log out knapp ---
 const logoutBtn = document.getElementById("logoutBtn");
-logoutBtn.addEventListener("click", () => {
+logoutBtn.addEventListener("click", async () => {
   localStorage.removeItem("currentUser");
-  firebase.auth().signOut();
+  await firebase.auth().signOut();
   window.location.href = "login.html";
 });
 
@@ -30,21 +29,22 @@ const foodCitySelect = document.getElementById("foodCity");
 // --- Mat-data ---
 let myFoods = [];
 let countriesData = [];
-let firebaseUser = null; // kommer hålla auth-user
+let firebaseUser = null; // håller auth-user
+let selectedEmoji = "";
 
 // --- Firebase-konfiguration ---
 const firebaseConfig = {
   apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
   authDomain: "global-food-share.firebaseapp.com",
   projectId: "global-food-share",
-  storageBucket: "global-food-share.firebasestorage.app",
+  storageBucket: "global-food-share.appspot.com",
   messagingSenderId: "902107453892",
   appId: "1:902107453892:web:dd9625974b8744cc94ac91",
-  measurementId: "G-S1G7JY0TH5",
 };
-
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore(app);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
 
 // --- Länder och städer ---
 async function loadCountries() {
@@ -85,11 +85,9 @@ foodCountrySelect.addEventListener("change", () => {
 });
 
 // --- Emoji picker ---
-let selectedEmoji = "";
 emojiPickerBtn.addEventListener("click", () => {
   emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
 });
-
 emojiPicker.addEventListener("click", (e) => {
   if (e.target.tagName.toLowerCase() === "span") {
     selectedEmoji = e.target.textContent;
@@ -102,7 +100,6 @@ emojiPicker.addEventListener("click", (e) => {
 addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!selectedEmoji) return alert("Please select an emoji!");
-
   if (!firebaseUser) return alert("User not logged in");
 
   const newFood = {
@@ -111,19 +108,20 @@ addFoodForm.addEventListener("submit", async (e) => {
     city: foodCitySelect.value,
     emoji: selectedEmoji,
     user: currentUser.email,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    timestamp: firebase.firestore.FieldValue.serverTimestamp(), // ⚡ alltid timestamp
   };
 
   try {
-    const newDocRef = await db.collection("foods").doc(firebaseUser.uid).collection("items").add({
-  ...newFood,
-  ownerId: firebaseUser.uid,
-});
+    const newDocRef = await db
+      .collection("foods")
+      .doc(firebaseUser.uid)
+      .collection("items")
+      .add(newFood);
 
-// Vänta tills server-timestamp är satt (valfritt, men bra)
-await db.doc(newDocRef.path).get();
+    // Vänta tills server-timestamp är satt
+    await db.doc(newDocRef.path).get();
 
-
+    // Reset form
     addFoodForm.reset();
     selectedEmoji = "";
     emojiPickerBtn.textContent = "Select your food Emoji";
@@ -151,6 +149,7 @@ async function loadUserFoods() {
 
     myFoods = snapshot.docs.map((doc) => doc.data());
 
+    // fallback dummy om inga items
     if (!myFoods.length) {
       myFoods = [
         { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
@@ -159,26 +158,15 @@ async function loadUserFoods() {
       ];
     }
 
-    localStorage.setItem("allFoods", JSON.stringify(myFoods));
     renderMyFoods();
   } catch (err) {
     console.error("Error loading foods:", err);
-
-    // fallback dummy
-    myFoods = [
-      { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
-      { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
-      { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
-    ];
-    localStorage.setItem("allFoods", JSON.stringify(myFoods));
-    renderMyFoods();
   }
 }
 
 // --- Rendera matlista ---
 function renderMyFoods() {
   myFoodList.innerHTML = "";
-
   if (!myFoods.length) {
     myFoodList.innerHTML = `<p class="no-food">You don't have any food listed yet.</p>`;
     return;
@@ -206,4 +194,3 @@ firebase.auth().onAuthStateChanged(async (user) => {
   firebaseUser = user;
   await loadUserFoods();
 });
-
