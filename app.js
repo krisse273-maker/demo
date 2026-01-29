@@ -113,7 +113,9 @@ window.addEventListener("DOMContentLoaded", async () => {
         let timeStr = "Unknown time";
         if (item.timestamp) {
           const date = item.timestamp.toDate(); // timestamp → JS Date
-          timeStr = date.toLocaleString(); // t.ex. "1/29/2026, 14:35:10"
+          // Visa bara datum och timmar/minuter utan sekunder
+          const options = { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" };
+          timeStr = date.toLocaleString(undefined, options); // t.ex. "01/29/2026, 21:29"
         }
 
         const div = document.createElement("div");
