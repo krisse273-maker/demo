@@ -22,6 +22,7 @@
         padding: 1.5rem 1rem;
         text-align: center;
         border-bottom: 4px solid #388e3c;
+        position: relative; /* <-- Lagt till för knappen */
       }
 
       header h1 {
@@ -35,7 +36,6 @@
       }
 
       #logoutBtn {
-        margin-top: 1rem;
         padding: 0.6rem 1.2rem;
         border-radius: 25px;
         border: none;
@@ -44,6 +44,10 @@
         font-weight: bold;
         cursor: pointer;
         transition: 0.2s;
+
+        position: absolute; /* <-- flyttar knappen */
+        top: 1.5rem;       /* matchar header padding */
+        right: 1rem;       /* avstånd från högra kanten */
       }
 
       #logoutBtn:hover {
@@ -223,6 +227,5 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
     <script src="myfood.js"></script>
-    <!-- Länka till din JavaScript-fil här -->
   </body>
 </html>
