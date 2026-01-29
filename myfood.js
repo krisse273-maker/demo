@@ -131,6 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const newFood = {
       title: foodValue,
+      type: foodValue,
       country: foodCountrySelect.value,
       city: foodCitySelect.value,
       emoji: selectedEmoji,
@@ -199,3 +200,4 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
+
