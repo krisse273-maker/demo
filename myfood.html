@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="style.css" />
     <script src="script.js" defer></script>
     <style>
-      /* Din CSS-kod för stilning här */
       body {
         font-family: "Segoe UI", sans-serif;
         margin: 0;
@@ -22,7 +21,7 @@
         padding: 1.5rem 1rem;
         text-align: center;
         border-bottom: 4px solid #388e3c;
-        position: relative; /* <-- Lagt till för log out-knappen */
+        position: relative; /* för log out-knappen */
       }
 
       header h1 {
@@ -44,10 +43,9 @@
         font-weight: bold;
         cursor: pointer;
         transition: 0.2s;
-
-        position: absolute; /* <-- flyttar knappen */
-        top: 1.5rem;       /* matchar header padding */
-        right: 1rem;       /* avstånd från högra kanten */
+        position: absolute;
+        top: 1.5rem;
+        right: 1rem;
       }
 
       #logoutBtn:hover {
@@ -62,7 +60,8 @@
         color: #4caf50;
         font-weight: bold;
         cursor: pointer;
-        margin-top: 0.5rem;
+        display: block;
+        margin: 0.5rem auto; /* centrerad under välkomsttexten */
         transition: 0.2s;
       }
 
@@ -194,8 +193,8 @@
     <header>
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Here’s your food list.</p>
-      <button id="logoutBtn">Log Out</button>
       <button id="homeBtn" onclick="window.location.href='index.html'">Home</button>
+      <button id="logoutBtn">Log Out</button>
     </header>
 
     <div class="container">
