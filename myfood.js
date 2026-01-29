@@ -12,10 +12,16 @@ headerP.textContent = `Welcome, ${currentUser.name}! Here’s your food list.`;
 
 // --- Log out knapp ---
 const logoutBtn = document.getElementById("logoutBtn");
+const homeBtn = document.getElementById("homeBtn");
+
 logoutBtn.addEventListener("click", () => {
   localStorage.removeItem("currentUser");
   firebase.auth().signOut();
   window.location.href = "login.html";
+});
+
+homeBtn.addEventListener("click", () => {
+  window.location.href = "index.html";
 });
 
 // --- DOM-element ---
@@ -206,4 +212,5 @@ firebase.auth().onAuthStateChanged(async (user) => {
   firebaseUser = user;
   await loadUserFoods();
 });
+
 
