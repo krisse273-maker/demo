@@ -14,20 +14,20 @@ if (!firebase.apps.length) {
 }
 const db = firebase.firestore();
 
-// --- Säkerhet: kolla om användaren är inloggad ---
-firebase.auth().onAuthStateChanged(user => {
-  if (!user) {
-    // Om inte inloggad -> skicka till login
-    window.location.href = "login.html";
-    return;
-  }
+window.addEventListener("DOMContentLoaded", async () => {
 
-  // Om inloggad -> starta appen
-  initApp(user);
-});
+  // --- Kolla auth först ---
+  firebase.auth().onAuthStateChanged(user => {
+    if (!user) {
+      // Om inte inloggad -> skicka till login
+      window.location.href = "login.html";
+      return;
+    }
+    // Om inloggad -> kör resten av appen
+    startApp();
+  });
 
-function initApp(user) {
-  window.addEventListener("DOMContentLoaded", async () => {
+  function startApp() {
     const countrySelect = document.getElementById("country");
     const citySelect = document.getElementById("city");
     const filterBtn = document.getElementById("filterBtn");
@@ -38,34 +38,35 @@ function initApp(user) {
     let countriesData = [];
     let allFoods = [];
 
-    // --- Hjälpfunktion: rensa select ---
     function clearSelect(select) {
       while (select.firstChild) select.removeChild(select.firstChild);
     }
 
     // --- Ladda länder/städer ---
-    try {
-      const res = await fetch("https://countriesnow.space/api/v0.1/countries");
-      const data = await res.json();
-      countriesData = data.data || [];
+    (async function loadCountries() {
+      try {
+        const res = await fetch("https://countriesnow.space/api/v0.1/countries");
+        const data = await res.json();
+        countriesData = data.data || [];
 
-      clearSelect(countrySelect);
-      const defaultOption = document.createElement("option");
-      defaultOption.value = "";
-      defaultOption.textContent = "Select country";
-      countrySelect.appendChild(defaultOption);
+        clearSelect(countrySelect);
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Select country";
+        countrySelect.appendChild(defaultOption);
 
-      countriesData.forEach(c => {
-        const opt = document.createElement("option");
-        opt.value = c.country;
-        opt.textContent = c.country;
-        countrySelect.appendChild(opt);
-      });
-      countrySelect.disabled = false;
-    } catch (err) {
-      console.error("Could not fetch countries:", err);
-      alert("Failed to load countries. Refresh the page.");
-    }
+        countriesData.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c.country;
+          opt.textContent = c.country;
+          countrySelect.appendChild(opt);
+        });
+        countrySelect.disabled = false;
+      } catch (err) {
+        console.error("Could not fetch countries:", err);
+        alert("Failed to load countries. Refresh the page.");
+      }
+    })();
 
     // --- När ett land väljs ---
     countrySelect.addEventListener("change", () => {
@@ -171,5 +172,5 @@ function initApp(user) {
 
       renderFoodItems(filtered);
     });
-  });
-}
+  }
+});
