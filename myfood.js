@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     firebaseUser = user;
     // ✅ Visa användarnamnet istället för email/Anonymous
-    headerP.textContent = `Welcome, ${user.displayName}! Here’s your food list.`;
+    headerP.textContent = `Welcome, ${user.displayName || "Anonymous"}! Here’s your food list.`;
     await loadUserFoods();
   });
 
