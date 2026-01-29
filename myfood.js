@@ -30,14 +30,13 @@ document.addEventListener("DOMContentLoaded", () => {
     messagingSenderId: "902107453892",
     appId: "1:902107453892:web:dd9625974b8744cc94ac91"
   };
-
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
-
   const db = firebase.firestore();
+
   let firebaseUser = null;
-  let currentUserName = "Anonymous"; // Default name if none is found
+  let currentUserName = "Anonymous"; // Default
   let selectedEmoji = "";
   let myFoods = [];
   let countriesData = [];
@@ -53,31 +52,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     firebaseUser = user;
 
-    // Hämta displayName från Firestore
+    // Hämta användarnamn från Firestore (som nu finns där efter registrering)
     try {
-      const userDocRef = db.collection("users").doc(user.uid);
-      const userDoc = await userDocRef.get();
-
+      const userDoc = await db.collection("users").doc(user.uid).get();
       if (userDoc.exists && userDoc.data().name) {
-        currentUserName = userDoc.data().name;
+        currentUserName = userDoc.data().name; // Om användarnamn finns i Firestore
       } else if (user.displayName) {
-        currentUserName = user.displayName;
-      } else {
-        currentUserName = "Anonymous"; // fallback
+        currentUserName = user.displayName; // Om användarnamn finns i Auth
       }
-
     } catch (err) {
       console.error("Failed to get user displayName from Firestore:", err);
-      currentUserName = user.displayName || "Anonymous"; // fallback
     }
 
-    // Visa användarnamnet i välkomstmeddelandet
+    // Visa användarnamnet i headern
     headerP.textContent = `Welcome, ${currentUserName}! Here’s your food list.`;
-
-    // Ladda matposter efter att användarnamnet är satt
     await loadUserFoods();
   });
 
+  // Logout
   logoutBtn?.addEventListener("click", () => {
     firebase.auth().signOut();
     window.location.href = "login.html";
@@ -101,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
         option.textContent = c.country;
         foodCountrySelect.appendChild(option);
       });
-    } catch (e) {
+    } catch(e) {
       console.error("Failed to load countries:", e);
     }
   }
@@ -117,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!selectedCountry) return;
 
     const countryObj = countriesData.find(c => c.country === selectedCountry);
-    if (countryObj && countryObj.cities.length) {
+    if (countryObj && countryObj.cities.length){
       countryObj.cities.forEach(city => {
         const opt = document.createElement("option");
         opt.value = city;
@@ -162,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
       country: foodCountrySelect.value,
       city: foodCitySelect.value,
       emoji: selectedEmoji,
-      user: currentUserName, // Använder nu Firestore-displayName eller fallback
+      user: currentUserName, // Använd nu Firestore-displayName
       ownerId: firebaseUser.uid,
       createdAt: firebase.firestore.Timestamp.now()
     };
@@ -181,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       await loadUserFoods();
       alert("Food item added successfully!");
-    } catch (err) {
+    } catch(err) {
       console.error("Failed to add food:", err);
       alert("Failed to add food!");
     }
@@ -200,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                .get();
       myFoods = snapshot.docs.map(doc => doc.data());
       renderMyFoods();
-    } catch (err) {
+    } catch(err) {
       console.error("Failed to load user foods:", err);
     }
   }
