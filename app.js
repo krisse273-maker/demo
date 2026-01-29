@@ -129,5 +129,12 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     renderFoodItems(filtered);
   });
-});
 
+  // --- Home knapp (går till index.html) ---
+  const homeBtn = document.getElementById("homeBtn");
+  if (homeBtn) {
+    homeBtn.addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+  }
+});
