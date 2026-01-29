@@ -1,7 +1,3 @@
-// ================================
-//            app.js
-// ================================
-
 // --- Kontrollera om användaren är inloggad ---
 let currentUser = JSON.parse(localStorage.getItem("currentUser"));
 if (!currentUser) {
@@ -12,15 +8,8 @@ if (!currentUser) {
 const headerP = document.getElementById("welcomeMsg");
 headerP.textContent = `Welcome, ${currentUser.name}! Here’s your food list.`;
 
-// --- Log out knapp ---
-const logoutBtn = document.getElementById("logoutBtn");
-logoutBtn.addEventListener("click", async () => {
-  localStorage.removeItem("currentUser");
-  await firebase.auth().signOut();
-  window.location.href = "login.html";
-});
-
 // --- DOM-element ---
+const logoutBtn = document.getElementById("logoutBtn");
 const myFoodList = document.querySelector(".my-food-list");
 const addFoodForm = document.getElementById("addFoodForm");
 const emojiPickerBtn = document.getElementById("emojiPickerBtn");
@@ -32,7 +21,7 @@ const foodCitySelect = document.getElementById("foodCity");
 // --- Mat-data ---
 let myFoods = [];
 let countriesData = [];
-let firebaseUser = null; // håller auth-user
+let firebaseUser = null;
 let selectedEmoji = "";
 
 // --- Firebase-konfiguration ---
@@ -44,24 +33,27 @@ const firebaseConfig = {
   messagingSenderId: "902107453892",
   appId: "1:902107453892:web:dd9625974b8744cc94ac91",
 };
+
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
 
-// ================================
-//         LÄNDER OCH STÄDER
-// ================================
-document.addEventListener("DOMContentLoaded", () => {
-  loadCountries();
+// --- Log out ---
+logoutBtn.addEventListener("click", async () => {
+  localStorage.removeItem("currentUser");
+  await firebase.auth().signOut();
+  window.location.href = "login.html";
 });
 
+// --- Ladda länder ---
 async function loadCountries() {
   try {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
     const data = await res.json();
     countriesData = data.data;
 
+    foodCountrySelect.innerHTML = '<option value="">Select Country</option>';
     countriesData.forEach((c) => {
       const option = document.createElement("option");
       option.value = c.country;
@@ -72,6 +64,7 @@ async function loadCountries() {
     console.error("Failed to load countries:", err);
   }
 }
+loadCountries();
 
 foodCountrySelect.addEventListener("change", () => {
   const selectedCountry = foodCountrySelect.value;
@@ -92,13 +85,10 @@ foodCountrySelect.addEventListener("change", () => {
   }
 });
 
-// ================================
-//            EMOJI PICKER
-// ================================
+// --- Emoji picker ---
 emojiPickerBtn.addEventListener("click", () => {
   emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
 });
-
 emojiPicker.addEventListener("click", (e) => {
   if (e.target.tagName.toLowerCase() === "span") {
     selectedEmoji = e.target.textContent;
@@ -107,9 +97,7 @@ emojiPicker.addEventListener("click", (e) => {
   }
 });
 
-// ================================
-//         LÄGG TILL MAT
-// ================================
+// --- Lägg till mat ---
 addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!selectedEmoji) return alert("Please select an emoji!");
@@ -131,10 +119,8 @@ addFoodForm.addEventListener("submit", async (e) => {
       .collection("items")
       .add(newFood);
 
-    // Vänta tills server-timestamp är satt
     await db.doc(newDocRef.path).get();
 
-    // Reset form
     addFoodForm.reset();
     selectedEmoji = "";
     emojiPickerBtn.textContent = "Select your food Emoji";
@@ -148,9 +134,7 @@ addFoodForm.addEventListener("submit", async (e) => {
   }
 });
 
-// ================================
-//       LÄS ANVÄNDARENS MAT
-// ================================
+// --- Ladda användarens matlista ---
 async function loadUserFoods() {
   if (!firebaseUser) return;
 
@@ -163,7 +147,6 @@ async function loadUserFoods() {
       .get();
 
     myFoods = snapshot.docs.map((doc) => doc.data());
-    console.log("Loaded foods:", myFoods);
 
     renderMyFoods();
   } catch (err) {
@@ -171,9 +154,7 @@ async function loadUserFoods() {
   }
 }
 
-// ================================
-//          RENDER FUNKTION
-// ================================
+// --- Rendera matlista ---
 function renderMyFoods() {
   myFoodList.innerHTML = "";
   if (!myFoods.length) {
@@ -193,9 +174,7 @@ function renderMyFoods() {
   });
 }
 
-// ================================
-//      VÄNTA PÅ FIREBASE AUTH
-// ================================
+// --- Vänta på Firebase Auth ---
 firebase.auth().onAuthStateChanged(async (user) => {
   if (!user) {
     window.location.href = "login.html";
