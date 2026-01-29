@@ -73,7 +73,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   // --- Vänta tills användaren är inloggad innan Firestore ---
   firebase.auth().onAuthStateChanged(user => {
     if (!user) {
-      // Användaren är inte inloggad → redirect till login
       window.location.href = "login.html";
       return;
     }
@@ -82,7 +81,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     let allFoods = [];
 
     db.collection("publicFoods")
-      .orderBy("createdAt", "desc") // OBS: ska vara samma som vi använder i myfood.js
+      .orderBy("createdAt", "desc") // samma som i myfood.js
       .onSnapshot(snapshot => {
         allFoods = snapshot.docs.map(doc => {
           const data = doc.data();
@@ -92,7 +91,7 @@ window.addEventListener("DOMContentLoaded", async () => {
             country: data.country || "",
             emoji: data.emoji || "🍽️",
             user: data.user || "Anonymous",
-            timestamp: data.createdAt || null // vi sparar createdAt i myfood.js
+            timestamp: data.createdAt || null
           };
         });
 
@@ -109,13 +108,16 @@ window.addEventListener("DOMContentLoaded", async () => {
         return;
       }
       items.forEach(item => {
-        // Konvertera Firestore timestamp till läsbar tid
+        // Konvertera Firestore timestamp till datum + tid utan sekunder
         let timeStr = "Unknown time";
         if (item.timestamp) {
           const date = item.timestamp.toDate(); // timestamp → JS Date
-          // Visa bara datum och timmar/minuter utan sekunder
-          const options = { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" };
-          timeStr = date.toLocaleString(undefined, options); // t.ex. "01/29/2026, 21:29"
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          const hours = String(date.getHours()).padStart(2, "0");
+          const minutes = String(date.getMinutes()).padStart(2, "0");
+          timeStr = `${year}-${month}-${day} ${hours}:${minutes}`; // t.ex. "2026-01-29 21:29"
         }
 
         const div = document.createElement("div");
