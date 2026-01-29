@@ -62,6 +62,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     db.collectionGroup("items")
       .orderBy("timestamp", "desc")
+      .orderBy(firebase.firestore.FieldPath.documentId(), "asc") // <-- Lagt till detta
       .onSnapshot(snapshot => {
         allFoods = snapshot.docs.map(doc => {
           const data = doc.data();
