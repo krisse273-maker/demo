@@ -23,6 +23,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const logoutBtn = document.getElementById("logoutBtn");
   const homeBtn = document.getElementById("homeBtn");
 
+  // --- Länder/städer ---
   let countriesData = [];
   try {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
@@ -69,9 +70,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   });
   if (homeBtn) homeBtn.addEventListener("click", () => window.location.href = "index.html");
 
-  // --- Vänta tills användaren är inloggad innan vi laddar Firestore ---
+  // --- Vänta tills användaren är inloggad innan Firestore ---
   firebase.auth().onAuthStateChanged(user => {
     if (!user) {
+      // Användaren är inte inloggad → redirect till login
       window.location.href = "login.html";
       return;
     }
@@ -99,7 +101,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         console.error("Error fetching global foods:", err);
       });
 
-    // --- Render ---
+    // --- Render-funktion ---
     function renderFoodItems(items) {
       foodList.innerHTML = "";
       if (!items.length) {
@@ -119,7 +121,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       });
     }
 
-    // --- Filter ---
+    // --- Filterknapp ---
     filterBtn.addEventListener("click", () => {
       const country = countrySelect.value;
       const city = citySelect.value;
