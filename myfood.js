@@ -62,79 +62,80 @@ foodCountrySelect.addEventListener("change", () => {
   foodCitySelect.innerHTML = '<option value="">Select City</option>';
   foodCitySelect.disabled = true;
   if (!selectedCountry) return;
-  const countryObj = countriesData.find(c=>c.country===selectedCountry);
-  if(countryObj && countryObj.cities.length){
-    countryObj.cities.forEach(city=>{
-      const opt=document.createElement("option");
-      opt.value=city;
-      opt.textContent=city;
+  const countryObj = countriesData.find(c => c.country === selectedCountry);
+  if (countryObj && countryObj.cities.length){
+    countryObj.cities.forEach(city => {
+      const opt = document.createElement("option");
+      opt.value = city;
+      opt.textContent = city;
       foodCitySelect.appendChild(opt);
     });
-    foodCitySelect.disabled=false;
+    foodCitySelect.disabled = false;
   }
 });
 
-emojiPickerBtn.addEventListener("click", ()=>{
-  emojiPicker.style.display = emojiPicker.style.display==="flex"?"none":"flex";
+emojiPickerBtn.addEventListener("click", () => {
+  emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
 });
 
-emojiPicker.addEventListener("click",(e)=>{
-  if(e.target.tagName.toLowerCase()==="span"){
+emojiPicker.addEventListener("click", (e) => {
+  if (e.target.tagName.toLowerCase() === "span") {
     selectedEmoji = e.target.textContent;
-    emojiPicker.style.display="none";
-    emojiPickerBtn.textContent=`Selected: ${selectedEmoji}`;
+    emojiPicker.style.display = "none";
+    emojiPickerBtn.textContent = `Selected: ${selectedEmoji}`;
   }
 });
 
-addFoodForm.addEventListener("submit", async (e)=>{
+addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  if(!selectedEmoji) return alert("Please select an emoji!");
-  if(!firebaseUser) return alert("User not logged in");
+  if (!selectedEmoji) return alert("Please select an emoji!");
+  if (!firebaseUser) return alert("User not logged in");
 
-  const newFood={
+  const newFood = {
     title: foodTitleInput.value,
     country: foodCountrySelect.value,
     city: foodCitySelect.value,
     emoji: selectedEmoji,
     user: firebaseUser.email,
+    ownerId: firebaseUser.uid,  // <-- viktig ändring för Firestore-regler
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
   };
 
-  try{
+  try {
     await db.collection("foods").doc(firebaseUser.uid).collection("items").add(newFood);
     addFoodForm.reset();
-    selectedEmoji="";
-    emojiPickerBtn.textContent="Select your food Emoji";
-    foodCitySelect.disabled=true;
+    selectedEmoji = "";
+    emojiPickerBtn.textContent = "Select your food Emoji";
+    foodCitySelect.disabled = true;
     await loadUserFoods();
     alert("Food item added successfully!");
-  }catch(err){
+  } catch(err) {
     console.error(err);
     alert("Failed to add food!");
   }
 });
 
-async function loadUserFoods(){
-  if(!firebaseUser) return;
-  try{
-    const snapshot = await db.collection("foods").doc(firebaseUser.uid).collection("items").orderBy("timestamp","desc").get();
-    myFoods = snapshot.docs.map(doc=>doc.data());
+async function loadUserFoods() {
+  if (!firebaseUser) return;
+  try {
+    const snapshot = await db.collection("foods").doc(firebaseUser.uid).collection("items").orderBy("timestamp", "desc").get();
+    myFoods = snapshot.docs.map(doc => doc.data());
     renderMyFoods();
-  }catch(err){
+  } catch(err) {
     console.error(err);
   }
 }
 
-function renderMyFoods(){
-  myFoodList.innerHTML="";
-  if(!myFoods.length){
-    myFoodList.innerHTML=`<p class="no-food">You don't have any food listed yet.</p>`;
+function renderMyFoods() {
+  myFoodList.innerHTML = "";
+  if (!myFoods.length) {
+    myFoodList.innerHTML = `<p class="no-food">You don't have any food listed yet.</p>`;
     return;
   }
-  myFoods.forEach(food=>{
+  myFoods.forEach(food => {
     const div = document.createElement("div");
     div.classList.add("food-item");
-    div.innerHTML=`
+    div.innerHTML = `
       <span class="icon">${food.emoji}</span>
       <h3>${food.title}</h3>
       <p>${food.city}, ${food.country}</p>
