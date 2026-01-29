@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const addFoodForm = document.getElementById("addFoodForm");
   const emojiPickerBtn = document.getElementById("emojiPickerBtn");
   const emojiPicker = document.getElementById("emojiPicker");
-  const foodTitleInput = document.getElementById("foodTitle"); // ENDA INPUT
+  const foodTitleInput = document.getElementById("foodTitle");
   const foodCountrySelect = document.getElementById("foodCountry");
   const foodCitySelect = document.getElementById("foodCity");
 
@@ -26,11 +26,13 @@ document.addEventListener("DOMContentLoaded", () => {
     apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
     authDomain: "global-food-share.firebaseapp.com",
     projectId: "global-food-share",
-    storageBucket: "global-food-share.firebasestorage.app",
+    storageBucket: "global-food-share.appspot.com",
     messagingSenderId: "902107453892",
     appId: "1:902107453892:web:dd9625974b8744cc94ac91"
   };
-  firebase.initializeApp(firebaseConfig);
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
   const db = firebase.firestore();
 
   let firebaseUser = null;
@@ -47,7 +49,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     firebaseUser = user;
-    headerP.textContent = `Welcome, ${user.displayName || user.email}! Here’s your food list.`;
+    // ✅ Visa användarnamnet istället för email/Anonymous
+    headerP.textContent = `Welcome, ${user.displayName}! Here’s your food list.`;
     await loadUserFoods();
   });
 
@@ -135,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
       country: foodCountrySelect.value,
       city: foodCitySelect.value,
       emoji: selectedEmoji,
-      user: firebaseUser.email,
+      user: firebaseUser.displayName, // ✅ sparar displayName istället för email
       ownerId: firebaseUser.uid,
       createdAt: firebase.firestore.Timestamp.now()
     };
@@ -200,4 +203,3 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
-
