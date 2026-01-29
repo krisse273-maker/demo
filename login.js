@@ -18,7 +18,17 @@ loginBtn.addEventListener("click", async () => {
   }
 
   try {
-    await firebase.auth().signInWithEmailAndPassword(email, password);
+    // Logga in användaren med e-post och lösenord
+    const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+    const user = userCredential.user;
+
+    // Spara användarnamn och e-post i localStorage
+    localStorage.setItem("currentUser", JSON.stringify({
+      email: user.email,
+      name: user.displayName || "Anonymous"  // Om användaren inte har ett displayName, använd "Anonymous"
+    }));
+
+    // Skicka användaren till index.html eller annan sida
     window.location.href = "index.html";
   } catch (err) {
     msgElem.textContent = err.message;
