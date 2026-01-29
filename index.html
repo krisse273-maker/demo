@@ -42,17 +42,69 @@
       <p>&copy; 2026 Global Food Share</p>
     </footer>
 
-<!-- Firebase SDK -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-    <script src="app.js"></script>
-    <!-- Länka till din JavaScript-fil här -->
+    <script>
+      // Firebase-konfiguration
+      const firebaseConfig = {
+        apiKey: "DIN_API_KEY",
+        authDomain: "DIN_PROJECT_ID.firebaseapp.com",
+        projectId: "DIN_PROJECT_ID",
+        storageBucket: "DIN_PROJECT_ID.appspot.com",
+        messagingSenderId: "DIN_SENDER_ID",
+        appId: "DIN_APP_ID"
+      };
+      firebase.initializeApp(firebaseConfig);
 
+      const auth = firebase.auth();
+      const db = firebase.firestore();
 
+      const logoutBtn = document.getElementById("logoutBtn");
+
+      // 🔒 Kolla om användaren är inloggad
+      auth.onAuthStateChanged(user => {
+        if (!user) {
+          // Inte inloggad → skicka till login.html
+          window.location.href = "login.html";
+        } else {
+          // Inloggad → visa välkomstmeddelande
+          document.getElementById("welcomeMsg").textContent = `Welcome, ${user.email}!`;
+          loadPublicFood();
+        }
+      });
+
+      // Logga ut
+      logoutBtn.addEventListener("click", () => {
+        auth.signOut().then(() => {
+          window.location.href = "login.html";
+        });
+      });
+
+      // Hämta publicFood
+      function loadPublicFood() {
+        const container = document.querySelector(".global-food-list");
+        container.innerHTML = ""; // Rensa tidigare innehåll
+
+        db.collection("publicFood").get().then(snapshot => {
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            const item = document.createElement("div");
+            item.className = "food-item";
+            item.innerHTML = `<strong>${data.name}</strong> - ${data.kcal} kcal - ${data.city}, ${data.country}`;
+            container.appendChild(item);
+          });
+        }).catch(err => {
+          console.error("Error fetching public food:", err);
+        });
+      }
+
+      // Knapparna kan bindas här
+      document.getElementById("myFoodBtn").addEventListener("click", () => {
+        window.location.href = "myfood.html"; // Skicka till privat sida
+      });
+    </script>
   </body>
 </html>
-
-
-
