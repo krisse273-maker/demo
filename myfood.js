@@ -1,34 +1,21 @@
-// --- DOMContentLoaded för knappar ---
-window.addEventListener("DOMContentLoaded", () => {
-  const logoutBtn = document.getElementById("logoutBtn");
-  const homeBtn = document.getElementById("homeBtn");
-  const headerP = document.getElementById("welcomeMsg");
+// --- Kontrollera om användaren är inloggad ---
+const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+console.log(currentUser);
 
-  let firebaseUser = null; // kommer hålla auth-user
+if (!currentUser) {
+  window.location.href = "login.html";
+}
 
-  // --- Kolla auth-status ---
-  firebase.auth().onAuthStateChanged(async (user) => {
-    if (!user) {
-      window.location.href = "login.html"; // inte inloggad → till login
-      return;
-    }
+// --- Hälsa användaren ---
+const headerP = document.getElementById("welcomeMsg");
+headerP.textContent = `Welcome, ${currentUser.name}! Here’s your food list.`;
 
-    firebaseUser = user;
-    headerP.textContent = `Welcome, ${firebaseUser.email}! Here’s your food list.`;
-    await loadUserFoods();
-  });
-
-  // --- Log out knapp ---
-  logoutBtn.addEventListener("click", () => {
-    firebase.auth().signOut().then(() => {
-      window.location.href = "login.html";
-    });
-  });
-
-  // --- Home knapp ---
-  homeBtn.addEventListener("click", () => {
-    window.location.href = "index.html"; // bara navigera, ingen logout
-  });
+// --- Log out knapp ---
+const logoutBtn = document.getElementById("logoutBtn");
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("currentUser");
+  firebase.auth().signOut();
+  window.location.href = "login.html";
 });
 
 // --- DOM-element ---
@@ -40,9 +27,26 @@ const foodTitleInput = document.getElementById("foodTitle");
 const foodCountrySelect = document.getElementById("foodCountry");
 const foodCitySelect = document.getElementById("foodCity");
 
-// --- Länder och städer ---
+// --- Mat-data ---
+let myFoods = [];
 let countriesData = [];
+let firebaseUser = null; // kommer hålla auth-user
 
+// --- Firebase-konfiguration ---
+const firebaseConfig = {
+  apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
+  authDomain: "global-food-share.firebaseapp.com",
+  projectId: "global-food-share",
+  storageBucket: "global-food-share.firebasestorage.app",
+  messagingSenderId: "902107453892",
+  appId: "1:902107453892:web:dd9625974b8744cc94ac91",
+  measurementId: "G-S1G7JY0TH5",
+};
+
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore(app);
+
+// --- Länder och städer ---
 async function loadCountries() {
   try {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
@@ -94,24 +98,11 @@ emojiPicker.addEventListener("click", (e) => {
   }
 });
 
-// --- Firebase-konfiguration ---
-const firebaseConfig = {
-  apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
-  authDomain: "global-food-share.firebaseapp.com",
-  projectId: "global-food-share",
-  storageBucket: "global-food-share.firebasestorage.app",
-  messagingSenderId: "902107453892",
-  appId: "1:902107453892:web:dd9625974b8744cc94ac91",
-  measurementId: "G-S1G7JY0TH5",
-};
-
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore(app);
-
 // --- Lägg till mat ---
 addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!selectedEmoji) return alert("Please select an emoji!");
+
   if (!firebaseUser) return alert("User not logged in");
 
   const newFood = {
@@ -119,17 +110,19 @@ addFoodForm.addEventListener("submit", async (e) => {
     country: foodCountrySelect.value,
     city: foodCitySelect.value,
     emoji: selectedEmoji,
-    user: firebaseUser.email,
+    user: currentUser.email,
     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
   };
 
   try {
     const newDocRef = await db.collection("foods").doc(firebaseUser.uid).collection("items").add({
-      ...newFood,
-      ownerId: firebaseUser.uid,
-    });
+  ...newFood,
+  ownerId: firebaseUser.uid,
+});
 
-    await db.doc(newDocRef.path).get();
+// Vänta tills server-timestamp är satt (valfritt, men bra)
+await db.doc(newDocRef.path).get();
+
 
     addFoodForm.reset();
     selectedEmoji = "";
@@ -145,8 +138,6 @@ addFoodForm.addEventListener("submit", async (e) => {
 });
 
 // --- Ladda användarens matlista ---
-let myFoods = [];
-
 async function loadUserFoods() {
   if (!firebaseUser) return;
 
@@ -172,6 +163,14 @@ async function loadUserFoods() {
     renderMyFoods();
   } catch (err) {
     console.error("Error loading foods:", err);
+
+    // fallback dummy
+    myFoods = [
+      { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
+      { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
+      { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
+    ];
+    localStorage.setItem("allFoods", JSON.stringify(myFoods));
     renderMyFoods();
   }
 }
@@ -196,3 +195,15 @@ function renderMyFoods() {
     myFoodList.appendChild(div);
   });
 }
+
+// --- Vänta på Firebase Auth ---
+firebase.auth().onAuthStateChanged(async (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  firebaseUser = user;
+  await loadUserFoods();
+});
+
