@@ -1,23 +1,3 @@
-// --- Kontrollera om användaren är inloggad ---
-const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-console.log(currentUser);
-
-if (!currentUser) {
-  window.location.href = "login.html";
-}
-
-// --- Hälsa användaren ---
-const headerP = document.getElementById("welcomeMsg");
-headerP.textContent = `Welcome, ${currentUser.name}! Here’s your food list.`;
-
-// --- Log out knapp ---
-const logoutBtn = document.getElementById("logoutBtn");
-logoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("currentUser");
-  firebase.auth().signOut();
-  window.location.href = "login.html";
-});
-
 // --- DOM-element ---
 const myFoodList = document.querySelector(".my-food-list");
 const addFoodForm = document.getElementById("addFoodForm");
@@ -30,7 +10,7 @@ const foodCitySelect = document.getElementById("foodCity");
 // --- Mat-data ---
 let myFoods = [];
 let countriesData = [];
-let firebaseUser = null; // kommer hålla auth-user
+let firebaseUser = null; // håller Firebase-användaren
 
 // --- Firebase-konfiguration ---
 const firebaseConfig = {
@@ -102,7 +82,6 @@ emojiPicker.addEventListener("click", (e) => {
 addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!selectedEmoji) return alert("Please select an emoji!");
-
   if (!firebaseUser) return alert("User not logged in");
 
   const newFood = {
@@ -110,19 +89,21 @@ addFoodForm.addEventListener("submit", async (e) => {
     country: foodCountrySelect.value,
     city: foodCitySelect.value,
     emoji: selectedEmoji,
-    user: currentUser.email,
+    user: firebaseUser.email,
     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
   };
 
   try {
-    const newDocRef = await db.collection("foods").doc(firebaseUser.uid).collection("items").add({
-  ...newFood,
-  ownerId: firebaseUser.uid,
-});
+    const newDocRef = await db
+      .collection("foods")
+      .doc(firebaseUser.uid)
+      .collection("items")
+      .add({
+        ...newFood,
+        ownerId: firebaseUser.uid,
+      });
 
-// Vänta tills server-timestamp är satt (valfritt, men bra)
-await db.doc(newDocRef.path).get();
-
+    await db.doc(newDocRef.path).get();
 
     addFoodForm.reset();
     selectedEmoji = "";
@@ -159,7 +140,6 @@ async function loadUserFoods() {
       ];
     }
 
-    localStorage.setItem("allFoods", JSON.stringify(myFoods));
     renderMyFoods();
   } catch (err) {
     console.error("Error loading foods:", err);
@@ -170,7 +150,6 @@ async function loadUserFoods() {
       { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
       { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
     ];
-    localStorage.setItem("allFoods", JSON.stringify(myFoods));
     renderMyFoods();
   }
 }
@@ -196,6 +175,13 @@ function renderMyFoods() {
   });
 }
 
+// --- Log out knapp ---
+const logoutBtn = document.getElementById("logoutBtn");
+logoutBtn.addEventListener("click", async () => {
+  await firebase.auth().signOut();
+  window.location.href = "login.html";
+});
+
 // --- Vänta på Firebase Auth ---
 firebase.auth().onAuthStateChanged(async (user) => {
   if (!user) {
@@ -204,6 +190,11 @@ firebase.auth().onAuthStateChanged(async (user) => {
   }
 
   firebaseUser = user;
+
+  // Hälsa användaren
+  const headerP = document.getElementById("welcomeMsg");
+  headerP.textContent = `Welcome, ${user.displayName || user.email}! Here’s your food list.`;
+
+  // Ladda användarens mat
   await loadUserFoods();
 });
-
