@@ -194,3 +194,4 @@ firebase.auth().onAuthStateChanged(async (user) => {
   firebaseUser = user;
   await loadUserFoods();
 });
+
