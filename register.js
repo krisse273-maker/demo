@@ -24,6 +24,9 @@ document.addEventListener("DOMContentLoaded", () => {
         displayName: name, // Uppdatera med användarnamnet
       });
 
+      // Kontrollera att displayName är uppdaterat
+      console.log("Updated displayName:", user.displayName);
+
       // Spara användardata i Firestore
       await firebase.firestore().collection("users").doc(user.uid).set({
         name: name,
