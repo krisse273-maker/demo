@@ -14,6 +14,19 @@ if (!firebase.apps.length) {
 }
 const db = firebase.firestore();
 
+// --- DEBUG: Kolla om items subcollections finns och innehåller timestamp ---
+db.collectionGroup("items").get()
+  .then(snapshot => {
+    console.log("=== DEBUG: Found items documents ===");
+    snapshot.forEach(doc => {
+      console.log(doc.id, doc.data());
+    });
+    console.log("=== End of items documents ===");
+  })
+  .catch(err => {
+    console.error("DEBUG: Error fetching items collectionGroup:", err);
+  });
+
 window.addEventListener("DOMContentLoaded", async () => {
   const countrySelect = document.getElementById("country");
   const citySelect = document.getElementById("city");
