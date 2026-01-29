@@ -82,7 +82,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     let allFoods = [];
 
     db.collection("publicFoods")
-      .orderBy("timestamp", "desc")
+      .orderBy("createdAt", "desc") // OBS: ska vara samma som vi använder i myfood.js
       .onSnapshot(snapshot => {
         allFoods = snapshot.docs.map(doc => {
           const data = doc.data();
@@ -92,7 +92,7 @@ window.addEventListener("DOMContentLoaded", async () => {
             country: data.country || "",
             emoji: data.emoji || "🍽️",
             user: data.user || "Anonymous",
-            timestamp: data.timestamp || null
+            timestamp: data.createdAt || null // vi sparar createdAt i myfood.js
           };
         });
 
@@ -109,6 +109,13 @@ window.addEventListener("DOMContentLoaded", async () => {
         return;
       }
       items.forEach(item => {
+        // Konvertera Firestore timestamp till läsbar tid
+        let timeStr = "Unknown time";
+        if (item.timestamp) {
+          const date = item.timestamp.toDate(); // timestamp → JS Date
+          timeStr = date.toLocaleString(); // t.ex. "1/29/2026, 14:35:10"
+        }
+
         const div = document.createElement("div");
         div.classList.add("food-item");
         div.innerHTML = `
@@ -116,6 +123,7 @@ window.addEventListener("DOMContentLoaded", async () => {
           <h3>${item.title}</h3>
           <p>Location: ${item.city}, ${item.country}</p>
           <p>Shared by: ${item.user}</p>
+          <p>Posted: ${timeStr}</p>
         `;
         foodList.appendChild(div);
       });
