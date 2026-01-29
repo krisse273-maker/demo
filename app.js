@@ -22,6 +22,13 @@ window.addEventListener("DOMContentLoaded", async () => {
   const myFoodBtn = document.getElementById("myFoodBtn");
   const logoutBtn = document.getElementById("logoutBtn");
 
+  // --- Kontrollera om användaren är inloggad ---
+  firebase.auth().onAuthStateChanged(user => {
+    if (!user) {
+      window.location.href = "login.html";
+    }
+  });
+
   // --- Länder/städer ---
   let countriesData = [];
   try {
@@ -75,8 +82,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   // --- Global real-time food list ---
   let allFoods = []; // aktuell global lista
 
-  db.collectionGroup("items")
-    //.orderBy("timestamp", "desc")
+  db.collection("publicFoods")
+    .orderBy("timestamp", "desc")
     .onSnapshot(snapshot => {
       allFoods = snapshot.docs.map(doc => {
         const data = doc.data();
