@@ -104,19 +104,27 @@ addFoodForm.addEventListener("submit", async (e) => {
     city: foodCitySelect.value,
     emoji: selectedEmoji,
     user: firebaseUser.email,
-    ownerId: firebaseUser.uid,       // <-- Viktig ändring!
+    ownerId: firebaseUser.uid,
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
   };
 
   try {
-    // Skapa nytt dokument med .set() så att ownerId finns
-    const docRef = db.collection("foods").doc(firebaseUser.uid).collection("items").doc();
-    await docRef.set(newFood);
+    // 1️⃣ Lägg till i privat matlista
+    const userDocRef = db.collection("foods").doc(firebaseUser.uid).collection("items").doc();
+    await userDocRef.set(newFood);
 
+    // 2️⃣ Lägg till i publicFoods så index.html kan visa den
+    // Vi kan använda samma doc id så det blir lätt att referera
+    const publicDocRef = db.collection("publicFoods").doc(userDocRef.id);
+    await publicDocRef.set(newFood);
+
+    // Reset formulär
     addFoodForm.reset();
     selectedEmoji = "";
     emojiPickerBtn.textContent = "Select your food Emoji";
     foodCitySelect.disabled = true;
+
+    // Ladda om användarens egna lista
     await loadUserFoods();
     alert("Food item added successfully!");
   } catch(err) {
