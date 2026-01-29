@@ -14,30 +14,26 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Skapa användare via Firebase Auth
     try {
+      // Skapa användare via Firebase Auth
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
 
-      // Uppdatera användarnamnet i Firebase Auth
+      // Uppdatera displayName i Firebase Auth
       await user.updateProfile({
-        displayName: name, // Uppdatera med användarnamnet
+        displayName: name,
       });
 
-      // Kontrollera att displayName är uppdaterat
       console.log("Updated displayName:", user.displayName);
 
-      // Spara användardata i Firestore
+      // Spara användardata i Firestore under users/{uid}
       await firebase.firestore().collection("users").doc(user.uid).set({
         name: name,
         email: user.email,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
-      // Spara användaren i localStorage för myfood.html
-      localStorage.setItem("currentUser", JSON.stringify({ email: user.email, name: name }));
-
-      // Skicka användaren till myfood.html
+      // Skicka användaren direkt till myfood.html
       window.location.href = "myfood.html";
     } catch (error) {
       console.error("Error during registration:", error);
