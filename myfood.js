@@ -1,4 +1,7 @@
 // --- DOM-element ---
+const headerP = document.getElementById("welcomeMsg");
+const logoutBtn = document.getElementById("logoutBtn");
+const homeBtn = document.getElementById("homeBtn");
 const myFoodList = document.querySelector(".my-food-list");
 const addFoodForm = document.getElementById("addFoodForm");
 const emojiPickerBtn = document.getElementById("emojiPickerBtn");
@@ -6,11 +9,6 @@ const emojiPicker = document.getElementById("emojiPicker");
 const foodTitleInput = document.getElementById("foodTitle");
 const foodCountrySelect = document.getElementById("foodCountry");
 const foodCitySelect = document.getElementById("foodCity");
-
-// --- Mat-data ---
-let myFoods = [];
-let countriesData = [];
-let firebaseUser = null; // håller Firebase-användaren
 
 // --- Firebase-konfiguration ---
 const firebaseConfig = {
@@ -25,6 +23,33 @@ const firebaseConfig = {
 
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore(app);
+
+let firebaseUser = null;
+let selectedEmoji = "";
+let myFoods = [];
+let countriesData = [];
+
+// --- Kontrollera inloggad användare ---
+firebase.auth().onAuthStateChanged(async (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+  firebaseUser = user;
+  headerP.textContent = `Welcome, ${user.displayName || user.email}! Here’s your food list.`;
+  await loadUserFoods();
+});
+
+// --- Log out knapp ---
+logoutBtn.addEventListener("click", () => {
+  firebase.auth().signOut();
+  window.location.href = "login.html";
+});
+
+// --- Home knapp (går bara till index utan att logga ut) ---
+homeBtn.addEventListener("click", () => {
+  window.location.href = "index.html";
+});
 
 // --- Länder och städer ---
 async function loadCountries() {
@@ -65,7 +90,6 @@ foodCountrySelect.addEventListener("change", () => {
 });
 
 // --- Emoji picker ---
-let selectedEmoji = "";
 emojiPickerBtn.addEventListener("click", () => {
   emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
 });
@@ -94,16 +118,10 @@ addFoodForm.addEventListener("submit", async (e) => {
   };
 
   try {
-    const newDocRef = await db
-      .collection("foods")
+    await db.collection("foods")
       .doc(firebaseUser.uid)
       .collection("items")
-      .add({
-        ...newFood,
-        ownerId: firebaseUser.uid,
-      });
-
-    await db.doc(newDocRef.path).get();
+      .add(newFood);
 
     addFoodForm.reset();
     selectedEmoji = "";
@@ -130,40 +148,22 @@ async function loadUserFoods() {
       .orderBy("timestamp", "desc")
       .get();
 
-    myFoods = snapshot.docs.map((doc) => doc.data());
-
-    if (!myFoods.length) {
-      myFoods = [
-        { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
-        { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
-        { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
-      ];
-    }
-
+    myFoods = snapshot.docs.map(doc => doc.data());
     renderMyFoods();
   } catch (err) {
     console.error("Error loading foods:", err);
-
-    // fallback dummy
-    myFoods = [
-      { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
-      { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
-      { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
-    ];
-    renderMyFoods();
   }
 }
 
 // --- Rendera matlista ---
 function renderMyFoods() {
   myFoodList.innerHTML = "";
-
   if (!myFoods.length) {
     myFoodList.innerHTML = `<p class="no-food">You don't have any food listed yet.</p>`;
     return;
   }
 
-  myFoods.forEach((food) => {
+  myFoods.forEach(food => {
     const div = document.createElement("div");
     div.classList.add("food-item");
     div.innerHTML = `
@@ -174,27 +174,3 @@ function renderMyFoods() {
     myFoodList.appendChild(div);
   });
 }
-
-// --- Log out knapp ---
-const logoutBtn = document.getElementById("logoutBtn");
-logoutBtn.addEventListener("click", async () => {
-  await firebase.auth().signOut();
-  window.location.href = "login.html";
-});
-
-// --- Vänta på Firebase Auth ---
-firebase.auth().onAuthStateChanged(async (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  firebaseUser = user;
-
-  // Hälsa användaren
-  const headerP = document.getElementById("welcomeMsg");
-  headerP.textContent = `Welcome, ${user.displayName || user.email}! Here’s your food list.`;
-
-  // Ladda användarens mat
-  await loadUserFoods();
-});
