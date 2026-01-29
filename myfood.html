@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css" />
     <script src="script.js" defer></script>
     <style>
-      /* Grundstil */
+      /* Din CSS-kod för stilning här */
       body {
         font-family: "Segoe UI", sans-serif;
         margin: 0;
@@ -16,56 +16,40 @@
         color: #333;
       }
 
-      /* FLEX HEADER */
       header {
-        display: flex;
-        justify-content: space-between; /* vänster-höger layout */
-        align-items: center;
         background: #4caf50;
         color: white;
-        padding: 1.5rem 2rem;
+        padding: 1.5rem 1rem;
+        text-align: center;
         border-bottom: 4px solid #388e3c;
       }
 
-      .header-left h1 {
+      header h1 {
         margin: 0;
         font-size: 2rem;
       }
 
-      .header-left p {
-        margin: 0.3rem 0 0 0;
+      header p {
+        margin-top: 0.5rem;
         font-size: 1rem;
       }
 
-      .header-right button {
-        margin-left: 1rem;
+      #logoutBtn {
+        margin-top: 1rem;
         padding: 0.6rem 1.2rem;
         border-radius: 25px;
         border: none;
-        cursor: pointer;
-        font-weight: bold;
-        transition: 0.2s;
-      }
-
-      #logoutBtn {
         background-color: white;
         color: #4caf50;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
       }
 
       #logoutBtn:hover {
         background-color: #f0f0f0;
       }
 
-      #homeBtn {
-        background-color: white;
-        color: #4caf50;
-      }
-
-      #homeBtn:hover {
-        background-color: #f0f0f0;
-      }
-
-      /* Container för lista + form */
       .container {
         display: flex;
         flex-wrap: wrap;
@@ -188,14 +172,10 @@
   </head>
   <body>
     <header>
-      <div class="header-left">
-        <h1>🌍 Global Food Share</h1>
-        <p id="welcomeMsg">Welcome! Here’s your food list.</p>
-      </div>
-      <div class="header-right">
-        <button id="homeBtn">Home</button>
-        <button id="logoutBtn">Log Out</button>
-      </div>
+      <h1>🌍 Global Food Share</h1>
+      <p id="welcomeMsg">Welcome! Here’s your food list.</p>
+      <button id="logoutBtn">Log Out</button>
+      <button id="homeBtn">Home</button>
     </header>
 
     <div class="container">
@@ -215,9 +195,9 @@
           <span>🧁</span><span>🍦</span><span>🍩</span><span>🍪</span>
           <span>🍫</span><span>🍿</span><span>🥯</span><span>🥖</span>
           <span>🥙</span><span>🥬</span><span>🥒</span><span>🥕</span>
-          <span>🌽</span><span>🍅</span><span>🧂</span>
-          <span>🍹</span><span>🍺</span><span>🍷</span><span>🥤</span>
-          <span>🐟</span><span>🦪</span><span>🦐</span><span>🦑</span>
+          <span>🌽</span><span>🍅</span><span>🧂</span> <span>🍹</span
+          ><span>🍺</span><span>🍷</span><span>🥤</span> <span>🐟</span
+          ><span>🦪</span><span>🦐</span><span>🦑</span>
         </div>
 
         <select id="foodCountry" required>
