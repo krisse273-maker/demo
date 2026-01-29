@@ -64,7 +64,6 @@
 
       const logoutBtn = document.getElementById("logoutBtn");
       const myFoodBtn = document.getElementById("myFoodBtn");
-      const homeBtn = document.getElementById("homeBtn");
       const countrySelect = document.getElementById("country");
       const citySelect = document.getElementById("city");
       const filterBtn = document.getElementById("filterBtn");
@@ -155,9 +154,10 @@
         renderFoodItems(filtered);
       });
 
-      // ===== Hämta global matlista =====
+      // ===== Hämta global matlista från publicFoods =====
       function loadGlobalFood() {
-        db.collectionGroup("items")
+        db.collection("publicFoods")
+          .orderBy("timestamp", "desc")
           .onSnapshot(snapshot => {
             allFoods = snapshot.docs.map(doc => {
               const data = doc.data();
@@ -200,4 +200,3 @@
     </script>
   </body>
 </html>
-
