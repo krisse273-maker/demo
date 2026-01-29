@@ -19,6 +19,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
 
+      // Uppdatera användarnamnet i Firebase Auth
+      await user.updateProfile({
+        displayName: name, // Uppdatera med användarnamnet
+      });
+
       // Spara användardata i Firestore
       await firebase.firestore().collection("users").doc(user.uid).set({
         name: name,
