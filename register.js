@@ -1,4 +1,3 @@
-// Vänta på att Firebase är klart
 document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
 
@@ -19,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
 
-      // Uppdatera displayName i Firebase Auth
+      // Uppdatera displayName i Firebase Auth (kan användas vid login, men primärt kommer Firestore vara källan)
       await user.updateProfile({
         displayName: name,
       });
@@ -28,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Spara användardata i Firestore under users/{uid}
       await firebase.firestore().collection("users").doc(user.uid).set({
-        name: name,
+        name: name,  // Användarnamnet som ska sparas i Firestore
         email: user.email,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
