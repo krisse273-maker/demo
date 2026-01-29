@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const addFoodForm = document.getElementById("addFoodForm");
   const emojiPickerBtn = document.getElementById("emojiPickerBtn");
   const emojiPicker = document.getElementById("emojiPicker");
-  const foodTitleInput = document.getElementById("foodTitle");
+  const foodTitleInput = document.getElementById("foodTitle"); // ENDA INPUT
   const foodCountrySelect = document.getElementById("foodCountry");
   const foodCitySelect = document.getElementById("foodCity");
 
@@ -26,13 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
     apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
     authDomain: "global-food-share.firebaseapp.com",
     projectId: "global-food-share",
-    storageBucket: "global-food-share.appspot.com",
+    storageBucket: "global-food-share.firebasestorage.app",
     messagingSenderId: "902107453892",
     appId: "1:902107453892:web:dd9625974b8744cc94ac91"
   };
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
+  firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
   let firebaseUser = null;
@@ -49,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     firebaseUser = user;
-    headerP.textContent = `Welcome, ${user.displayName || "Anonymous"}! Here’s your food list.`;
+    headerP.textContent = `Welcome, ${user.displayName || user.email}! Here’s your food list.`;
     await loadUserFoods();
   });
 
@@ -134,27 +132,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const newFood = {
       title: foodValue,
       type: foodValue,
-      country: foodCountrySelect.value || "",
-      city: foodCitySelect.value || "",
+      country: foodCountrySelect.value,
+      city: foodCitySelect.value,
       emoji: selectedEmoji,
-      user: firebaseUser.displayName || "Anonymous",
+      user: firebaseUser.email,
       ownerId: firebaseUser.uid,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp() // ✅ alltid serverTimestamp
+      createdAt: firebase.firestore.Timestamp.now()
     };
 
     try {
-      // Lägg till i privat lista
-      const userDocRef = db.collection("foods")
-                           .doc(firebaseUser.uid)
-                           .collection("items")
-                           .doc();
+      const userDocRef = db.collection("foods").doc(firebaseUser.uid).collection("items").doc();
       await userDocRef.set(newFood);
 
-      // Lägg till i public lista
       const publicDocRef = db.collection("publicFoods").doc(userDocRef.id);
-      await publicDocRef.set(newFood); // serverTimestamp redan satt i newFood
+      await publicDocRef.set(newFood);
 
-      // Reset form
       addFoodForm.reset();
       selectedEmoji = "";
       emojiPickerBtn.textContent = "Select your food Emoji";
@@ -164,7 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Food item added successfully!");
     } catch(err) {
       console.error("Failed to add food:", err);
-      alert("Failed to add food! Check Firestore rules.");
+      alert("Failed to add food!");
     }
   });
 
@@ -208,3 +200,4 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
+
