@@ -10,12 +10,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const addFoodForm = document.getElementById("addFoodForm");
   const emojiPickerBtn = document.getElementById("emojiPickerBtn");
   const emojiPicker = document.getElementById("emojiPicker");
-  const foodTitleInput = document.getElementById("foodTitle"); // ENDA INPUT FÄLTET
+  const foodTitleInput = document.getElementById("foodTitle"); // ENDA INPUT
   const foodCountrySelect = document.getElementById("foodCountry");
   const foodCitySelect = document.getElementById("foodCity");
 
   if (!addFoodForm || !foodTitleInput) {
-    console.error("Form or foodType input not found in DOM!");
+    console.error("Form or foodTitle input not found in DOM!");
     return;
   }
 
@@ -30,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
     messagingSenderId: "902107453892",
     appId: "1:902107453892:web:dd9625974b8744cc94ac91"
   };
-
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
@@ -75,15 +74,21 @@ document.addEventListener("DOMContentLoaded", () => {
         option.textContent = c.country;
         foodCountrySelect.appendChild(option);
       });
-    } catch(e) { console.error(e); }
+    } catch(e) {
+      console.error("Failed to load countries:", e);
+    }
   }
   loadCountries();
 
+  // =====================================
+  // Välj City baserat på Country
+  // =====================================
   foodCountrySelect.addEventListener("change", () => {
     const selectedCountry = foodCountrySelect.value;
     foodCitySelect.innerHTML = '<option value="">Select City</option>';
     foodCitySelect.disabled = true;
     if (!selectedCountry) return;
+
     const countryObj = countriesData.find(c => c.country === selectedCountry);
     if (countryObj && countryObj.cities.length){
       countryObj.cities.forEach(city => {
@@ -149,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
       await loadUserFoods();
       alert("Food item added successfully!");
     } catch(err) {
-      console.error(err);
+      console.error("Failed to add food:", err);
       alert("Failed to add food!");
     }
   });
@@ -168,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
       myFoods = snapshot.docs.map(doc => doc.data());
       renderMyFoods();
     } catch(err) {
-      console.error(err);
+      console.error("Failed to load user foods:", err);
     }
   }
 
@@ -194,4 +199,3 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
-
