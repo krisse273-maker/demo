@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const addFoodForm = document.getElementById("addFoodForm");
   const emojiPickerBtn = document.getElementById("emojiPickerBtn");
   const emojiPicker = document.getElementById("emojiPicker");
-  const foodTitleInput = document.getElementById("foodType"); // ENDA INPUT FÄLTET
+  const foodTitleInput = document.getElementById("foodTitle"); // ENDA INPUT FÄLTET
   const foodCountrySelect = document.getElementById("foodCountry");
   const foodCitySelect = document.getElementById("foodCity");
 
@@ -194,3 +194,4 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
+
