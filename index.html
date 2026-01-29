@@ -10,7 +10,7 @@
     <header>
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
-      <button id="logoutBtn" style="margin-top: 1rem; padding: 0.5rem 1rem; border-radius: 6px; border: none; background-color: white; color: #4caf50; cursor: pointer;">Log Out</button>
+      <button id="logoutBtn" style="margin-top:1rem;padding:0.5rem 1rem;border-radius:6px;border:none;background-color:white;color:#4caf50;cursor:pointer;">Log Out</button>
     </header>
 
     <section class="filters">
@@ -27,9 +27,9 @@
           <option value="">Select city</option>
         </select>
       </div>
-      <div style="margin-top: 1rem">
-        <button id="filterBtn" style="padding: 0.5rem 1rem; border-radius: 6px; border: none; background-color: #4caf50; color: white; cursor: pointer;">Search</button>
-        <button id="myFoodBtn" style="padding: 0.5rem 1rem; border-radius: 6px; border: none; background-color: #ff9800; color: white; cursor: pointer; margin-left: 0.5rem;">My Food List</button>
+      <div style="margin-top:1rem">
+        <button id="filterBtn" style="padding:0.5rem 1rem;border-radius:6px;border:none;background-color:#4caf50;color:white;cursor:pointer;">Search</button>
+        <button id="myFoodBtn" style="padding:0.5rem 1rem;border-radius:6px;border:none;background-color:#ff9800;color:white;cursor:pointer;margin-left:0.5rem;">My Food List</button>
       </div>
     </section>
 
@@ -48,7 +48,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
     <script>
-      // ===== Firebase-konfiguration =====
       const firebaseConfig = {
         apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
         authDomain: "global-food-share.firebaseapp.com",
@@ -72,126 +71,101 @@
       let countriesData = [];
       let allFoods = [];
 
-      // ===== Kontrollera om användaren är inloggad =====
-      auth.onAuthStateChanged(async (user) => {
-        if (!user) {
-          window.location.href = "login.html";
-          return;
-        }
+      const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-        // Visa välkomstmeddelande
+      auth.onAuthStateChanged(async user => {
+        if (!user) return window.location.href="login.html";
+
         document.getElementById("welcomeMsg").textContent = `Welcome, ${user.displayName || user.email}!`;
 
-        // Ladda länder + städer
         await loadCountries();
-
-        // Ladda global matlista
         loadGlobalFood();
       });
 
-      // ===== Logout knapp =====
-      logoutBtn.addEventListener("click", () => {
-        auth.signOut().then(() => {
-          window.location.href = "login.html";
-        });
-      });
+      logoutBtn.addEventListener("click",()=>auth.signOut().then(()=>window.location.href="login.html"));
+      myFoodBtn.addEventListener("click",()=>window.location.href="myfood.html");
 
-      // ===== MyFood knapp =====
-      myFoodBtn.addEventListener("click", () => {
-        window.location.href = "myfood.html";
-      });
-
-      // ===== Ladda länder =====
-      async function loadCountries() {
-        try {
+      async function loadCountries(){
+        try{
           const res = await fetch("https://countriesnow.space/api/v0.1/countries");
           const data = await res.json();
           countriesData = data.data;
 
           countrySelect.innerHTML = '<option value="">Select country</option>';
-          countriesData.forEach(c => {
-            const opt = document.createElement("option");
-            opt.value = c.country;
-            opt.textContent = c.country;
+          countriesData.forEach(c=>{
+            const opt=document.createElement("option");
+            opt.value=c.country;
+            opt.textContent=c.country;
             countrySelect.appendChild(opt);
           });
-          countrySelect.disabled = false;
-        } catch (err) {
-          console.error("Could not fetch countries:", err);
+          countrySelect.disabled=false;
+        }catch(err){
+          console.error("Could not fetch countries:",err);
           alert("Failed to load countries. Try refreshing.");
         }
       }
 
-      countrySelect.addEventListener("change", () => {
-        citySelect.innerHTML = '<option value="">Select city</option>';
-        citySelect.disabled = true;
-
+      countrySelect.addEventListener("change",()=>{
+        citySelect.innerHTML='<option value="">Select city</option>';
+        citySelect.disabled=true;
         const selectedCountry = countrySelect.value;
-        if (!selectedCountry) return;
-
-        const countryObj = countriesData.find(c => c.country === selectedCountry);
-        if (!countryObj || !countryObj.cities.length) return;
-
-        countryObj.cities.forEach(city => {
-          const opt = document.createElement("option");
-          opt.value = city;
-          opt.textContent = city;
+        if(!selectedCountry) return;
+        const countryObj = countriesData.find(c=>c.country===selectedCountry);
+        if(!countryObj||!countryObj.cities.length) return;
+        countryObj.cities.forEach(city=>{
+          const opt=document.createElement("option");
+          opt.value=city;
+          opt.textContent=city;
           citySelect.appendChild(opt);
         });
-        citySelect.disabled = false;
+        citySelect.disabled=false;
       });
 
-      // ===== Filterknapp =====
-      filterBtn.addEventListener("click", () => {
-        const country = countrySelect.value;
-        const city = citySelect.value;
-
-        const filtered = allFoods.filter(f =>
-          (!country || f.country === country) &&
-          (!city || f.city === city)
-        );
-
+      filterBtn.addEventListener("click",()=>{
+        const country=countrySelect.value;
+        const city=citySelect.value;
+        const filtered=allFoods.filter(f=>(!country||f.country===country)&&(!city||f.city===city));
         renderFoodItems(filtered);
       });
 
-      // ===== Hämta global matlista från publicFoods =====
-      function loadGlobalFood() {
+      function loadGlobalFood(){
         db.collection("publicFoods")
-          .orderBy("createdAt", "desc")
-          .onSnapshot(snapshot => {
-            allFoods = snapshot.docs.map(doc => {
-              const data = doc.data();
+          .orderBy("createdAt","desc")
+          .onSnapshot(snapshot=>{
+            allFoods=snapshot.docs.map(doc=>{
+              const data=doc.data();
               return {
-                title: data.title || "",
-                city: data.city || "",
-                country: data.country || "",
-                emoji: data.emoji || "🍽️",
-                user: data.user || "Anonymous"
+                title:data.title||"",
+                city:data.city||"",
+                country:data.country||"",
+                emoji:data.emoji||"🍽️",
+                user:data.user||"Anonymous",
+                createdAt:data.createdAt||null
               };
             });
-
             renderFoodItems(allFoods);
-          }, err => {
-            console.error("Error fetching global foods:", err);
-          });
+          },err=>console.error("Error fetching global foods:",err));
       }
 
-      // ===== Rendera global matlista =====
-      function renderFoodItems(items) {
-        foodList.innerHTML = "";
-        if (!items.length) {
-          foodList.innerHTML = "<p>No food found.</p>";
-          return;
-        }
+      function renderFoodItems(items){
+        foodList.innerHTML="";
+        if(!items.length){foodList.innerHTML="<p>No food found.</p>";return;}
 
-        items.forEach(item => {
-          const div = document.createElement("div");
+        items.forEach(item=>{
+          let dateStr="";
+          if(item.createdAt){
+            const d=item.createdAt.toDate();
+            dateStr=`${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+          }
+
+          const div=document.createElement("div");
           div.classList.add("food-item");
-          div.innerHTML = `
+          div.innerHTML=`
             <span class="icon">${item.emoji}</span>
             <h3>${item.title}</h3>
             <p>Location: ${item.city}, ${item.country}</p>
             <p>Shared by: ${item.user}</p>
+            ${dateStr?`<p>Posted: ${dateStr}</p>`:""}
           `;
           foodList.appendChild(div);
         });
