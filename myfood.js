@@ -12,17 +12,19 @@ headerP.textContent = `Welcome, ${currentUser.name}! Here’s your food list.`;
 
 // --- Log out knapp ---
 const logoutBtn = document.getElementById("logoutBtn");
-const homeBtn = document.getElementById("homeBtn");
-
 logoutBtn.addEventListener("click", () => {
   localStorage.removeItem("currentUser");
   firebase.auth().signOut();
   window.location.href = "login.html";
 });
 
-homeBtn.addEventListener("click", () => {
-  window.location.href = "index.html";
-});
+// --- Home knapp ---
+const homeBtn = document.getElementById("homeBtn");
+if (homeBtn) {
+  homeBtn.addEventListener("click", () => {
+    window.location.href = "index.html";
+  });
+}
 
 // --- DOM-element ---
 const myFoodList = document.querySelector(".my-food-list");
@@ -108,7 +110,6 @@ emojiPicker.addEventListener("click", (e) => {
 addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!selectedEmoji) return alert("Please select an emoji!");
-
   if (!firebaseUser) return alert("User not logged in");
 
   const newFood = {
@@ -122,13 +123,12 @@ addFoodForm.addEventListener("submit", async (e) => {
 
   try {
     const newDocRef = await db.collection("foods").doc(firebaseUser.uid).collection("items").add({
-  ...newFood,
-  ownerId: firebaseUser.uid,
-});
+      ...newFood,
+      ownerId: firebaseUser.uid,
+    });
 
-// Vänta tills server-timestamp är satt (valfritt, men bra)
-await db.doc(newDocRef.path).get();
-
+    // Vänta tills server-timestamp är satt
+    await db.doc(newDocRef.path).get();
 
     addFoodForm.reset();
     selectedEmoji = "";
@@ -169,7 +169,6 @@ async function loadUserFoods() {
     renderMyFoods();
   } catch (err) {
     console.error("Error loading foods:", err);
-
     // fallback dummy
     myFoods = [
       { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
@@ -212,5 +211,3 @@ firebase.auth().onAuthStateChanged(async (user) => {
   firebaseUser = user;
   await loadUserFoods();
 });
-
-
