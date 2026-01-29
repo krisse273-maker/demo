@@ -81,7 +81,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     let allFoods = [];
 
     db.collection("publicFoods")
-      .orderBy("createdAt", "desc") // samma som i myfood.js
+      .orderBy("createdAt", "desc")
       .onSnapshot(snapshot => {
         allFoods = snapshot.docs.map(doc => {
           const data = doc.data();
@@ -108,16 +108,16 @@ window.addEventListener("DOMContentLoaded", async () => {
         return;
       }
       items.forEach(item => {
-        // Konvertera Firestore timestamp till datum + tid utan sekunder
         let timeStr = "Unknown time";
         if (item.timestamp) {
-          const date = item.timestamp.toDate(); // timestamp → JS Date
+          const date = item.timestamp.toDate();
+          // Format: YYYY-MM-DD HH:MM (utan sekunder)
           const year = date.getFullYear();
           const month = String(date.getMonth() + 1).padStart(2, "0");
           const day = String(date.getDate()).padStart(2, "0");
           const hours = String(date.getHours()).padStart(2, "0");
           const minutes = String(date.getMinutes()).padStart(2, "0");
-          timeStr = `${year}-${month}-${day} ${hours}:${minutes}`; // t.ex. "2026-01-29 21:29"
+          timeStr = `${year}-${month}-${day} ${hours}:${minutes}`;
         }
 
         const div = document.createElement("div");
