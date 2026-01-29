@@ -22,7 +22,7 @@
         padding: 1.5rem 1rem;
         text-align: center;
         border-bottom: 4px solid #388e3c;
-        position: relative; /* <-- Lagt till för knappen */
+        position: relative; /* <-- Lagt till för log out-knappen */
       }
 
       header h1 {
@@ -51,6 +51,22 @@
       }
 
       #logoutBtn:hover {
+        background-color: #f0f0f0;
+      }
+
+      #homeBtn {
+        padding: 0.6rem 1.2rem;
+        border-radius: 25px;
+        border: none;
+        background-color: white;
+        color: #4caf50;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 0.5rem;
+        transition: 0.2s;
+      }
+
+      #homeBtn:hover {
         background-color: #f0f0f0;
       }
 
@@ -179,6 +195,7 @@
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Here’s your food list.</p>
       <button id="logoutBtn">Log Out</button>
+      <button id="homeBtn" onclick="window.location.href='index.html'">Home</button>
     </header>
 
     <div class="container">
