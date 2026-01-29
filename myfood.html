@@ -14,10 +14,10 @@
     header { background:#4caf50; color:white; padding:1.5rem 1rem; text-align:center; border-bottom:4px solid #388e3c; position:relative; }
     header h1 { margin:0; font-size:2rem; }
     header p { margin-top:0.5rem; font-size:1rem; }
-    #logoutBtn { padding:0.6rem 1.2rem; border-radius:25px; border:none; background:white; color:#4caf50; font-weight:bold; cursor:pointer; position:absolute; top:1.5rem; right:1rem; transition:0.2s; }
-    #logoutBtn:hover { background:#f0f0f0; }
-    #homeBtn { padding:0.6rem 1.2rem; border-radius:25px; border:none; background:white; color:#4caf50; font-weight:bold; cursor:pointer; margin-top:0.5rem; transition:0.2s; }
-    #homeBtn:hover { background:#f0f0f0; }
+    #logoutBtn, #homeBtn { padding:0.6rem 1.2rem; border-radius:25px; border:none; background:white; color:#4caf50; font-weight:bold; cursor:pointer; transition:0.2s; }
+    #logoutBtn { position:absolute; top:1.5rem; right:1rem; }
+    #logoutBtn:hover, #homeBtn:hover { background:#f0f0f0; }
+    #homeBtn { margin-top:0.5rem; }
     .container { display:flex; flex-wrap:wrap; padding:2rem; gap:2rem; justify-content:center; }
     .my-food-list, form { flex:1 1 300px; background:white; padding:1.5rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); max-height:80vh; overflow-y:auto; display:flex; flex-direction:column; gap:1rem; }
     .food-item { border:1px solid #ddd; padding:0.75rem 1rem; margin-bottom:0.75rem; border-radius:12px; display:flex; align-items:center; gap:0.75rem; background:#fafafa; transition:0.2s; }
@@ -47,8 +47,11 @@
   <div class="my-food-list"></div>
 
   <form id="addFoodForm">
-    <!-- Food Name först -->
+    <!-- Food Name -->
     <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="50" required />
+
+    <!-- Food Type (NYTT) -->
+    <input type="text" id="foodType" name="type" placeholder="Example: Meat" maxlength="50" required />
 
     <!-- Emoji -->
     <button type="button" id="emojiPickerBtn">Select your food Emoji</button>
@@ -79,4 +82,3 @@
 </div>
 </body>
 </html>
-
