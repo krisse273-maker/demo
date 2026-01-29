@@ -14,21 +14,7 @@ if (!firebase.apps.length) {
 }
 const db = firebase.firestore();
 
-/* =========================
-   🔒 AUTH-GUARD (KORREKT)
-   ========================= */
-firebase.auth().onAuthStateChanged(user => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  // 🔥 användaren är inloggad → starta appen
-  startApp();
-});
-
-function startApp() {
-
+window.addEventListener("DOMContentLoaded", async () => {
   const countrySelect = document.getElementById("country");
   const citySelect = document.getElementById("city");
   const filterBtn = document.getElementById("filterBtn");
@@ -36,48 +22,37 @@ function startApp() {
   const myFoodBtn = document.getElementById("myFoodBtn");
   const logoutBtn = document.getElementById("logoutBtn");
 
+  // --- Länder/städer ---
   let countriesData = [];
-  let allFoods = [];
+  try {
+    const res = await fetch("https://countriesnow.space/api/v0.1/countries");
+    const data = await res.json();
+    countriesData = data.data;
 
-  function clearSelect(select) {
-    while (select.firstChild) select.removeChild(select.firstChild);
+    countrySelect.innerHTML = '<option value="">Select country</option>';
+    countriesData.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.country;
+      opt.textContent = c.country;
+      countrySelect.appendChild(opt);
+    });
+    countrySelect.disabled = false;
+  } catch (err) {
+    console.error("Could not fetch countries:", err);
+    alert("Failed to load countries. Try refreshing.");
   }
 
-  /* ---------- LÄNDER ---------- */
-  fetch("https://countriesnow.space/api/v0.1/countries")
-    .then(res => res.json())
-    .then(data => {
-      countriesData = data.data || [];
-
-      clearSelect(countrySelect);
-      const def = document.createElement("option");
-      def.value = "";
-      def.textContent = "Select country";
-      countrySelect.appendChild(def);
-
-      countriesData.forEach(c => {
-        const opt = document.createElement("option");
-        opt.value = c.country;
-        opt.textContent = c.country;
-        countrySelect.appendChild(opt);
-      });
-    })
-    .catch(err => {
-      console.error("Countries error:", err);
-    });
-
   countrySelect.addEventListener("change", () => {
-    clearSelect(citySelect);
-    const def = document.createElement("option");
-    def.value = "";
-    def.textContent = "Select city";
-    citySelect.appendChild(def);
+    citySelect.innerHTML = '<option value="">Select city</option>';
     citySelect.disabled = true;
 
-    const country = countriesData.find(c => c.country === countrySelect.value);
-    if (!country) return;
+    const selectedCountry = countrySelect.value;
+    if (!selectedCountry) return;
 
-    country.cities.forEach(city => {
+    const countryObj = countriesData.find(c => c.country === selectedCountry);
+    if (!countryObj || !countryObj.cities.length) return;
+
+    countryObj.cities.forEach(city => {
       const opt = document.createElement("option");
       opt.value = city;
       opt.textContent = city;
@@ -86,52 +61,73 @@ function startApp() {
     citySelect.disabled = false;
   });
 
-  /* ---------- LOGOUT ---------- */
+  // --- Logout knapp ---
   logoutBtn.addEventListener("click", async () => {
     await firebase.auth().signOut();
     window.location.href = "login.html";
   });
 
+  // --- Navigera till myfood.html ---
   myFoodBtn.addEventListener("click", () => {
     window.location.href = "myfood.html";
   });
 
-  /* ---------- RENDER ---------- */
-  function render(items) {
+  // --- Global real-time food list ---
+  let allFoods = []; // aktuell global lista
+
+  db.collectionGroup("items")
+    //.orderBy("timestamp", "desc")
+    .onSnapshot(snapshot => {
+      allFoods = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          title: data.title || "",
+          city: data.city || "",
+          country: data.country || "",
+          emoji: data.emoji || "🍽️",
+          user: data.user || "Anonymous",
+          timestamp: data.timestamp || null
+        };
+      });
+
+      console.log("Fetched foods:", allFoods); // kolla att du får data
+      renderFoodItems(allFoods); // rendera maten direkt
+    }, err => {
+      console.error("Error fetching global foods:", err);
+    });
+
+  // --- Render function ---
+  function renderFoodItems(items) {
     foodList.innerHTML = "";
     if (!items.length) {
-      foodList.textContent = "No food found.";
+      foodList.innerHTML = "<p>No food found.</p>";
       return;
     }
 
     items.forEach(item => {
       const div = document.createElement("div");
-      div.className = "food-item";
+      div.classList.add("food-item");
       div.innerHTML = `
         <span class="icon">${item.emoji}</span>
         <h3>${item.title}</h3>
-        <p>${item.city}, ${item.country}</p>
-        <p>By ${item.user}</p>
+        <p>Location: ${item.city}, ${item.country}</p>
+        <p>Shared by: ${item.user}</p>
       `;
       foodList.appendChild(div);
     });
   }
 
-  /* ---------- GLOBAL FEED ---------- */
-  db.collectionGroup("items").onSnapshot(snapshot => {
-    allFoods = snapshot.docs.map(d => d.data());
-    render(allFoods);
-  });
-
+  // --- Filterknapp ---
   filterBtn.addEventListener("click", () => {
-    const c = countrySelect.value;
+    const country = countrySelect.value;
     const city = citySelect.value;
 
-    render(
-      allFoods.filter(f =>
-        (!c || f.country === c) &&
-        (!city || f.city === city)
-      )
+    const filtered = allFoods.filter(f =>
+      (!country || f.country === country) &&
+      (!city || f.city === city)
     );
+
+    renderFoodItems(filtered);
   });
-}
+});
+
