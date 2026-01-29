@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const addFoodForm = document.getElementById("addFoodForm");
   const emojiPickerBtn = document.getElementById("emojiPickerBtn");
   const emojiPicker = document.getElementById("emojiPicker");
-  const foodTitleInput = document.getElementById("foodTitle"); // ENDA INPUT
+  const foodTitleInput = document.getElementById("foodTitle"); 
   const foodCountrySelect = document.getElementById("foodCountry");
   const foodCitySelect = document.getElementById("foodCity");
 
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     firebaseUser = user;
-    headerP.textContent = `Welcome, ${user.displayName || user.email}! Here’s your food list.`;
+    headerP.textContent = `Welcome, ${user.displayName || "Anonymous"}! Here’s your food list.`;
     await loadUserFoods();
   });
 
@@ -135,9 +135,9 @@ document.addEventListener("DOMContentLoaded", () => {
       country: foodCountrySelect.value,
       city: foodCitySelect.value,
       emoji: selectedEmoji,
-      user: firebaseUser.email,
+      user: firebaseUser.displayName || "Anonymous", // ✅ här använder vi displayName
       ownerId: firebaseUser.uid,
-      createdAt: firebase.firestore.Timestamp.now() // behåll privat listan timestamp
+      createdAt: firebase.firestore.Timestamp.now()
     };
 
     try {
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const publicDocRef = db.collection("publicFoods").doc(userDocRef.id);
       await publicDocRef.set({
         ...newFood,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp() // <- ändringen
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
       addFoodForm.reset();
