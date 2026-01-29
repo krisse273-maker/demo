@@ -100,36 +100,22 @@ window.addEventListener("DOMContentLoaded", async () => {
         console.error("Error fetching global foods:", err);
       });
 
-    // --- Render-funktion med format DD-MM-YYYY HH:MM ---
+    // --- Render-funktion ---
     function renderFoodItems(items) {
       foodList.innerHTML = "";
       if (!items.length) {
         foodList.innerHTML = "<p>No food found.</p>";
         return;
       }
-
       items.forEach(item => {
-        let timeStr = "Unknown time";
-
+        let dateStr = "Unknown date";
         if (item.timestamp) {
-          let dateObj;
-
-          if (typeof item.timestamp.toDate === "function") {
-            dateObj = item.timestamp.toDate();
-          } else if (item.timestamp.seconds) {
-            dateObj = new Date(item.timestamp.seconds * 1000);
-          } else {
-            dateObj = new Date(item.timestamp);
-          }
-
-          const day = String(dateObj.getDate()).padStart(2, "0");
-          const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+          // Om det är Firestore Timestamp → konvertera
+          let dateObj = item.timestamp.toDate ? item.timestamp.toDate() : item.timestamp;
           const year = dateObj.getFullYear();
-          const hours = String(dateObj.getHours()).padStart(2, "0");
-          const minutes = String(dateObj.getMinutes()).padStart(2, "0");
-
-          // Format: DD-MM-YYYY HH:MM
-          timeStr = `${day}-${month}-${year} ${hours}:${minutes}`;
+          const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+          const day = String(dateObj.getDate()).padStart(2, "0");
+          dateStr = `${year}-${month}-${day}`;
         }
 
         const div = document.createElement("div");
@@ -139,7 +125,7 @@ window.addEventListener("DOMContentLoaded", async () => {
           <h3>${item.title}</h3>
           <p>Location: ${item.city}, ${item.country}</p>
           <p>Shared by: ${item.user}</p>
-          <p>Posted: ${timeStr}</p>
+          <p>Posted: ${dateStr}</p>
         `;
         foodList.appendChild(div);
       });
