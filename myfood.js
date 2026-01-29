@@ -105,7 +105,7 @@ addFoodForm.addEventListener("submit", async (e) => {
     emoji: selectedEmoji,
     user: firebaseUser.email,
     ownerId: firebaseUser.uid,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    createdAt: firebase.firestore.FieldValue.serverTimestamp() // ✅ Ändrat från timestamp till createdAt
   };
 
   try {
@@ -140,7 +140,7 @@ async function loadUserFoods() {
     const snapshot = await db.collection("foods")
                              .doc(firebaseUser.uid)
                              .collection("items")
-                             .orderBy("timestamp", "desc")
+                             .orderBy("createdAt", "desc") // ✅ ändrat för att sortera på createdAt
                              .get();
     myFoods = snapshot.docs.map(doc => doc.data());
     renderMyFoods();
