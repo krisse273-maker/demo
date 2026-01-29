@@ -137,15 +137,20 @@ document.addEventListener("DOMContentLoaded", () => {
       emoji: selectedEmoji,
       user: firebaseUser.email,
       ownerId: firebaseUser.uid,
-      createdAt: firebase.firestore.Timestamp.now()
+      createdAt: firebase.firestore.Timestamp.now() // behåll privat listan timestamp
     };
 
     try {
+      // Lägg till i privat lista
       const userDocRef = db.collection("foods").doc(firebaseUser.uid).collection("items").doc();
       await userDocRef.set(newFood);
 
+      // Lägg till i public lista med serverTimestamp
       const publicDocRef = db.collection("publicFoods").doc(userDocRef.id);
-      await publicDocRef.set(newFood);
+      await publicDocRef.set({
+        ...newFood,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp() // <- ändringen
+      });
 
       addFoodForm.reset();
       selectedEmoji = "";
@@ -200,5 +205,3 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
-
-
