@@ -100,7 +100,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         console.error("Error fetching global foods:", err);
       });
 
-    // --- Render-funktion med tid utan sekunder ---
+    // --- Render-funktion med format DD-MM-YYYY HH:MM ---
     function renderFoodItems(items) {
       foodList.innerHTML = "";
       if (!items.length) {
@@ -114,22 +114,22 @@ window.addEventListener("DOMContentLoaded", async () => {
         if (item.timestamp) {
           let dateObj;
 
-          // Säker konvertering till JS Date
           if (typeof item.timestamp.toDate === "function") {
-            dateObj = item.timestamp.toDate(); // Firestore Timestamp
+            dateObj = item.timestamp.toDate();
           } else if (item.timestamp.seconds) {
             dateObj = new Date(item.timestamp.seconds * 1000);
           } else {
             dateObj = new Date(item.timestamp);
           }
 
-          const y = dateObj.getFullYear();
-          const m = String(dateObj.getMonth() + 1).padStart(2, "0");
-          const d = String(dateObj.getDate()).padStart(2, "0");
-          const h = String(dateObj.getHours()).padStart(2, "0");
-          const min = String(dateObj.getMinutes()).padStart(2, "0");
+          const day = String(dateObj.getDate()).padStart(2, "0");
+          const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+          const year = dateObj.getFullYear();
+          const hours = String(dateObj.getHours()).padStart(2, "0");
+          const minutes = String(dateObj.getMinutes()).padStart(2, "0");
 
-          timeStr = `${y}-${m}-${d} ${h}:${min}`; // Sekunder tas bort här
+          // Format: DD-MM-YYYY HH:MM
+          timeStr = `${day}-${month}-${year} ${hours}:${minutes}`;
         }
 
         const div = document.createElement("div");
