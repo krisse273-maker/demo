@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const db = firebase.firestore();
 
   let firebaseUser = null;
+  let currentUserName = "Anonymous"; // Default
   let selectedEmoji = "";
   let myFoods = [];
   let countriesData = [];
@@ -48,9 +49,22 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "login.html";
       return;
     }
+
     firebaseUser = user;
-    // ✅ Visa användarnamnet istället för email/Anonymous
-    headerP.textContent = `Welcome, ${user.displayName || "Anonymous"}! Here’s your food list.`;
+
+    // Hämta displayName från Firestore
+    try {
+      const userDoc = await db.collection("users").doc(user.uid).get();
+      if (userDoc.exists && userDoc.data().name) {
+        currentUserName = userDoc.data().name;
+      } else if (user.displayName) {
+        currentUserName = user.displayName;
+      }
+    } catch (err) {
+      console.error("Failed to get user displayName from Firestore:", err);
+    }
+
+    headerP.textContent = `Welcome, ${currentUserName}! Here’s your food list.`;
     await loadUserFoods();
   });
 
@@ -138,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
       country: foodCountrySelect.value,
       city: foodCitySelect.value,
       emoji: selectedEmoji,
-      user: firebaseUser.displayName, // ✅ sparar displayName istället för email
+      user: currentUserName, // Använder nu Firestore-displayName
       ownerId: firebaseUser.uid,
       createdAt: firebase.firestore.Timestamp.now()
     };
@@ -197,6 +211,8 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="icon">${food.emoji}</span>
         <h3>${food.title}</h3>
         <p>${food.city}, ${food.country}</p>
+        <p>Shared by: ${food.user}</p>
+        <p>Posted: ${food.createdAt.toDate().toLocaleDateString()}</p>
       `;
       myFoodList.appendChild(div);
     });
