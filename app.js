@@ -108,16 +108,6 @@ window.addEventListener("DOMContentLoaded", async () => {
         return;
       }
       items.forEach(item => {
-        let dateStr = "Unknown date";
-        if (item.timestamp) {
-          // Om det är Firestore Timestamp → konvertera
-          let dateObj = item.timestamp.toDate ? item.timestamp.toDate() : item.timestamp;
-          const year = dateObj.getFullYear();
-          const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-          const day = String(dateObj.getDate()).padStart(2, "0");
-          dateStr = `${year}-${month}-${day}`;
-        }
-
         const div = document.createElement("div");
         div.classList.add("food-item");
         div.innerHTML = `
@@ -125,7 +115,6 @@ window.addEventListener("DOMContentLoaded", async () => {
           <h3>${item.title}</h3>
           <p>Location: ${item.city}, ${item.country}</p>
           <p>Shared by: ${item.user}</p>
-          <p>Posted: ${dateStr}</p>
         `;
         foodList.appendChild(div);
       });
