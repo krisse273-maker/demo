@@ -22,14 +22,26 @@ window.addEventListener("DOMContentLoaded", async () => {
   const myFoodBtn = document.getElementById("myFoodBtn");
   const logoutBtn = document.getElementById("logoutBtn");
 
-  // --- Länder/städer ---
   let countriesData = [];
+  let allFoods = [];
+
+  // --- Hjälpfunktion: rensa select ---
+  function clearSelect(select) {
+    while (select.firstChild) select.removeChild(select.firstChild);
+  }
+
+  // --- Ladda länder/städer ---
   try {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
     const data = await res.json();
-    countriesData = data.data;
+    countriesData = data.data || [];
 
-    countrySelect.innerHTML = '<option value="">Select country</option>';
+    clearSelect(countrySelect);
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "Select country";
+    countrySelect.appendChild(defaultOption);
+
     countriesData.forEach(c => {
       const opt = document.createElement("option");
       opt.value = c.country;
@@ -39,11 +51,16 @@ window.addEventListener("DOMContentLoaded", async () => {
     countrySelect.disabled = false;
   } catch (err) {
     console.error("Could not fetch countries:", err);
-    alert("Failed to load countries. Try refreshing.");
+    alert("Failed to load countries. Refresh the page.");
   }
 
+  // --- När ett land väljs ---
   countrySelect.addEventListener("change", () => {
-    citySelect.innerHTML = '<option value="">Select city</option>';
+    clearSelect(citySelect);
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "Select city";
+    citySelect.appendChild(defaultOption);
     citySelect.disabled = true;
 
     const selectedCountry = countrySelect.value;
@@ -61,22 +78,57 @@ window.addEventListener("DOMContentLoaded", async () => {
     citySelect.disabled = false;
   });
 
-  // --- Logout knapp ---
+  // --- Logout ---
   logoutBtn.addEventListener("click", async () => {
     await firebase.auth().signOut();
     window.location.href = "login.html";
   });
 
-  // --- Navigera till myfood.html ---
+  // --- Navigera till My Food ---
   myFoodBtn.addEventListener("click", () => {
     window.location.href = "myfood.html";
   });
 
-  // --- Global real-time food list ---
-  let allFoods = []; // aktuell global lista
+  // --- Rendera global food-list ---
+  function renderFoodItems(items) {
+    // Rensa listan
+    while (foodList.firstChild) foodList.removeChild(foodList.firstChild);
 
+    if (!items.length) {
+      const p = document.createElement("p");
+      p.textContent = "No food found.";
+      foodList.appendChild(p);
+      return;
+    }
+
+    items.forEach(item => {
+      const div = document.createElement("div");
+      div.classList.add("food-item");
+
+      const emojiSpan = document.createElement("span");
+      emojiSpan.classList.add("icon");
+      emojiSpan.textContent = item.emoji || "🍽️";
+
+      const titleH3 = document.createElement("h3");
+      titleH3.textContent = item.title || "";
+
+      const locationP = document.createElement("p");
+      locationP.textContent = `Location: ${item.city || ""}, ${item.country || ""}`;
+
+      const userP = document.createElement("p");
+      userP.textContent = `Shared by: ${item.user || "Anonymous"}`;
+
+      div.appendChild(emojiSpan);
+      div.appendChild(titleH3);
+      div.appendChild(locationP);
+      div.appendChild(userP);
+
+      foodList.appendChild(div);
+    });
+  }
+
+  // --- Realtidslyssning på global foods ---
   db.collectionGroup("items")
-    //.orderBy("timestamp", "desc")
     .onSnapshot(snapshot => {
       allFoods = snapshot.docs.map(doc => {
         const data = doc.data();
@@ -90,44 +142,21 @@ window.addEventListener("DOMContentLoaded", async () => {
         };
       });
 
-      console.log("Fetched foods:", allFoods); // kolla att du får data
-      renderFoodItems(allFoods); // rendera maten direkt
+      renderFoodItems(allFoods);
     }, err => {
       console.error("Error fetching global foods:", err);
     });
 
-  // --- Render function ---
-  function renderFoodItems(items) {
-    foodList.innerHTML = "";
-    if (!items.length) {
-      foodList.innerHTML = "<p>No food found.</p>";
-      return;
-    }
-
-    items.forEach(item => {
-      const div = document.createElement("div");
-      div.classList.add("food-item");
-      div.innerHTML = `
-        <span class="icon">${item.emoji}</span>
-        <h3>${item.title}</h3>
-        <p>Location: ${item.city}, ${item.country}</p>
-        <p>Shared by: ${item.user}</p>
-      `;
-      foodList.appendChild(div);
-    });
-  }
-
-  // --- Filterknapp ---
+  // --- Filter ---
   filterBtn.addEventListener("click", () => {
-    const country = countrySelect.value;
-    const city = citySelect.value;
+    const selectedCountry = countrySelect.value;
+    const selectedCity = citySelect.value;
 
     const filtered = allFoods.filter(f =>
-      (!country || f.country === country) &&
-      (!city || f.city === city)
+      (!selectedCountry || f.country === selectedCountry) &&
+      (!selectedCity || f.city === selectedCity)
     );
 
     renderFoodItems(filtered);
   });
 });
-
