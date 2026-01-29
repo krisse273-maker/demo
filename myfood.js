@@ -10,12 +10,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const addFoodForm = document.getElementById("addFoodForm");
   const emojiPickerBtn = document.getElementById("emojiPickerBtn");
   const emojiPicker = document.getElementById("emojiPicker");
-  const foodTitleInput = document.getElementById("foodTitle");
+  const foodTitleInput = document.getElementById("foodType"); // ENDA INPUT FÄLTET
   const foodCountrySelect = document.getElementById("foodCountry");
   const foodCitySelect = document.getElementById("foodCity");
-  const foodTypeInputEl = document.getElementById("foodType");
 
-  if (!addFoodForm || !foodTypeInputEl) {
+  if (!addFoodForm || !foodTitleInput) {
     console.error("Form or foodType input not found in DOM!");
     return;
   }
@@ -121,13 +120,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!selectedEmoji) return alert("Please select an emoji!");
     if (!firebaseUser) return alert("User not logged in");
 
-    const foodTypeValue = foodTypeInputEl.value.trim();
-    if (!foodTypeValue) return alert("Please enter a food type!");
-    if (foodTypeValue.length > 50) return alert("Food type cannot exceed 50 characters!");
+    const foodValue = foodTitleInput.value.trim();
+    if (!foodValue) return alert("Please enter a food name!");
+    if (foodValue.length > 50) return alert("Food name cannot exceed 50 characters!");
 
     const newFood = {
-      title: foodTitleInput.value.trim(),
-      type: foodTypeValue,
+      title: foodValue,
       country: foodCountrySelect.value,
       city: foodCitySelect.value,
       emoji: selectedEmoji,
