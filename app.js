@@ -112,23 +112,24 @@ window.addEventListener("DOMContentLoaded", async () => {
         let timeStr = "Unknown time";
 
         if (item.timestamp) {
+          // Säker konvertering till JS Date
           let dateObj;
-
-          // Om Firestore Timestamp
-          if (item.timestamp.toDate) {
+          if (typeof item.timestamp.toDate === "function") {
             dateObj = item.timestamp.toDate();
+          } else if (item.timestamp instanceof Date) {
+            dateObj = item.timestamp;
           } else {
-            // Annars anta redan JS Date eller sträng
             dateObj = new Date(item.timestamp);
           }
 
-          const year = dateObj.getFullYear();
-          const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-          const day = String(dateObj.getDate()).padStart(2, "0");
-          const hours = String(dateObj.getHours()).padStart(2, "0");
-          const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+          // Format: YYYY-MM-DD HH:MM, UTAN SEKUNDER
+          const y = dateObj.getFullYear();
+          const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+          const d = String(dateObj.getDate()).padStart(2, "0");
+          const h = String(dateObj.getHours()).padStart(2, "0");
+          const min = String(dateObj.getMinutes()).padStart(2, "0");
 
-          timeStr = `${year}-${month}-${day} ${hours}:${minutes}`; // UTAN SEKUNDER
+          timeStr = `${y}-${m}-${d} ${h}:${min}`;
         }
 
         const div = document.createElement("div");
