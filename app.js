@@ -107,7 +107,20 @@ window.addEventListener("DOMContentLoaded", async () => {
         foodList.innerHTML = "<p>No food found.</p>";
         return;
       }
+
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
       items.forEach(item => {
+        let dateStr = "";
+        if (item.timestamp) {
+          const date = item.timestamp.toDate();
+          const day = date.getDate();
+          const month = monthNames[date.getMonth()];
+          const year = date.getFullYear();
+          dateStr = `${day} ${month} ${year}`; // t.ex. 29 Jan 2026
+        }
+
         const div = document.createElement("div");
         div.classList.add("food-item");
         div.innerHTML = `
@@ -115,6 +128,7 @@ window.addEventListener("DOMContentLoaded", async () => {
           <h3>${item.title}</h3>
           <p>Location: ${item.city}, ${item.country}</p>
           <p>Shared by: ${item.user}</p>
+          ${dateStr ? `<p>Posted: ${dateStr}</p>` : ""}
         `;
         foodList.appendChild(div);
       });
