@@ -26,8 +26,12 @@ let selectedEmoji = "";
 let myFoods = [];
 let countriesData = [];
 
+// Kontrollera om användaren är inloggad
 firebase.auth().onAuthStateChanged(async (user) => {
-  if (!user) { window.location.href = "login.html"; return; }
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
   firebaseUser = user;
   headerP.textContent = `Welcome, ${user.displayName || user.email}! Here’s your food list.`;
   await loadUserFoods();
@@ -42,6 +46,7 @@ homeBtn.addEventListener("click", () => {
   window.location.href = "index.html";
 });
 
+// Ladda länder
 async function loadCountries() {
   try {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
@@ -74,6 +79,7 @@ foodCountrySelect.addEventListener("change", () => {
   }
 });
 
+// Emoji picker
 emojiPickerBtn.addEventListener("click", () => {
   emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
 });
@@ -86,6 +92,7 @@ emojiPicker.addEventListener("click", (e) => {
   }
 });
 
+// Lägg till ny mat
 addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!selectedEmoji) return alert("Please select an emoji!");
@@ -97,12 +104,15 @@ addFoodForm.addEventListener("submit", async (e) => {
     city: foodCitySelect.value,
     emoji: selectedEmoji,
     user: firebaseUser.email,
-    ownerId: firebaseUser.uid,  // <-- viktig ändring för Firestore-regler
+    ownerId: firebaseUser.uid,       // <-- Viktig ändring!
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
   };
 
   try {
-    await db.collection("foods").doc(firebaseUser.uid).collection("items").add(newFood);
+    // Skapa nytt dokument med .set() så att ownerId finns
+    const docRef = db.collection("foods").doc(firebaseUser.uid).collection("items").doc();
+    await docRef.set(newFood);
+
     addFoodForm.reset();
     selectedEmoji = "";
     emojiPickerBtn.textContent = "Select your food Emoji";
@@ -115,10 +125,15 @@ addFoodForm.addEventListener("submit", async (e) => {
   }
 });
 
+// Ladda användarens mat
 async function loadUserFoods() {
   if (!firebaseUser) return;
   try {
-    const snapshot = await db.collection("foods").doc(firebaseUser.uid).collection("items").orderBy("timestamp", "desc").get();
+    const snapshot = await db.collection("foods")
+                             .doc(firebaseUser.uid)
+                             .collection("items")
+                             .orderBy("timestamp", "desc")
+                             .get();
     myFoods = snapshot.docs.map(doc => doc.data());
     renderMyFoods();
   } catch(err) {
@@ -126,6 +141,7 @@ async function loadUserFoods() {
   }
 }
 
+// Rendera matlistan
 function renderMyFoods() {
   myFoodList.innerHTML = "";
   if (!myFoods.length) {
