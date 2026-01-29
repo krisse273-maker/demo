@@ -90,7 +90,7 @@ window.addEventListener("DOMContentLoaded", async () => {
             city: data.city || "",
             country: data.country || "",
             emoji: data.emoji || "🍽️",
-            user: data.user || "Anonymous",
+            user: data.userName || "Anonymous", // ✅ använd displayName istället för email
             timestamp: data.createdAt || null
           };
         });
@@ -127,7 +127,7 @@ window.addEventListener("DOMContentLoaded", async () => {
           <span class="icon">${item.emoji}</span>
           <h3>${item.title}</h3>
           <p>Location: ${item.city}, ${item.country}</p>
-          <p>Shared by: ${item.user}</p>
+          <p>Shared by: ${item.user}</p> <!-- använder displayName -->
           ${dateStr ? `<p>Posted: ${dateStr}</p>` : ""}
         `;
         foodList.appendChild(div);
@@ -146,5 +146,20 @@ window.addEventListener("DOMContentLoaded", async () => {
 
       renderFoodItems(filtered);
     });
+
+    // --- Lägg till matpost ---
+    async function addFoodItem(foodData) {
+      await db.collection("publicFoods").add({
+        title: foodData.title,
+        type: foodData.type,
+        country: foodData.country || "",
+        city: foodData.city || "",
+        emoji: foodData.emoji || "🍽️",
+        userName: user.displayName || "Anonymous", // ✅ här skickas användarnamn
+        ownerId: user.uid,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
   });
 });
