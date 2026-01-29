@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
       emoji: selectedEmoji,
       user: firebaseUser.email,
       ownerId: firebaseUser.uid,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      createdAt: firebase.firestore.Timestamp.now()
     };
 
     try {
@@ -200,4 +200,5 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
+
 
