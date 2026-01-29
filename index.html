@@ -157,7 +157,7 @@
       // ===== Hämta global matlista från publicFoods =====
       function loadGlobalFood() {
         db.collection("publicFoods")
-          .orderBy("createdAt", "desc") // ändrat till createdAt
+          .orderBy("createdAt", "desc")
           .onSnapshot(snapshot => {
             allFoods = snapshot.docs.map(doc => {
               const data = doc.data();
@@ -166,8 +166,7 @@
                 city: data.city || "",
                 country: data.country || "",
                 emoji: data.emoji || "🍽️",
-                user: data.user || "Anonymous",
-                createdAt: data.createdAt || null // ändrat från timestamp
+                user: data.user || "Anonymous"
               };
             });
 
@@ -186,13 +185,6 @@
         }
 
         items.forEach(item => {
-          // Konvertera Firestore timestamp till läsbar tid
-          let timeStr = "Unknown time";
-          if (item.createdAt) {
-            const date = item.createdAt.toDate();
-            timeStr = date.toLocaleString(); // t.ex. "1/29/2026, 14:35:10"
-          }
-
           const div = document.createElement("div");
           div.classList.add("food-item");
           div.innerHTML = `
@@ -200,7 +192,6 @@
             <h3>${item.title}</h3>
             <p>Location: ${item.city}, ${item.country}</p>
             <p>Shared by: ${item.user}</p>
-            <p>Posted: ${timeStr}</p> <!-- NY RAD FÖR TID -->
           `;
           foodList.appendChild(div);
         });
