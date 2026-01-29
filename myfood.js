@@ -98,14 +98,20 @@ addFoodForm.addEventListener("submit", async (e) => {
   if (!selectedEmoji) return alert("Please select an emoji!");
   if (!firebaseUser) return alert("User not logged in");
 
+  const foodTypeInput = document.getElementById("foodType").value.trim();
+  if (foodTypeInput.length > 50) {
+    return alert("Food type cannot exceed 50 characters!");
+  }
+
   const newFood = {
-    title: foodTitleInput.value,
+    title: foodTitleInput.value.trim(),
+    type: foodTypeInput,
     country: foodCountrySelect.value,
     city: foodCitySelect.value,
     emoji: selectedEmoji,
     user: firebaseUser.email,
     ownerId: firebaseUser.uid,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp() // ✅ Ändrat från timestamp till createdAt
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 
   try {
@@ -114,12 +120,12 @@ addFoodForm.addEventListener("submit", async (e) => {
     await userDocRef.set(newFood);
 
     // 2️⃣ Lägg till i publicFoods så index.html kan visa den
-    // Vi kan använda samma doc id så det blir lätt att referera
     const publicDocRef = db.collection("publicFoods").doc(userDocRef.id);
     await publicDocRef.set(newFood);
 
     // Reset formulär
     addFoodForm.reset();
+    document.getElementById("foodType").value = "";
     selectedEmoji = "";
     emojiPickerBtn.textContent = "Select your food Emoji";
     foodCitySelect.disabled = true;
@@ -140,7 +146,7 @@ async function loadUserFoods() {
     const snapshot = await db.collection("foods")
                              .doc(firebaseUser.uid)
                              .collection("items")
-                             .orderBy("createdAt", "desc") // ✅ ändrat för att sortera på createdAt
+                             .orderBy("createdAt", "desc")
                              .get();
     myFoods = snapshot.docs.map(doc => doc.data());
     renderMyFoods();
