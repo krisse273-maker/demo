@@ -1,6 +1,9 @@
+// ================================
+//            app.js
+// ================================
+
 // --- Kontrollera om användaren är inloggad ---
 let currentUser = JSON.parse(localStorage.getItem("currentUser"));
-
 if (!currentUser) {
   window.location.href = "login.html";
 }
@@ -46,7 +49,13 @@ if (!firebase.apps.length) {
 }
 const db = firebase.firestore();
 
-// --- Länder och städer ---
+// ================================
+//         LÄNDER OCH STÄDER
+// ================================
+document.addEventListener("DOMContentLoaded", () => {
+  loadCountries();
+});
+
 async function loadCountries() {
   try {
     const res = await fetch("https://countriesnow.space/api/v0.1/countries");
@@ -63,7 +72,6 @@ async function loadCountries() {
     console.error("Failed to load countries:", err);
   }
 }
-loadCountries();
 
 foodCountrySelect.addEventListener("change", () => {
   const selectedCountry = foodCountrySelect.value;
@@ -84,10 +92,13 @@ foodCountrySelect.addEventListener("change", () => {
   }
 });
 
-// --- Emoji picker ---
+// ================================
+//            EMOJI PICKER
+// ================================
 emojiPickerBtn.addEventListener("click", () => {
   emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
 });
+
 emojiPicker.addEventListener("click", (e) => {
   if (e.target.tagName.toLowerCase() === "span") {
     selectedEmoji = e.target.textContent;
@@ -96,7 +107,9 @@ emojiPicker.addEventListener("click", (e) => {
   }
 });
 
-// --- Lägg till mat ---
+// ================================
+//         LÄGG TILL MAT
+// ================================
 addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!selectedEmoji) return alert("Please select an emoji!");
@@ -108,7 +121,7 @@ addFoodForm.addEventListener("submit", async (e) => {
     city: foodCitySelect.value,
     emoji: selectedEmoji,
     user: currentUser.email,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp(), // ⚡ alltid timestamp
+    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
   };
 
   try {
@@ -135,7 +148,9 @@ addFoodForm.addEventListener("submit", async (e) => {
   }
 });
 
-// --- Ladda användarens matlista ---
+// ================================
+//       LÄS ANVÄNDARENS MAT
+// ================================
 async function loadUserFoods() {
   if (!firebaseUser) return;
 
@@ -148,15 +163,7 @@ async function loadUserFoods() {
       .get();
 
     myFoods = snapshot.docs.map((doc) => doc.data());
-
-    // fallback dummy om inga items
-    if (!myFoods.length) {
-      myFoods = [
-        { title: "Burger", country: "USA", city: "New York", emoji: "🍔", user: "test@example.com" },
-        { title: "Sushi", country: "Japan", city: "Tokyo", emoji: "🍣", user: "sushi@domain.com" },
-        { title: "Tacos", country: "Mexico", city: "Mexico City", emoji: "🌮", user: "maria@domain.com" },
-      ];
-    }
+    console.log("Loaded foods:", myFoods);
 
     renderMyFoods();
   } catch (err) {
@@ -164,7 +171,9 @@ async function loadUserFoods() {
   }
 }
 
-// --- Rendera matlista ---
+// ================================
+//          RENDER FUNKTION
+// ================================
 function renderMyFoods() {
   myFoodList.innerHTML = "";
   if (!myFoods.length) {
@@ -184,7 +193,9 @@ function renderMyFoods() {
   });
 }
 
-// --- Vänta på Firebase Auth ---
+// ================================
+//      VÄNTA PÅ FIREBASE AUTH
+// ================================
 firebase.auth().onAuthStateChanged(async (user) => {
   if (!user) {
     window.location.href = "login.html";
