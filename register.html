@@ -30,7 +30,80 @@
     </script>
     <script src="script.js" defer></script>
     <style>
-      /* Din CSS här */
+      body {
+        background-color: #4caf50;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      header {
+        text-align: center;
+        color: white;
+        padding: 2rem 1rem;
+      }
+
+      .register-form {
+        background-color: white;
+        border: 2px solid white;
+        max-width: 400px;
+        margin: 3rem auto;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .register-form h2 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: #333;
+      }
+
+      .register-form label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .register-form input {
+        width: 100%;
+        padding: 0.7rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 1rem;
+      }
+
+      .register-form button {
+        width: 100%;
+        padding: 0.8rem;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+
+      .register-form button:hover {
+        background-color: #45a049;
+      }
+
+      .register-form p.info {
+        color: #333;
+        font-size: 0.85rem;
+        margin-top: 1rem;
+        text-align: center;
+      }
+
+      footer {
+        text-align: center;
+        padding: 1rem;
+        margin-top: auto;
+        color: white;
+      }
     </style>
   </head>
   <body>
@@ -101,7 +174,7 @@
               return;
             }
 
-            // Om namnet är ledigt, fortsätt med registreringen
+            // Skapa användare med Firebase Auth
             auth
               .createUserWithEmailAndPassword(email, password)
               .then((userCredential) => {
@@ -114,7 +187,13 @@
                   createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 });
 
-                // Skicka användaren direkt till myfood.html utan att använda localStorage
+                // Spara användaren i localStorage (för myfood.html)
+                localStorage.setItem(
+                  "currentUser",
+                  JSON.stringify({ email: user.email, name: name })
+                );
+
+                // Skicka användaren direkt till myfood.html
                 window.location.href = "myfood.html";
               })
               .catch((error) => {
