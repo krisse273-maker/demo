@@ -160,16 +160,26 @@
 
         auth
           .signInWithEmailAndPassword(email, password)
-          .then((userCredential) => {
+          .then(async (userCredential) => {
             const user = userCredential.user;
-            // Spara användaren i localStorage (som du har använt innan)
-            localStorage.setItem(
-              "currentUser",
-              JSON.stringify({
+
+            // Hämta användarens data från Firestore
+            const userRef = db.collection('users').doc(user.uid);
+            const userDoc = await userRef.get();
+
+            if (userDoc.exists) {
+              // Användarens data finns i Firestore
+              const userData = userDoc.data();
+              console.log("User data from Firestore: ", userData);
+            } else {
+              // Om användaren inte har något dokument i Firestore, skapa ett nytt
+              await userRef.set({
                 email: user.email,
-                name: user.displayName || user.email,
-              }),
-            );
+                name: user.displayName || "Anonymous"
+              });
+            }
+
+            // Skicka användaren till myfood.html eller annan sida
             window.location.href = "myfood.html";
           })
           .catch((error) => {
