@@ -30,12 +30,11 @@ document.addEventListener("DOMContentLoaded", () => {
     messagingSenderId: "902107453892",
     appId: "1:902107453892:web:dd9625974b8744cc94ac91"
   };
-
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
-
   const db = firebase.firestore();
+
   let firebaseUser = null;
   let selectedEmoji = "";
   let myFoods = [];
@@ -50,10 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     firebaseUser = user;
-
-    // Visa displayName eller email direkt (ingen Firestore-läsning behövs)
     headerP.textContent = `Welcome, ${user.displayName || user.email}! Here’s your food list.`;
-
     await loadUserFoods();
   });
 
@@ -120,9 +116,8 @@ document.addEventListener("DOMContentLoaded", () => {
   emojiPicker.addEventListener("click", (e) => {
     if (e.target.tagName.toLowerCase() === "span") {
       selectedEmoji = e.target.textContent;
-      // Lägg emoji först i inputfältet, ta bort tidigare emoji om någon
-      foodTitleInput.value = selectedEmoji + " " + foodTitleInput.value.replace(/^\p{Emoji_Presentation}\s*/u, '');
       emojiPicker.style.display = "none";
+      // Visa emojin på knappen, inte i textfältet
       emojiPickerBtn.textContent = `Selected: ${selectedEmoji}`;
     }
   });
@@ -146,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
       country: foodCountrySelect.value,
       city: foodCitySelect.value,
       emoji: selectedEmoji,
-      user: firebaseUser.email,
+      user: firebaseUser.displayName || firebaseUser.email,
       ownerId: firebaseUser.uid,
       createdAt: firebase.firestore.Timestamp.now()
     };
@@ -205,6 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="icon">${food.emoji}</span>
         <h3>${food.title}</h3>
         <p>${food.city}, ${food.country}</p>
+        <p>Shared by: ${food.user}</p>
       `;
       myFoodList.appendChild(div);
     });
