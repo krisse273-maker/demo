@@ -60,10 +60,14 @@ document.addEventListener("DOMContentLoaded", () => {
       } else if (firebaseUser.displayName) {
         // 🔹 fallback: använd displayName från Auth om Firestore-dokument inte finns
         userName = firebaseUser.displayName;
+      } else {
+        // 🔹 sista fallback: "Anonymous"
+        userName = "Anonymous";
       }
     } catch (err) {
       console.error("Failed to get user name:", err);
       if (firebaseUser.displayName) userName = firebaseUser.displayName;
+      else userName = "Anonymous";
     }
 
     // Visa direkt i välkomstmeddelandet
