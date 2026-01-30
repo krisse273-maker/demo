@@ -45,37 +45,34 @@ document.addEventListener("DOMContentLoaded", () => {
   // Auth state + hämta namn från Firestore
   // =====================================
   firebase.auth().onAuthStateChanged(async (user) => {
-    if (!user) {
-      window.location.href = "login.html";
-      return;
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  firebaseUser = user;
+
+  // 🔹 Läs användarnamn direkt från Firestore
+  try {
+    const userDoc = await db.collection("users").doc(firebaseUser.uid).get();
+    if (userDoc.exists && userDoc.data().name) {
+      userName = userDoc.data().name;
+    } else {
+      console.error("User document exists but has no name field!");
+      userName = "Unknown User"; // bara för debug, kan ändras
     }
+  } catch (err) {
+    console.error("Failed to get user name from Firestore:", err);
+    userName = "Unknown User"; // bara för debug
+  }
 
-    firebaseUser = user;
+  // Visa välkomstmeddelande
+  headerP.textContent = `Welcome, ${userName}! Here’s your food list.`;
 
-    // 🔹 Hämta användarnamn EN gång från Firestore
-    try {
-      const userDoc = await db.collection("users").doc(firebaseUser.uid).get();
-      if (userDoc.exists && userDoc.data().name) {
-        userName = userDoc.data().name;
-      } else if (firebaseUser.displayName) {
-        // 🔹 fallback: använd displayName från Auth om Firestore-dokument inte finns
-        userName = firebaseUser.displayName;
-      } else {
-        // 🔹 sista fallback: "Anonymous"
-        userName = "Anonymous";
-      }
-    } catch (err) {
-      console.error("Failed to get user name:", err);
-      if (firebaseUser.displayName) userName = firebaseUser.displayName;
-      else userName = "Anonymous";
-    }
+  // Ladda användarens foods
+  await loadUserFoods();
+});
 
-    // Visa direkt i välkomstmeddelandet
-    headerP.textContent = `Welcome, ${userName}! Here’s your food list.`;
-
-    // Ladda användarens foods
-    await loadUserFoods();
-  });
 
   // =====================================
   // Logout & Home
@@ -239,3 +236,4 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
+
