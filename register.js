@@ -15,17 +15,18 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       // Skapa användare i Firebase Auth
       console.log("Attempting to create user in Firebase Auth...");
+
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
 
       console.log("User created in Firebase Auth:", user);
 
-      // Spara displayName i Auth (valfritt, används mest i UI)
+      // Spara användarens namn i Firebase Auth (valfritt, mest för UI)
       await user.updateProfile({ displayName: name });
 
-      // 🔹 Spara namn, email och timestamp i Firestore users collection
+      // Försök att spara användarens data i Firestore
       const db = firebase.firestore();
-      console.log("Attempting to save user in Firestore...");
+      console.log("Attempting to save user data to Firestore...");
 
       try {
         await db.collection("users").doc(user.uid).set({
@@ -33,15 +34,17 @@ document.addEventListener("DOMContentLoaded", () => {
           email: email,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        console.log("User saved in Firestore:", name, email);
+        console.log("User saved to Firestore:", name, email);
 
-        // Skicka användaren till myfood.html
+        // Om användaren är skapad i Firestore, skicka till myfood.html
         window.location.href = "myfood.html";
       } catch (firestoreError) {
+        // Logga och visa ett specifikt fel om det inte går att spara i Firestore
         console.error("Error saving user to Firestore:", firestoreError);
-        alert("Failed to save user to Firestore.");
+        alert("Failed to save user to Firestore: " + firestoreError.message);
       }
     } catch (error) {
+      // Logga och visa ett fel om det inte går att skapa användaren i Firebase Auth
       console.error("Error during registration:", error);
       alert("Registration failed: " + error.message);
     }
