@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let countriesData = [];
 
   // =====================================
-  // Auth state  ✅ ENDA FIXEN ÄR HÄR
+  // Auth state + hämta namn från foods
   // =====================================
   firebase.auth().onAuthStateChanged(async (user) => {
     if (!user) {
@@ -51,23 +51,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     firebaseUser = user;
 
+    // Ladda användarens foods först
+    await loadUserFoods();
+
+    // Standard fallback
     let nameToShow = "Anonymous";
 
-    try {
-      // Hämta användarens namn från Firestore under collection "users"
-      const userDoc = await db.collection("users").doc(user.uid).get();
-      if (userDoc.exists && userDoc.data().name) {
-        nameToShow = userDoc.data().name;
-      }
-    } catch (err) {
-      console.error("Failed to load user name:", err);
+    // Ta namnet från första fooden om den finns
+    if (myFoods.length > 0 && myFoods[0].name) {
+      nameToShow = myFoods[0].name;
     }
 
-    // Visa välkomstmeddelandet med användarens namn
+    // Visa välkomstmeddelandet
     headerP.textContent = `Welcome, ${nameToShow}! Here’s your food list.`;
-    await loadUserFoods();
   });
 
+  // =====================================
+  // Logout & Home
+  // =====================================
   logoutBtn?.addEventListener("click", () => {
     firebase.auth().signOut();
     window.location.href = "login.html";
@@ -101,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadCountries();
 
   // =====================================
-  // Välj City baserat på Country
+  // City select
   // =====================================
   foodCountrySelect.addEventListener("change", () => {
     const selectedCountry = foodCountrySelect.value;
@@ -122,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // =====================================
-  // Emoji picker (ORÖRD)
+  // Emoji picker
   // =====================================
   emojiPickerBtn.addEventListener("click", () => {
     emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
@@ -137,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // =====================================
-  // Lägg till ny mat (ORÖRD)
+  // Lägg till ny mat
   // =====================================
   addFoodForm.addEventListener("submit", async (e) => {
     e.preventDefault();
