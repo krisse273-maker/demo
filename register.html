@@ -1,63 +1,117 @@
-<script>
-  // Navigera till login-sidan
-  const goLoginBtn = document.getElementById("goLoginBtn");
-  goLoginBtn.addEventListener("click", () => {
-    window.location.href = "login.html";
-  });
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Global Food Share - Register</title>
+    <link rel="stylesheet" href="style.css" />
 
-  // Hantera registrering av användare
-  const registerBtn = document.getElementById("registerBtn");
-  registerBtn.addEventListener("click", () => {
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>🌍 Global Food Share</h1>
+      <p>Register a new account or try the demo</p>
+    </header>
 
-    if (!name || !email || !password) {
-      alert("Please fill in all fields!");
-      return;
-    }
+    <div class="register-form">
+      <h2>Register / Demo Account</h2>
 
-    // Logga information för felsökning
-    console.log("Attempting to create user with email:", email);
+      <label for="name">Name:</label>
+      <input type="text" id="name" placeholder="Your name" />
 
-    // Skapa användare med Firebase Auth
-    auth
-      .createUserWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
+      <label for="email">Email:</label>
+      <input type="email" id="email" placeholder="demo@example.com" />
 
-        // Logga användarens info för felsökning
-        console.log("User created in Firebase Auth:", user);
+      <label for="password">Password:</label>
+      <input type="password" id="password" placeholder="Demo password" />
 
-        // Spara användaren i Firestore (för att lägga till namn)
-        db.collection("users").doc(user.uid).set({
-          name: name,
-          email: user.email,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        })
-        .then(() => {
-          // Logga när användaren är sparad i Firestore
-          console.log("User saved in Firestore:", name);
+      <button id="registerBtn">Register / Enter App</button>
 
-          // Spara användaren i localStorage (för myfood.html)
-          localStorage.setItem(
-            "currentUser",
-            JSON.stringify({ email: user.email, name: name })
-          );
+      <button
+        id="goLoginBtn"
+        style="
+          margin-top: 1rem;
+          background-color: white;
+          color: #4caf50;
+          border: 2px solid white;
+        "
+      >
+        Login
+      </button>
 
-          // Skicka användaren direkt till myfood.html
-          window.location.href = "myfood.html";
-        })
-        .catch((error) => {
-          // Hantera Firestore-sparandet
-          console.error("Error saving user in Firestore:", error);
-          alert("Error saving user in Firestore: " + error.message);
-        });
-      })
-      .catch((error) => {
-        // Hantera registreringsfelet
-        console.error("Registration failed:", error);
-        alert("Registration failed: " + error.message);
+      <p class="info">This is a demo. No real user data is stored.</p>
+    </div>
+
+    <footer>
+      <p>&copy; 2026 Global Food Share</p>
+    </footer>
+
+    <!-- JavaScript script placed here -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const registerBtn = document.getElementById("registerBtn");
+
+        // Se till att knappen finns innan vi lyssnar på klick
+        if (registerBtn) {
+          registerBtn.addEventListener("click", async () => {
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+
+            // Kontrollera att alla fält är ifyllda
+            if (!name || !email || !password) {
+              alert("Please fill in all fields!");
+              return;
+            }
+
+            try {
+              // Skapa användare i Firebase Auth
+              console.log("Attempting to create user in Firebase Auth...");
+              const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+              const user = userCredential.user;
+              
+              console.log("User created in Firebase Auth:", user);
+
+              // Spara displayName i Auth (valfritt, används mest i UI)
+              await user.updateProfile({ displayName: name });
+
+              // Vänta tills användaren är inloggad innan vi försöker spara i Firestore
+              firebase.auth().onAuthStateChanged(async (user) => {
+                if (user) {
+                  console.log("User authenticated in Firestore:", user);
+
+                  // 🔹 Spara namn, email och timestamp i Firestore users collection
+                  const db = firebase.firestore();
+                  console.log("Attempting to save user in Firestore...");
+
+                  try {
+                    await db.collection("users").doc(user.uid).set({
+                      name: name,
+                      email: email,
+                      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    console.log("User saved in Firestore:", name, email);
+                    // Skicka användaren till myfood.html
+                    window.location.href = "myfood.html";
+                  } catch (firestoreError) {
+                    console.error("Error saving user to Firestore:", firestoreError);
+                  }
+                }
+              });
+
+            } catch (error) {
+              console.error("Error during registration:", error);
+              alert("Registration failed: " + error.message);
+            }
+          });
+        } else {
+          console.error("Register button not found.");
+        }
       });
-  });
-</script>
+    </script>
+  </body>
+</html>
