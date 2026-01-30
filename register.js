@@ -20,9 +20,10 @@ document.addEventListener("DOMContentLoaded", () => {
       // Uppdatera displayName i Firebase Auth
       await user.updateProfile({ displayName: name });
 
-      // Kontrollera att displayName verkligen är satt
+      // Hämta den uppdaterade användarprofilen för att säkerställa att displayName är satt
+      await user.reload();  // Hämta den senaste versionen av användarprofilen från Firebase Auth
       if (!user.displayName) {
-        throw new Error("Failed to set displayName");
+        throw new Error("Failed to set displayName in Firebase Auth");
       }
 
       console.log("Updated displayName:", user.displayName);
