@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let nameToShow = "Anonymous";
 
     try {
+      // Hämta användarens namn från Firestore under collection "users"
       const userDoc = await db.collection("users").doc(user.uid).get();
       if (userDoc.exists && userDoc.data().name) {
         nameToShow = userDoc.data().name;
@@ -62,6 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Failed to load user name:", err);
     }
 
+    // Visa välkomstmeddelandet med användarens namn
     headerP.textContent = `Welcome, ${nameToShow}! Here’s your food list.`;
     await loadUserFoods();
   });
