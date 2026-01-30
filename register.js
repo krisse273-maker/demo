@@ -1,55 +1,37 @@
+// Vänta på att Firebase är klart
 document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
 
+  // Hantera användarregistrering
   registerBtn.addEventListener("click", async () => {
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
 
-    // Kontrollera att alla fält är ifyllda
+    // Kolla om alla fält är fyllda
     if (!name || !email || !password) {
       alert("Please fill in all fields!");
       return;
     }
 
+    // Skapa användare via Firebase Auth
     try {
-      // Skapa användare i Firebase Auth
-      console.log("Attempting to create user in Firebase Auth...");
-
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
 
-      console.log("User created in Firebase Auth:", user);
+      // Spara användardata i Firestore
+      await firebase.firestore().collection("users").doc(user.uid).set({
+        name: name,
+        email: user.email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
 
-      // Spara användarens namn i Firebase Auth (valfritt, mest för UI)
-      await user.updateProfile({ displayName: name });
+      // Spara användaren i localStorage för myfood.html
+      localStorage.setItem("currentUser", JSON.stringify({ email: user.email, name: name }));
 
-      // Försök att spara användarens data i Firestore
-      const db = firebase.firestore();
-      console.log("Attempting to save user data to Firestore...");
-
-      try {
-        await db.collection("users").doc(user.uid).set({
-          name: name,
-          email: email,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        console.log("User saved to Firestore:", name, email);
-
-        // Nu loggar vi in användaren direkt efter registreringen för att skicka användaren till "myfood.html"
-        await firebase.auth().signInWithEmailAndPassword(email, password);
-        console.log("User logged in successfully");
-
-        // Om användaren är skapad i Firestore och inloggad, skicka till myfood.html
-        window.location.href = "myfood.html";
-
-      } catch (firestoreError) {
-        // Logga och visa ett specifikt fel om det inte går att spara i Firestore
-        console.error("Error saving user to Firestore:", firestoreError);
-        alert("Failed to save user to Firestore: " + firestoreError.message);
-      }
+      // Skicka användaren till myfood.html
+      window.location.href = "myfood.html";
     } catch (error) {
-      // Logga och visa ett fel om det inte går att skapa användaren i Firebase Auth
       console.error("Error during registration:", error);
       alert("Registration failed: " + error.message);
     }
