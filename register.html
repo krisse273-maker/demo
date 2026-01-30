@@ -164,45 +164,30 @@
           return;
         }
 
-        // Kontrollera om namnet redan finns i Firestore
-        db.collection("users")
-          .where("name", "==", name)
-          .get()
-          .then((snapshot) => {
-            if (!snapshot.empty) {
-              alert("The username is already taken. Please choose another one.");
-              return;
-            }
+        // Skapa användare med Firebase Auth
+        auth
+          .createUserWithEmailAndPassword(email, password)
+          .then((userCredential) => {
+            const user = userCredential.user;
 
-            // Skapa användare med Firebase Auth
-            auth
-              .createUserWithEmailAndPassword(email, password)
-              .then((userCredential) => {
-                const user = userCredential.user;
+            // Spara användaren i Firestore (för att lägga till namn)
+            db.collection("users").doc(user.uid).set({
+              name: name,
+              email: user.email,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
 
-                // Spara användaren i Firestore (för att lägga till namn)
-                db.collection("users").doc(user.uid).set({
-                  name: name,
-                  email: user.email,
-                  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                });
+            // Spara användaren i localStorage (för myfood.html)
+            localStorage.setItem(
+              "currentUser",
+              JSON.stringify({ email: user.email, name: name }),
+            );
 
-                // Spara användaren i localStorage (för myfood.html)
-                localStorage.setItem(
-                  "currentUser",
-                  JSON.stringify({ email: user.email, name: name })
-                );
-
-                // Skicka användaren direkt till myfood.html
-                window.location.href = "myfood.html";
-              })
-              .catch((error) => {
-                alert("Registration failed: " + error.message);
-              });
+            // Skicka användaren direkt till myfood.html
+            window.location.href = "myfood.html";
           })
           .catch((error) => {
-            console.error("Error checking username: ", error);
-            alert("Something went wrong. Please try again later.");
+            alert("Registration failed: " + error.message);
           });
       });
     </script>
