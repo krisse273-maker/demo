@@ -49,7 +49,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     firebaseUser = user;
-    headerP.textContent = `Welcome, ${user.displayName || user.email}! Here’s your food list.`;
+    const displayName = user.displayName || user.email;
+    headerP.textContent = `Welcome, ${displayName}! Here’s your food list.`;
     await loadUserFoods();
   });
 
@@ -79,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
         foodCountrySelect.appendChild(option);
       });
       foodCountrySelect.disabled = false;
-    } catch(e) {
+    } catch (e) {
       console.error("Failed to load countries:", e);
     }
   }
@@ -95,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!selectedCountry) return;
 
     const countryObj = countriesData.find(c => c.country === selectedCountry);
-    if (countryObj && countryObj.cities.length){
+    if (countryObj && countryObj.cities.length) {
       countryObj.cities.forEach(city => {
         const opt = document.createElement("option");
         opt.value = city;
@@ -117,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target.tagName.toLowerCase() === "span") {
       selectedEmoji = e.target.textContent;
       emojiPicker.style.display = "none";
-      // Visa emojin på knappen, inte i textfältet
+      // ✅ Endast uppdatera knappen, inte foodTitle
       emojiPickerBtn.textContent = `Selected: ${selectedEmoji}`;
     }
   });
@@ -160,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       await loadUserFoods();
       alert("Food item added successfully!");
-    } catch(err) {
+    } catch (err) {
       console.error("Failed to add food:", err);
       alert("Failed to add food!");
     }
@@ -179,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                .get();
       myFoods = snapshot.docs.map(doc => doc.data());
       renderMyFoods();
-    } catch(err) {
+    } catch (err) {
       console.error("Failed to load user foods:", err);
     }
   }
@@ -200,7 +201,6 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="icon">${food.emoji}</span>
         <h3>${food.title}</h3>
         <p>${food.city}, ${food.country}</p>
-        <p>Shared by: ${food.user}</p>
       `;
       myFoodList.appendChild(div);
     });
