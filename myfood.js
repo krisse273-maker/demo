@@ -39,9 +39,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedEmoji = "";
   let myFoods = [];
   let countriesData = [];
+  let userName = "Anonymous"; // 🔹 global variabel för namn
 
   // =====================================
-  // Auth state + hämta namn från användardokumentet
+  // Auth state + hämta namn från Firestore
   // =====================================
   firebase.auth().onAuthStateChanged(async (user) => {
     if (!user) {
@@ -51,8 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     firebaseUser = user;
 
-    // 🔹 Hämta användarens namn från users/{uid} i Firestore
-    let userName = "Anonymous"; // fallback
+    // 🔹 Hämta användarnamn EN gång från Firestore
     try {
       const userDoc = await db.collection("users").doc(firebaseUser.uid).get();
       if (userDoc.exists && userDoc.data().name) {
@@ -62,11 +62,11 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Failed to get user name:", err);
     }
 
-    // Ladda användarens foods först
-    await loadUserFoods();
-
-    // Visa välkomstmeddelandet
+    // Visa direkt i välkomstmeddelandet
     headerP.textContent = `Welcome, ${userName}! Here’s your food list.`;
+
+    // Ladda användarens foods
+    await loadUserFoods();
   });
 
   // =====================================
@@ -153,17 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!foodValue) return alert("Please enter a food name!");
     if (foodValue.length > 50) return alert("Food name cannot exceed 50 characters!");
 
-    // 🔹 Hämta användarens namn från Firestore
-    let userName = "Anonymous"; // fallback
-    try {
-      const userDoc = await db.collection("users").doc(firebaseUser.uid).get();
-      if (userDoc.exists && userDoc.data().name) {
-        userName = userDoc.data().name;
-      }
-    } catch (err) {
-      console.error("Failed to get user name:", err);
-    }
-
+    // 🔹 Använd redan hämtat userName
     const newFood = {
       title: foodValue,
       type: foodValue,
@@ -171,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
       city: foodCitySelect.value,
       emoji: selectedEmoji,
       ownerId: firebaseUser.uid,
-      name: userName, // ✅ användarens namn sparas nu
+      name: userName,
       createdAt: firebase.firestore.Timestamp.now()
     };
 
