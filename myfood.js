@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let countriesData = [];
 
   // =====================================
-  // Auth state + hämta namn från foods
+  // Auth state + hämta namn från användardokumentet
   // =====================================
   firebase.auth().onAuthStateChanged(async (user) => {
     if (!user) {
@@ -51,19 +51,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     firebaseUser = user;
 
+    // 🔹 Hämta användarens namn från users/{uid} i Firestore
+    let userName = "Anonymous"; // fallback
+    try {
+      const userDoc = await db.collection("users").doc(firebaseUser.uid).get();
+      if (userDoc.exists && userDoc.data().name) {
+        userName = userDoc.data().name;
+      }
+    } catch (err) {
+      console.error("Failed to get user name:", err);
+    }
+
     // Ladda användarens foods först
     await loadUserFoods();
 
-    // Standard fallback
-    let nameToShow = "Anonymous";
-
-    // Ta namnet från första fooden om den finns
-    if (myFoods.length > 0 && myFoods[0].name) {
-      nameToShow = myFoods[0].name;
-    }
-
     // Visa välkomstmeddelandet
-    headerP.textContent = `Welcome, ${nameToShow}! Here’s your food list.`;
+    headerP.textContent = `Welcome, ${userName}! Here’s your food list.`;
   });
 
   // =====================================
@@ -150,6 +153,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!foodValue) return alert("Please enter a food name!");
     if (foodValue.length > 50) return alert("Food name cannot exceed 50 characters!");
 
+    // 🔹 Hämta användarens namn från Firestore
+    let userName = "Anonymous"; // fallback
+    try {
+      const userDoc = await db.collection("users").doc(firebaseUser.uid).get();
+      if (userDoc.exists && userDoc.data().name) {
+        userName = userDoc.data().name;
+      }
+    } catch (err) {
+      console.error("Failed to get user name:", err);
+    }
+
     const newFood = {
       title: foodValue,
       type: foodValue,
@@ -157,6 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
       city: foodCitySelect.value,
       emoji: selectedEmoji,
       ownerId: firebaseUser.uid,
+      name: userName, // ✅ användarens namn sparas nu
       createdAt: firebase.firestore.Timestamp.now()
     };
 
