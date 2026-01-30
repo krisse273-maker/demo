@@ -19,17 +19,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
 
-      // Spara användardata i Firestore
+      // Spara användardata i Firestore under användarens UID
       await firebase.firestore().collection("users").doc(user.uid).set({
         name: name,
         email: user.email,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
-      // Spara användaren i localStorage för myfood.html
-      localStorage.setItem("currentUser", JSON.stringify({ email: user.email, name: name }));
-
-      // Skicka användaren till myfood.html
+      // Omdirigera användaren till myfood.html
       window.location.href = "myfood.html";
     } catch (error) {
       console.error("Error during registration:", error);
