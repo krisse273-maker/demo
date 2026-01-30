@@ -10,6 +10,101 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <script>
+      // Firebase-konfiguration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
+        authDomain: "global-food-share.firebaseapp.com",
+        projectId: "global-food-share",
+        storageBucket: "global-food-share.firebasestorage.app",
+        messagingSenderId: "902107453892",
+        appId: "1:902107453892:web:dd9625974b8744cc94ac91",
+        measurementId: "G-S1G7JY0TH5",
+      };
+
+      // Initiera Firebase
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+    </script>
+    <script src="script.js" defer></script>
+    <style>
+      body {
+        background-color: #4caf50;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      header {
+        text-align: center;
+        color: white;
+        padding: 2rem 1rem;
+      }
+
+      .register-form {
+        background-color: white;
+        border: 2px solid white;
+        max-width: 400px;
+        margin: 3rem auto;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .register-form h2 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: #333;
+      }
+
+      .register-form label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .register-form input {
+        width: 100%;
+        padding: 0.7rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 1rem;
+      }
+
+      .register-form button {
+        width: 100%;
+        padding: 0.8rem;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+
+      .register-form button:hover {
+        background-color: #45a049;
+      }
+
+      .register-form p.info {
+        color: #333;
+        font-size: 0.85rem;
+        margin-top: 1rem;
+        text-align: center;
+      }
+
+      footer {
+        text-align: center;
+        padding: 1rem;
+        margin-top: auto;
+        color: white;
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -50,67 +145,50 @@
       <p>&copy; 2026 Global Food Share</p>
     </footer>
 
-    <!-- JavaScript script placed here -->
     <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const registerBtn = document.getElementById("registerBtn");
+      // Navigera till login-sidan
+      const goLoginBtn = document.getElementById("goLoginBtn");
+      goLoginBtn.addEventListener("click", () => {
+        window.location.href = "login.html";
+      });
 
-        // Se till att knappen finns innan vi lyssnar på klick
-        if (registerBtn) {
-          registerBtn.addEventListener("click", async () => {
-            const name = document.getElementById("name").value.trim();
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value;
+      // Hantera registrering av användare
+      const registerBtn = document.getElementById("registerBtn");
+      registerBtn.addEventListener("click", () => {
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
 
-            // Kontrollera att alla fält är ifyllda
-            if (!name || !email || !password) {
-              alert("Please fill in all fields!");
-              return;
-            }
-
-            try {
-              // Skapa användare i Firebase Auth
-              console.log("Attempting to create user in Firebase Auth...");
-              const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-              const user = userCredential.user;
-              
-              console.log("User created in Firebase Auth:", user);
-
-              // Spara displayName i Auth (valfritt, används mest i UI)
-              await user.updateProfile({ displayName: name });
-
-              // Vänta tills användaren är inloggad innan vi försöker spara i Firestore
-              firebase.auth().onAuthStateChanged(async (user) => {
-                if (user) {
-                  console.log("User authenticated in Firestore:", user);
-
-                  // 🔹 Spara namn, email och timestamp i Firestore users collection
-                  const db = firebase.firestore();
-                  console.log("Attempting to save user in Firestore...");
-
-                  try {
-                    await db.collection("users").doc(user.uid).set({
-                      name: name,
-                      email: email,
-                      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    console.log("User saved in Firestore:", name, email);
-                    // Skicka användaren till myfood.html
-                    window.location.href = "myfood.html";
-                  } catch (firestoreError) {
-                    console.error("Error saving user to Firestore:", firestoreError);
-                  }
-                }
-              });
-
-            } catch (error) {
-              console.error("Error during registration:", error);
-              alert("Registration failed: " + error.message);
-            }
-          });
-        } else {
-          console.error("Register button not found.");
+        if (!name || !email || !password) {
+          alert("Please fill in all fields!");
+          return;
         }
+
+        // Skapa användare med Firebase Auth
+        auth
+          .createUserWithEmailAndPassword(email, password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+
+            // Spara användaren i Firestore (för att lägga till namn)
+            db.collection("users").doc(user.uid).set({
+              name: name,
+              email: user.email,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+
+            // Spara användaren i localStorage (för myfood.html)
+            localStorage.setItem(
+              "currentUser",
+              JSON.stringify({ email: user.email, name: name }),
+            );
+
+            // Skicka användaren direkt till myfood.html
+            window.location.href = "myfood.html";
+          })
+          .catch((error) => {
+            alert("Registration failed: " + error.message);
+          });
       });
     </script>
   </body>
