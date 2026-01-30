@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target.tagName.toLowerCase() === "span") {
       selectedEmoji = e.target.textContent;
       emojiPicker.style.display = "none";
-      // ✅ Uppdaterar bara knappen, INTE matnamnsfältet
+      // ✅ Endast uppdatera knappen, INTE foodTitleInput
       emojiPickerBtn.textContent = `Selected: ${selectedEmoji}`;
     }
   });
