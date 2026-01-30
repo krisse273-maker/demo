@@ -91,24 +91,39 @@
           return;
         }
 
-        // Skapa användare med Firebase Auth
-        auth
-          .createUserWithEmailAndPassword(email, password)
-          .then((userCredential) => {
-            const user = userCredential.user;
+        // Kontrollera om namnet redan finns i Firestore
+        db.collection("users")
+          .where("name", "==", name)
+          .get()
+          .then((snapshot) => {
+            if (!snapshot.empty) {
+              alert("The username is already taken. Please choose another one.");
+              return;
+            }
 
-            // Spara användaren i Firestore (för att lägga till namn)
-            db.collection("users").doc(user.uid).set({
-              name: name,
-              email: user.email,
-              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            });
+            // Om namnet är ledigt, fortsätt med registreringen
+            auth
+              .createUserWithEmailAndPassword(email, password)
+              .then((userCredential) => {
+                const user = userCredential.user;
 
-            // Skicka användaren direkt till myfood.html utan att använda localStorage
-            window.location.href = "myfood.html";
+                // Spara användaren i Firestore (för att lägga till namn)
+                db.collection("users").doc(user.uid).set({
+                  name: name,
+                  email: user.email,
+                  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                });
+
+                // Skicka användaren direkt till myfood.html utan att använda localStorage
+                window.location.href = "myfood.html";
+              })
+              .catch((error) => {
+                alert("Registration failed: " + error.message);
+              });
           })
           .catch((error) => {
-            alert("Registration failed: " + error.message);
+            console.error("Error checking username: ", error);
+            alert("Something went wrong. Please try again later.");
           });
       });
     </script>
