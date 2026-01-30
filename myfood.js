@@ -52,24 +52,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     firebaseUser = user;
 
-    // Hämta användarnamn från Firestore (som nu finns där efter registrering)
+    // Hämta displayName från Firestore
     try {
       const userDoc = await db.collection("users").doc(user.uid).get();
       if (userDoc.exists && userDoc.data().name) {
-        currentUserName = userDoc.data().name; // Om användarnamn finns i Firestore
+        currentUserName = userDoc.data().name;  // Om användaren har ett namn sparat i Firestore
       } else if (user.displayName) {
-        currentUserName = user.displayName; // Om användarnamn finns i Auth
+        currentUserName = user.displayName;  // Om användaren har ett displayName sparat i Auth
       }
     } catch (err) {
       console.error("Failed to get user displayName from Firestore:", err);
     }
 
-    // Visa användarnamnet i headern
     headerP.textContent = `Welcome, ${currentUserName}! Here’s your food list.`;
     await loadUserFoods();
   });
 
-  // Logout
   logoutBtn?.addEventListener("click", () => {
     firebase.auth().signOut();
     window.location.href = "login.html";
@@ -77,106 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   homeBtn?.addEventListener("click", () => {
     window.location.href = "index.html";
-  });
-
-  // =====================================
-  // Ladda länder
-  // =====================================
-  async function loadCountries() {
-    try {
-      const res = await fetch("https://countriesnow.space/api/v0.1/countries");
-      const data = await res.json();
-      countriesData = data.data;
-      countriesData.forEach(c => {
-        const option = document.createElement("option");
-        option.value = c.country;
-        option.textContent = c.country;
-        foodCountrySelect.appendChild(option);
-      });
-    } catch(e) {
-      console.error("Failed to load countries:", e);
-    }
-  }
-  loadCountries();
-
-  // =====================================
-  // Välj City baserat på Country
-  // =====================================
-  foodCountrySelect.addEventListener("change", () => {
-    const selectedCountry = foodCountrySelect.value;
-    foodCitySelect.innerHTML = '<option value="">Select City</option>';
-    foodCitySelect.disabled = true;
-    if (!selectedCountry) return;
-
-    const countryObj = countriesData.find(c => c.country === selectedCountry);
-    if (countryObj && countryObj.cities.length){
-      countryObj.cities.forEach(city => {
-        const opt = document.createElement("option");
-        opt.value = city;
-        opt.textContent = city;
-        foodCitySelect.appendChild(opt);
-      });
-      foodCitySelect.disabled = false;
-    }
-  });
-
-  // =====================================
-  // Emoji picker
-  // =====================================
-  emojiPickerBtn.addEventListener("click", () => {
-    emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
-  });
-
-  emojiPicker.addEventListener("click", (e) => {
-    if (e.target.tagName.toLowerCase() === "span") {
-      selectedEmoji = e.target.textContent;
-      emojiPicker.style.display = "none";
-      emojiPickerBtn.textContent = `Selected: ${selectedEmoji}`;
-    }
-  });
-
-  // =====================================
-  // Lägg till ny mat
-  // =====================================
-  addFoodForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    if (!selectedEmoji) return alert("Please select an emoji!");
-    if (!firebaseUser) return alert("User not logged in");
-
-    const foodValue = foodTitleInput.value.trim();
-    if (!foodValue) return alert("Please enter a food name!");
-    if (foodValue.length > 50) return alert("Food name cannot exceed 50 characters!");
-
-    const newFood = {
-      title: foodValue,
-      type: foodValue,
-      country: foodCountrySelect.value,
-      city: foodCitySelect.value,
-      emoji: selectedEmoji,
-      user: currentUserName, // Använd nu Firestore-displayName
-      ownerId: firebaseUser.uid,
-      createdAt: firebase.firestore.Timestamp.now()
-    };
-
-    try {
-      const userDocRef = db.collection("foods").doc(firebaseUser.uid).collection("items").doc();
-      await userDocRef.set(newFood);
-
-      const publicDocRef = db.collection("publicFoods").doc(userDocRef.id);
-      await publicDocRef.set(newFood);
-
-      addFoodForm.reset();
-      selectedEmoji = "";
-      emojiPickerBtn.textContent = "Select your food Emoji";
-      foodCitySelect.disabled = true;
-
-      await loadUserFoods();
-      alert("Food item added successfully!");
-    } catch(err) {
-      console.error("Failed to add food:", err);
-      alert("Failed to add food!");
-    }
   });
 
   // =====================================
@@ -213,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="icon">${food.emoji}</span>
         <h3>${food.title}</h3>
         <p>${food.city}, ${food.country}</p>
-        <p>Shared by: ${food.user}</p>
+        <p>Shared by: ${food.user}</p> <!-- Här används displayName -->
         <p>Posted: ${food.createdAt.toDate().toLocaleDateString()}</p>
       `;
       myFoodList.appendChild(div);
