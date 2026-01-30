@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // 🔹 Spara namn, email och timestamp i Firestore users collection
       const db = firebase.firestore();
+      console.log("Attempting to save user in Firestore...");  // Lägg till denna logg
+
       await db.collection("users").doc(user.uid).set({
         name: name,
         email: email,
