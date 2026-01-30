@@ -20,20 +20,25 @@ document.addEventListener("DOMContentLoaded", () => {
       // Spara displayName i Auth (valfritt, används mest i UI)
       await user.updateProfile({ displayName: name });
 
-      // 🔹 Spara namn, email och timestamp i Firestore users collection
-      const db = firebase.firestore();
-      console.log("Attempting to save user in Firestore...");  // Lägg till denna logg
+      // Vänta tills användaren är inloggad innan vi försöker spara i Firestore
+      firebase.auth().onAuthStateChanged(async (user) => {
+        if (user) {
+          // 🔹 Spara namn, email och timestamp i Firestore users collection
+          const db = firebase.firestore();
+          console.log("Attempting to save user in Firestore...");
 
-      await db.collection("users").doc(user.uid).set({
-        name: name,
-        email: email,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          await db.collection("users").doc(user.uid).set({
+            name: name,
+            email: email,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+          console.log("User saved in Firestore:", name, email);
+
+          // Skicka användaren till myfood.html
+          window.location.href = "myfood.html";
+        }
       });
-
-      console.log("User saved in Firestore:", name, email);
-
-      // Skicka användaren till myfood.html
-      window.location.href = "myfood.html";
 
     } catch (error) {
       console.error("Error during registration:", error);
