@@ -28,7 +28,10 @@
       const auth = firebase.auth();
       const db = firebase.firestore();
     </script>
-    <script src="script.js" defer></script>
+
+    <!-- Koppla nya register.js -->
+    <script src="register.js" defer></script>
+
     <style>
       body {
         background-color: #4caf50;
@@ -150,45 +153,6 @@
       const goLoginBtn = document.getElementById("goLoginBtn");
       goLoginBtn.addEventListener("click", () => {
         window.location.href = "login.html";
-      });
-
-      // Hantera registrering av användare
-      const registerBtn = document.getElementById("registerBtn");
-      registerBtn.addEventListener("click", () => {
-        const name = document.getElementById("name").value;
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-
-        if (!name || !email || !password) {
-          alert("Please fill in all fields!");
-          return;
-        }
-
-        // Skapa användare med Firebase Auth
-        auth
-          .createUserWithEmailAndPassword(email, password)
-          .then((userCredential) => {
-            const user = userCredential.user;
-
-            // Spara användaren i Firestore (för att lägga till namn)
-            db.collection("users").doc(user.uid).set({
-              name: name,
-              email: user.email,
-              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            });
-
-            // Spara användaren i localStorage (för myfood.html)
-            localStorage.setItem(
-              "currentUser",
-              JSON.stringify({ email: user.email, name: name }),
-            );
-
-            // Skicka användaren direkt till myfood.html
-            window.location.href = "myfood.html";
-          })
-          .catch((error) => {
-            alert("Registration failed: " + error.message);
-          });
       });
     </script>
   </body>
