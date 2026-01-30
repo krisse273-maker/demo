@@ -17,20 +17,22 @@ document.addEventListener("DOMContentLoaded", () => {
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
 
-      // Uppdatera displayName i Firebase Auth
+      // Spara displayName i Auth (valfritt, används mest i UI)
       await user.updateProfile({ displayName: name });
 
-      // Hämta den uppdaterade användarprofilen för att säkerställa att displayName är satt
-      await user.reload();  // Hämta den senaste versionen av användarprofilen från Firebase Auth
-      if (!user.displayName) {
-        throw new Error("Failed to set displayName in Firebase Auth");
-      }
+      // 🔹 Spara namn, email och timestamp i Firestore users collection
+      const db = firebase.firestore();
+      await db.collection("users").doc(user.uid).set({
+        name: name,
+        email: email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
 
-      console.log("Updated displayName:", user.displayName);
+      console.log("User saved in Firestore:", name, email);
 
-      // Skicka användaren till myfood.html efter registrering
+      // Skicka användaren till myfood.html
       window.location.href = "myfood.html";
-      
+
     } catch (error) {
       console.error("Error during registration:", error);
       alert("Registration failed: " + error.message);
