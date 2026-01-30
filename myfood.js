@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let countriesData = [];
 
   // =====================================
-  // Hämta länder och städer
+  // Ladda länder och städer
   // =====================================
   async function loadCountries() {
     if (!foodCountrySelect || !foodCitySelect) return;
@@ -88,8 +88,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Kör direkt
   loadCountries();
+
+  // =====================================
+  // Emoji picker
+  // =====================================
+  if (emojiPickerBtn && emojiPicker) {
+    emojiPickerBtn.addEventListener("click", () => {
+      emojiPicker.style.display = emojiPicker.style.display === "block" ? "none" : "block";
+    });
+
+    emojiPicker.addEventListener("click", e => {
+      if (e.target.classList.contains("emoji")) {
+        selectedEmoji = e.target.textContent;
+        foodTitleInput.value = selectedEmoji + " " + foodTitleInput.value;
+        emojiPicker.style.display = "none";
+      }
+    });
+  }
 
   // =====================================
   // Auth state
@@ -106,9 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const userDoc = await db.collection("users").doc(user.uid).get();
       if (userDoc.exists && userDoc.data().name) {
-        currentUserName = userDoc.data().name;  // Om användaren har ett namn sparat i Firestore
+        currentUserName = userDoc.data().name;
       } else if (user.displayName) {
-        currentUserName = user.displayName;  // Om användaren har ett displayName sparat i Auth
+        currentUserName = user.displayName;
       }
     } catch (err) {
       console.error("Failed to get user displayName from Firestore:", err);
@@ -161,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="icon">${food.emoji}</span>
         <h3>${food.title}</h3>
         <p>${food.city}, ${food.country}</p>
-        <p>Shared by: ${food.user}</p> <!-- Här används displayName -->
+        <p>Shared by: ${food.user}</p>
         <p>Posted: ${food.createdAt.toDate().toLocaleDateString()}</p>
       `;
       myFoodList.appendChild(div);
