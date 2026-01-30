@@ -14,10 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       // Skapa användare i Firebase Auth
+      console.log("Attempting to create user in Firebase Auth...");
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
-
-      console.log("User created in Auth:", user.uid); // Kontrollera att användaren skapades korrekt
+      
+      console.log("User created in Firebase Auth:", user);
 
       // Spara displayName i Auth (valfritt, används mest i UI)
       await user.updateProfile({ displayName: name });
@@ -25,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Vänta tills användaren är inloggad innan vi försöker spara i Firestore
       firebase.auth().onAuthStateChanged(async (user) => {
         if (user) {
-          console.log("User is authenticated:", user.uid); // Kontrollera att användaren är autentiserad
+          console.log("User authenticated in Firestore:", user);
 
           // 🔹 Spara namn, email och timestamp i Firestore users collection
           const db = firebase.firestore();
@@ -37,16 +38,12 @@ document.addEventListener("DOMContentLoaded", () => {
               email: email,
               createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-
             console.log("User saved in Firestore:", name, email);
-          } catch (error) {
-            console.error("Error saving user to Firestore:", error);
+            // Skicka användaren till myfood.html
+            window.location.href = "myfood.html";
+          } catch (firestoreError) {
+            console.error("Error saving user to Firestore:", firestoreError);
           }
-
-          // Skicka användaren till myfood.html
-          window.location.href = "myfood.html";
-        } else {
-          console.log("No user is authenticated.");
         }
       });
 
