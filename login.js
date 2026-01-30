@@ -29,10 +29,9 @@ loginBtn.addEventListener("click", async () => {
     if (userDoc.exists) {
       // Användarinformation finns i Firestore
       const userData = userDoc.data();
-      // Du kan nu använda userData här, om du vill
       console.log("User data from Firestore: ", userData);
     } else {
-      // Om användaren inte har något dokument i Firestore, kan du skapa ett nytt
+      // Om användaren inte har något dokument i Firestore, skapa ett nytt
       await userRef.set({
         email: user.email,
         name: user.displayName || "Anonymous"
