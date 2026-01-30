@@ -30,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
     messagingSenderId: "902107453892",
     appId: "1:902107453892:web:dd9625974b8744cc94ac91"
   };
-
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
@@ -40,32 +39,21 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedEmoji = "";
   let myFoods = [];
   let countriesData = [];
-  let userName = "Anonymous"; // 🔹 global variabel för namn
 
   // =====================================
-  // Auth state + hämta namn från Firebase Auth
+  // Auth state
   // =====================================
   firebase.auth().onAuthStateChanged(async (user) => {
     if (!user) {
       window.location.href = "login.html";
       return;
     }
-
     firebaseUser = user;
-
-    // 🔹 Hämta displayName direkt från Auth
-    userName = firebaseUser.displayName || "Unknown User";
-
-    // Visa välkomstmeddelande
-    headerP.textContent = `Welcome, ${userName}! Here’s your food list.`;
-
-    // Ladda användarens foods
+    const displayName = user.displayName || user.email;
+    headerP.textContent = `Welcome, ${displayName}! Here’s your food list.`;
     await loadUserFoods();
   });
 
-  // =====================================
-  // Logout & Home
-  // =====================================
   logoutBtn?.addEventListener("click", () => {
     firebase.auth().signOut();
     window.location.href = "login.html";
@@ -99,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadCountries();
 
   // =====================================
-  // City select
+  // Välj City baserat på Country
   // =====================================
   foodCountrySelect.addEventListener("change", () => {
     const selectedCountry = foodCountrySelect.value;
@@ -130,6 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target.tagName.toLowerCase() === "span") {
       selectedEmoji = e.target.textContent;
       emojiPicker.style.display = "none";
+      // ✅ Endast uppdatera knappen, INTE foodTitleInput
       emojiPickerBtn.textContent = `Selected: ${selectedEmoji}`;
     }
   });
@@ -153,20 +142,17 @@ document.addEventListener("DOMContentLoaded", () => {
       country: foodCountrySelect.value,
       city: foodCitySelect.value,
       emoji: selectedEmoji,
+      user: firebaseUser.displayName || firebaseUser.email,
       ownerId: firebaseUser.uid,
-      name: userName,
       createdAt: firebase.firestore.Timestamp.now()
     };
 
     try {
-      const userDocRef = db
-        .collection("foods")
-        .doc(firebaseUser.uid)
-        .collection("items")
-        .doc();
-
+      const userDocRef = db.collection("foods").doc(firebaseUser.uid).collection("items").doc();
       await userDocRef.set(newFood);
-      await db.collection("publicFoods").doc(userDocRef.id).set(newFood);
+
+      const publicDocRef = db.collection("publicFoods").doc(userDocRef.id);
+      await publicDocRef.set(newFood);
 
       addFoodForm.reset();
       selectedEmoji = "";
@@ -187,13 +173,11 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadUserFoods() {
     if (!firebaseUser) return;
     try {
-      const snapshot = await db
-        .collection("foods")
-        .doc(firebaseUser.uid)
-        .collection("items")
-        .orderBy("createdAt", "desc")
-        .get();
-
+      const snapshot = await db.collection("foods")
+                               .doc(firebaseUser.uid)
+                               .collection("items")
+                               .orderBy("createdAt", "desc")
+                               .get();
       myFoods = snapshot.docs.map(doc => doc.data());
       renderMyFoods();
     } catch (err) {
@@ -210,7 +194,6 @@ document.addEventListener("DOMContentLoaded", () => {
       myFoodList.innerHTML = `<p class="no-food">You don't have any food listed yet.</p>`;
       return;
     }
-
     myFoods.forEach(food => {
       const div = document.createElement("div");
       div.classList.add("food-item");
