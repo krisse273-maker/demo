@@ -28,7 +28,7 @@
       const auth = firebase.auth();
       const db = firebase.firestore();
     </script>
-    <script src="script.js" defer></script>
+
     <style>
       body {
         background-color: #4caf50;
@@ -180,7 +180,7 @@
             // Spara användaren i localStorage (för myfood.html)
             localStorage.setItem(
               "currentUser",
-              JSON.stringify({ email: user.email, name: name }),
+              JSON.stringify({ email: user.email, name: name })
             );
 
             // Skicka användaren direkt till myfood.html
