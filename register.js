@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
 
+    // Kontrollera att alla fält är ifyllda
     if (!name || !email || !password) {
       alert("Please fill in all fields!");
       return;
@@ -16,25 +17,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
 
-      // Uppdatera displayName i Auth
+      // Uppdatera displayName i Firebase Auth
       await user.updateProfile({ displayName: name });
+
+      // Kontrollera att displayName verkligen är satt
+      if (!user.displayName) {
+        throw new Error("Failed to set displayName");
+      }
 
       console.log("Updated displayName:", user.displayName);
 
-      // 🔹 Vänta på att Firestore-dokumentet sparas
-      const userRef = firebase.firestore().collection("users").doc(user.uid);
-      await userRef.set({
-        name: name,
-        email: user.email,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-
-      // 🔹 Hämta tillbaka dokumentet för säkerhets skull (garanterar att data finns)
-      const savedDoc = await userRef.get();
-      if (!savedDoc.exists) throw new Error("Failed to save user document.");
-
-      // Skicka användaren först nu
+      // Skicka användaren till myfood.html efter registrering
       window.location.href = "myfood.html";
+      
     } catch (error) {
       console.error("Error during registration:", error);
       alert("Registration failed: " + error.message);
