@@ -42,6 +42,56 @@ document.addEventListener("DOMContentLoaded", () => {
   let countriesData = [];
 
   // =====================================
+  // Hämta länder och städer
+  // =====================================
+  async function loadCountries() {
+    if (!foodCountrySelect || !foodCitySelect) return;
+
+    try {
+      const res = await fetch("https://countriesnow.space/api/v0.1/countries");
+      const data = await res.json();
+      countriesData = data.data;
+
+      // Fyll country dropdown
+      foodCountrySelect.innerHTML = '<option value="">Select country</option>';
+      countriesData.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.country;
+        opt.textContent = c.country;
+        foodCountrySelect.appendChild(opt);
+      });
+      foodCountrySelect.disabled = false;
+
+      // Lyssna på land-ändring
+      foodCountrySelect.addEventListener("change", () => {
+        foodCitySelect.innerHTML = '<option value="">Select city</option>';
+        foodCitySelect.disabled = true;
+
+        const selectedCountry = foodCountrySelect.value;
+        if (!selectedCountry) return;
+
+        const countryObj = countriesData.find(c => c.country === selectedCountry);
+        if (!countryObj || !countryObj.cities.length) return;
+
+        countryObj.cities.forEach(city => {
+          const opt = document.createElement("option");
+          opt.value = city;
+          opt.textContent = city;
+          foodCitySelect.appendChild(opt);
+        });
+        foodCitySelect.disabled = false;
+      });
+
+    } catch (err) {
+      console.error("Could not fetch countries:", err);
+      alert("Failed to load countries. Try refreshing.");
+    }
+  }
+
+  // Kör direkt
+  loadCountries();
+
+  // =====================================
   // Auth state
   // =====================================
   firebase.auth().onAuthStateChanged(async (user) => {
