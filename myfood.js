@@ -57,9 +57,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const userDoc = await db.collection("users").doc(firebaseUser.uid).get();
       if (userDoc.exists && userDoc.data().name) {
         userName = userDoc.data().name;
+      } else if (firebaseUser.displayName) {
+        // 🔹 fallback: använd displayName från Auth om Firestore-dokument inte finns
+        userName = firebaseUser.displayName;
       }
     } catch (err) {
       console.error("Failed to get user name:", err);
+      if (firebaseUser.displayName) userName = firebaseUser.displayName;
     }
 
     // Visa direkt i välkomstmeddelandet
