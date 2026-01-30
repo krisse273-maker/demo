@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const addFoodForm = document.getElementById("addFoodForm");
   const emojiPickerBtn = document.getElementById("emojiPickerBtn");
   const emojiPicker = document.getElementById("emojiPicker");
-  const foodTitleInput = document.getElementById("foodTitle"); // ENDA INPUT
+  const foodTitleInput = document.getElementById("foodTitle");
   const foodCountrySelect = document.getElementById("foodCountry");
   const foodCitySelect = document.getElementById("foodCity");
 
@@ -26,14 +26,15 @@ document.addEventListener("DOMContentLoaded", () => {
     apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
     authDomain: "global-food-share.firebaseapp.com",
     projectId: "global-food-share",
-    storageBucket: "global-food-share.firebasestorage.app",
+    storageBucket: "global-food-share.appspot.com",
     messagingSenderId: "902107453892",
     appId: "1:902107453892:web:dd9625974b8744cc94ac91"
   };
-  firebase.initializeApp(firebaseConfig);
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
   let firebaseUser = null;
+  let currentUserName = "Anonymous";
   let selectedEmoji = "";
   let myFoods = [];
   let countriesData = [];
@@ -47,7 +48,20 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     firebaseUser = user;
-    headerP.textContent = `Welcome, ${user.displayName || user.email}! Here’s your food list.`;
+
+    // Hämta displayName från Firestore om finns
+    try {
+      const userDoc = await db.collection("users").doc(user.uid).get();
+      if (userDoc.exists && userDoc.data().name) {
+        currentUserName = userDoc.data().name;
+      } else if (user.displayName) {
+        currentUserName = user.displayName;
+      }
+    } catch (err) {
+      console.error("Failed to get user displayName from Firestore:", err);
+    }
+
+    headerP.textContent = `Welcome, ${currentUserName}! Here’s your food list.`;
     await loadUserFoods();
   });
 
@@ -61,36 +75,41 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // =====================================
-  // Ladda länder
+  // Ladda länder och städer
   // =====================================
   async function loadCountries() {
     try {
       const res = await fetch("https://countriesnow.space/api/v0.1/countries");
       const data = await res.json();
       countriesData = data.data;
+
+      // Fyll country dropdown
+      foodCountrySelect.innerHTML = '<option value="">Select Country</option>';
       countriesData.forEach(c => {
         const option = document.createElement("option");
         option.value = c.country;
         option.textContent = c.country;
         foodCountrySelect.appendChild(option);
       });
-    } catch(e) {
+      foodCountrySelect.disabled = false;
+
+    } catch (e) {
       console.error("Failed to load countries:", e);
+      alert("Failed to load countries. Try refreshing.");
     }
   }
   loadCountries();
 
-  // =====================================
-  // Välj City baserat på Country
-  // =====================================
+  // Visa cities när country ändras
   foodCountrySelect.addEventListener("change", () => {
     const selectedCountry = foodCountrySelect.value;
     foodCitySelect.innerHTML = '<option value="">Select City</option>';
     foodCitySelect.disabled = true;
+
     if (!selectedCountry) return;
 
     const countryObj = countriesData.find(c => c.country === selectedCountry);
-    if (countryObj && countryObj.cities.length){
+    if (countryObj && countryObj.cities.length) {
       countryObj.cities.forEach(city => {
         const opt = document.createElement("option");
         opt.value = city;
@@ -112,7 +131,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target.tagName.toLowerCase() === "span") {
       selectedEmoji = e.target.textContent;
       emojiPicker.style.display = "none";
+
+      // Lägg emoji framför texten i inputfältet
+      if (!foodTitleInput.value.startsWith(selectedEmoji)) {
+        foodTitleInput.value = selectedEmoji + " " + foodTitleInput.value.trim();
+      }
+
       emojiPickerBtn.textContent = `Selected: ${selectedEmoji}`;
+      foodTitleInput.focus();
     }
   });
 
@@ -132,18 +158,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const newFood = {
       title: foodValue,
       type: foodValue,
-      country: foodCountrySelect.value,
-      city: foodCitySelect.value,
+      country: foodCountrySelect.value || "",
+      city: foodCitySelect.value || "",
       emoji: selectedEmoji,
-      user: firebaseUser.email,
+      user: currentUserName,
       ownerId: firebaseUser.uid,
       createdAt: firebase.firestore.Timestamp.now()
     };
 
     try {
+      // Lägg till i privat lista
       const userDocRef = db.collection("foods").doc(firebaseUser.uid).collection("items").doc();
       await userDocRef.set(newFood);
 
+      // Lägg till i global lista
       const publicDocRef = db.collection("publicFoods").doc(userDocRef.id);
       await publicDocRef.set(newFood);
 
@@ -154,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       await loadUserFoods();
       alert("Food item added successfully!");
-    } catch(err) {
+    } catch (err) {
       console.error("Failed to add food:", err);
       alert("Failed to add food!");
     }
@@ -167,13 +195,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!firebaseUser) return;
     try {
       const snapshot = await db.collection("foods")
-                               .doc(firebaseUser.uid)
-                               .collection("items")
-                               .orderBy("createdAt", "desc")
-                               .get();
+        .doc(firebaseUser.uid)
+        .collection("items")
+        .orderBy("createdAt", "desc")
+        .get();
       myFoods = snapshot.docs.map(doc => doc.data());
       renderMyFoods();
-    } catch(err) {
+    } catch (err) {
       console.error("Failed to load user foods:", err);
     }
   }
@@ -193,11 +221,12 @@ document.addEventListener("DOMContentLoaded", () => {
       div.innerHTML = `
         <span class="icon">${food.emoji}</span>
         <h3>${food.title}</h3>
-        <p>${food.city}, ${food.country}</p>
+        <p>${food.city || ""}, ${food.country || ""}</p>
+        <p>Shared by: ${food.user}</p>
+        <p>Posted: ${food.createdAt?.toDate().toLocaleDateString() || ""}</p>
       `;
       myFoodList.appendChild(div);
     });
   }
 
 });
-
