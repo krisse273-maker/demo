@@ -49,8 +49,24 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     firebaseUser = user;
-    const displayName = user.displayName || user.email;
-    headerP.textContent = `Welcome, ${displayName}! Here’s your food list.`;
+
+    try {
+      // Hämta användarens namn från Firestore
+      const userDoc = await db.collection("users").doc(firebaseUser.uid).get();
+      let userName = user.email; // fallback
+      if (userDoc.exists && userDoc.data().name) {
+        userName = userDoc.data().name;
+      }
+      headerP.textContent = `Welcome, ${userName}! Here’s your food list.`;
+      
+      // Spara userName globalt så vi kan använda det när vi lägger upp mat
+      firebaseUser.userName = userName;
+    } catch (err) {
+      console.error("Failed to get user name from Firestore:", err);
+      headerP.textContent = `Welcome, ${firebaseUser.email}! Here’s your food list.`;
+      firebaseUser.userName = firebaseUser.email; // fallback
+    }
+
     await loadUserFoods();
   });
 
@@ -142,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
       country: foodCountrySelect.value,
       city: foodCitySelect.value,
       emoji: selectedEmoji,
-      user: firebaseUser.displayName || firebaseUser.email,
+      user: firebaseUser.userName, // använd användarens namn från Firestore
       ownerId: firebaseUser.uid,
       createdAt: firebase.firestore.Timestamp.now()
     };
