@@ -36,8 +36,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         console.log("User saved to Firestore:", name, email);
 
-        // Om användaren är skapad i Firestore, skicka till myfood.html
+        // Nu loggar vi in användaren direkt efter registreringen för att skicka användaren till "myfood.html"
+        await firebase.auth().signInWithEmailAndPassword(email, password);
+        console.log("User logged in successfully");
+
+        // Om användaren är skapad i Firestore och inloggad, skicka till myfood.html
         window.location.href = "myfood.html";
+
       } catch (firestoreError) {
         // Logga och visa ett specifikt fel om det inte går att spara i Firestore
         console.error("Error saving user to Firestore:", firestoreError);
