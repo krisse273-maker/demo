@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     messagingSenderId: "902107453892",
     appId: "1:902107453892:web:dd9625974b8744cc94ac91"
   };
+
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
@@ -42,37 +43,25 @@ document.addEventListener("DOMContentLoaded", () => {
   let userName = "Anonymous"; // 🔹 global variabel för namn
 
   // =====================================
-  // Auth state + hämta namn från Firestore
+  // Auth state + hämta namn från Firebase Auth
   // =====================================
   firebase.auth().onAuthStateChanged(async (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  firebaseUser = user;
-
-  // 🔹 Läs användarnamn direkt från Firestore
-  try {
-    const userDoc = await db.collection("users").doc(firebaseUser.uid).get();
-    if (userDoc.exists && userDoc.data().name) {
-      userName = userDoc.data().name;
-    } else {
-      console.error("User document exists but has no name field!");
-      userName = "Unknown User"; // bara för debug, kan ändras
+    if (!user) {
+      window.location.href = "login.html";
+      return;
     }
-  } catch (err) {
-    console.error("Failed to get user name from Firestore:", err);
-    userName = "Unknown User"; // bara för debug
-  }
 
-  // Visa välkomstmeddelande
-  headerP.textContent = `Welcome, ${userName}! Here’s your food list.`;
+    firebaseUser = user;
 
-  // Ladda användarens foods
-  await loadUserFoods();
-});
+    // 🔹 Hämta displayName direkt från Auth
+    userName = firebaseUser.displayName || "Unknown User";
 
+    // Visa välkomstmeddelande
+    headerP.textContent = `Welcome, ${userName}! Here’s your food list.`;
+
+    // Ladda användarens foods
+    await loadUserFoods();
+  });
 
   // =====================================
   // Logout & Home
@@ -158,7 +147,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!foodValue) return alert("Please enter a food name!");
     if (foodValue.length > 50) return alert("Food name cannot exceed 50 characters!");
 
-    // 🔹 Använd redan hämtat userName
     const newFood = {
       title: foodValue,
       type: foodValue,
@@ -236,4 +224,3 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
-
