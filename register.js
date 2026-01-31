@@ -26,6 +26,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const confirmPasswordInput = document.getElementById("confirmPassword");
   const togglePasswordBtn = document.getElementById("togglePassword");
   const goLoginBtn = document.getElementById("goLoginBtn");
+  const passwordError = document.getElementById("passwordError");
+
+  // Lägg till hint-text ovanför passwordError
+  const passwordHint = document.createElement("p");
+  passwordHint.className = "password-hint";
+  passwordHint.textContent = "Password must contain at least 1 uppercase letter and 1 number";
+  passwordError.parentNode.insertBefore(passwordHint, passwordError);
+
+  // Visa fel direkt under input
+  function showPasswordError(message) {
+    passwordError.textContent = message;
+    passwordError.style.color = "red";
+  }
+
+  function clearPasswordError() {
+    passwordError.textContent = "Password must be at least 6 characters."; // alltid visa denna
+    passwordError.style.color = "#777";
+  }
 
   // Gå till login page
   goLoginBtn.addEventListener("click", () => window.location.href = "login.html");
@@ -46,10 +64,13 @@ document.addEventListener("DOMContentLoaded", () => {
     return /^[a-zA-Z0-9]{1,15}$/.test(name);
   }
 
-  // Ny funktion: kolla 1 stor bokstav och 1 siffra
   function hasUppercaseAndNumber(password) {
     return /^(?=.*[A-Z])(?=.*\d).+$/.test(password);
   }
+
+  // Clear error while typing
+  passwordInput.addEventListener("input", clearPasswordError);
+  confirmPasswordInput.addEventListener("input", clearPasswordError);
 
   registerBtn.addEventListener("click", async () => {
     const name = document.getElementById("name").value.trim();
@@ -77,22 +98,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Lösenord matchar confirm?
     if (password !== confirmPassword) {
-      alert("Passwords do not match.");
+      showPasswordError("Passwords do not match.");
       return;
     }
 
     // Minst 6 tecken
     if (password.length < 6) {
-      alert("Password must be at least 6 characters.");
+      showPasswordError("Password must be at least 6 characters.");
       return;
     }
 
     // Minst 1 stor bokstav och 1 siffra
     if (!hasUppercaseAndNumber(password)) {
-      alert("Password must contain at least 1 uppercase letter and 1 number.");
+      showPasswordError("Password must contain at least 1 uppercase letter and 1 number.");
       return;
     }
 
+    clearPasswordError();
     registerBtn.disabled = true;
     registerBtn.textContent = "Registering...";
 
@@ -131,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (error.code === "auth/email-already-in-use") alert("This email already exists.");
       else if (error.code === "auth/invalid-email" || /badly formatted/.test(error.message)) alert("Please enter a valid email address.");
-      else if (error.code === "auth/weak-password") alert("Password must be at least 6 characters.");
+      else if (error.code === "auth/weak-password") showPasswordError("Password must be at least 6 characters.");
       else alert("Registration failed. Please check your inputs.");
     } finally {
       registerBtn.disabled = false;
