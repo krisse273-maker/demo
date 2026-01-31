@@ -1,5 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
+  const passwordInput = document.getElementById("password");
+
+  // Skapa ett p-element för felmeddelande under passwordfältet
+  let passwordError = document.createElement("p");
+  passwordError.id = "passwordError";
+  passwordError.style.color = "red";
+  passwordError.style.display = "none";
+  passwordError.textContent = "Password must be at least 6 characters.";
+  passwordInput.insertAdjacentElement("afterend", passwordError);
 
   // Funktion för enkel email-validering
   function isValidEmail(email) {
@@ -11,10 +20,19 @@ document.addEventListener("DOMContentLoaded", () => {
     return /^[a-zA-Z0-9]{1,15}$/.test(name);
   }
 
+  // Lyssna på input för password och visa röd text om för kort
+  passwordInput.addEventListener("input", () => {
+    if (passwordInput.value.length < 6) {
+      passwordError.style.display = "block";
+    } else {
+      passwordError.style.display = "none";
+    }
+  });
+
   registerBtn.addEventListener("click", async () => {
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+    const password = passwordInput.value;
     const confirmPassword = document.getElementById("confirmPassword").value;
 
     // Kolla att alla fält är fyllda
@@ -32,6 +50,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Kontrollera email innan Firebase
     if (!isValidEmail(email) || email.length > 100) {
       alert("Please enter a valid email address.");
+      return;
+    }
+
+    // Kontrollera password längd
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters.");
       return;
     }
 
