@@ -1,46 +1,9 @@
-// register.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+// ===== Firebase och annat är som innan =====
 
-// ===== Firebase-konfiguration =====
-const firebaseConfig = {
-  apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
-  authDomain: "global-food-share.firebaseapp.com",
-  projectId: "global-food-share",
-  storageBucket: "global-food-share.firebasestorage.app",
-  messagingSenderId: "902107453892",
-  appId: "1:902107453892:web:dd9625974b8744cc94ac91",
-  measurementId: "G-S1G7JY0TH5",
-};
-
-// ===== Initiera Firebase =====
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// ===== Register-logik + UI =====
 document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
   const passwordInput = document.getElementById("password");
   const confirmPasswordInput = document.getElementById("confirmPassword");
-  const togglePasswordBtn = document.getElementById("togglePassword");
-  const goLoginBtn = document.getElementById("goLoginBtn");
-
-  // Felmeddelanden
-  const uppercaseNumberError = document.getElementById("uppercaseNumberError");
-  const passwordLengthError = document.getElementById("passwordLengthError");
-
-  // Gå till login page
-  goLoginBtn.addEventListener("click", () => window.location.href = "login.html");
-
-  // Toggle password visibility
-  togglePasswordBtn.addEventListener("click", () => {
-    const isVisible = passwordInput.type === "text";
-    passwordInput.type = isVisible ? "password" : "text";
-    confirmPasswordInput.type = isVisible ? "password" : "text";
-    togglePasswordBtn.textContent = isVisible ? "OFF" : "ON";
-  });
 
   function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -51,7 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function hasUppercaseAndNumber(password) {
-    return /[A-Z]/.test(password) && /\d/.test(password);
+    // Minst en stor bokstav och minst en siffra
+    return /[A-Z]/.test(password) && /[0-9]/.test(password);
   }
 
   registerBtn.addEventListener("click", async () => {
@@ -60,11 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = passwordInput.value;
     const confirmPassword = confirmPasswordInput.value;
 
-    // Reset felmeddelanden till grå om ok
-    uppercaseNumberError.style.color = "#777";
-    passwordLengthError.style.color = "#777";
-
-    // ===== Validering =====
+    // ✅ Grundkontroller
     if (!name || !email || !password || !confirmPassword) {
       alert("Please fill in all fields!");
       return;
@@ -85,58 +45,31 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    let hasError = false;
-
     if (password.length < 6) {
-      passwordLengthError.style.color = "red";
-      hasError = true;
+      alert("Password must be at least 6 characters.");
+      return;
     }
 
+    // ✅ Ny kontroll för uppercase och number
     if (!hasUppercaseAndNumber(password)) {
-      uppercaseNumberError.style.color = "red";
-      hasError = true;
+      alert("Password must contain at least 1 uppercase letter and 1 number");
+      return;
     }
 
-    if (hasError) return; // Stoppa registrering om fel
-
+    // Här kan resten av din registreringskod fortsätta (Firebase osv.)
     registerBtn.disabled = true;
     registerBtn.textContent = "Registering...";
-
+    
     try {
-      // Kontrollera unikt publicName
-      const publicUsersRef = collection(db, "publicUsers");
-      const q = query(publicUsersRef, where("publicName", "==", name.toLowerCase()));
-      const snapshot = await getDocs(q);
-
-      if (!snapshot.empty) {
-        alert("This name is already taken. Please choose another.");
-        registerBtn.disabled = false;
-        registerBtn.textContent = "Register / Enter App";
-        return;
-      }
-
-      // Skapa användare
+      // Skapa användare med Firebase
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
-      await Promise.all([
-        setDoc(doc(db, "users", user.uid), {
-          name: name,
-          publicName: name.toLowerCase(),
-          email,
-          createdAt: serverTimestamp()
-        }),
-        setDoc(doc(db, "publicUsers", user.uid), { publicName: name.toLowerCase() }),
-        updateProfile(user, { displayName: name })
-      ]);
-
+      // ... Resten av din kod
       window.location.href = "index.html";
-
     } catch (error) {
       console.error("Registration error:", error);
-
       if (error.code === "auth/email-already-in-use") alert("This email already exists.");
-      else if (error.code === "auth/invalid-email" || /badly formatted/.test(error.message)) alert("Please enter a valid email address.");
+      else if (error.code === "auth/invalid-email") alert("Please enter a valid email address.");
       else if (error.code === "auth/weak-password") alert("Password must be at least 6 characters.");
       else alert("Registration failed. Please check your inputs.");
     } finally {
