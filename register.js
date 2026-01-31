@@ -16,9 +16,39 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = passwordInput.value;
     const confirmPassword = document.getElementById("confirmPassword").value;
 
-    const originalBtnText = registerBtn.textContent; // Spara originaltext
+    // ✅ Först: validera alla fält
+    if (!name || !email || !password || !confirmPassword) {
+      alert("Please fill in all fields!");
+      return;
+    }
 
-    // Starta “animated dots” för texten
+    if (!isValidName(name)) {
+      alert("Name must be 1-15 characters and contain only letters and numbers.");
+      return;
+    }
+
+    if (!isValidEmail(email) || email.length > 100) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters.");
+      return;
+    }
+
+    if (password.length > 128) {
+      alert("Password must be 128 characters or less.");
+      return;
+    }
+
+    // ✅ Nu validerat allt – starta “Registering…” animation
+    const originalBtnText = registerBtn.textContent;
     let dots = 0;
     registerBtn.disabled = true;
     const interval = setInterval(() => {
@@ -27,36 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 500);
 
     try {
-      if (!name || !email || !password || !confirmPassword) {
-        alert("Please fill in all fields!");
-        return;
-      }
-
-      if (!isValidName(name)) {
-        alert("Name must be 1-15 characters and contain only letters and numbers.");
-        return;
-      }
-
-      if (!isValidEmail(email) || email.length > 100) {
-        alert("Please enter a valid email address.");
-        return;
-      }
-
-      if (password !== confirmPassword) {
-        alert("Passwords do not match.");
-        return;
-      }
-
-      if (password.length < 6) {
-        alert("Password must be at least 6 characters.");
-        return;
-      }
-
-      if (password.length > 128) {
-        alert("Password must be 128 characters or less.");
-        return;
-      }
-
       const usersRef = firebase.firestore().collection("users");
       const nameQuery = await usersRef
         .where("publicName", "==", name.toLowerCase())
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Registration failed. Please check your inputs.");
       }
     } finally {
-      // Stoppa animationen och återställ knapp
+      // ✅ Stopp animation och återställ knapp
       clearInterval(interval);
       registerBtn.textContent = originalBtnText;
       registerBtn.disabled = false;
