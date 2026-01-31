@@ -21,15 +21,30 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // ===== App Check =====
+self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // om du testar lokalt
 initializeAppCheck(app, {
   provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"),
   isTokenAutoRefreshEnabled: true
 });
 
-// ===== Register-logik =====
+// ===== Register-logik + UI =====
 document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
   const passwordInput = document.getElementById("password");
+  const confirmPasswordInput = document.getElementById("confirmPassword");
+  const togglePasswordBtn = document.getElementById("togglePassword");
+  const goLoginBtn = document.getElementById("goLoginBtn");
+
+  // Go to login page
+  goLoginBtn.addEventListener("click", () => window.location.href = "login.html");
+
+  // Toggle password visibility
+  togglePasswordBtn.addEventListener("click", () => {
+    const isVisible = passwordInput.type === "text";
+    passwordInput.type = isVisible ? "password" : "text";
+    confirmPasswordInput.type = isVisible ? "password" : "text";
+    togglePasswordBtn.textContent = isVisible ? "OFF" : "ON";
+  });
 
   function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -43,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
     const password = passwordInput.value;
-    const confirmPassword = document.getElementById("confirmPassword").value;
+    const confirmPassword = confirmPasswordInput.value;
 
     if (!name || !email || !password || !confirmPassword) {
       alert("Please fill in all fields!");
@@ -74,12 +89,12 @@ document.addEventListener("DOMContentLoaded", () => {
     registerBtn.textContent = "Registering...";
 
     try {
-      // Kolla om publicName redan finns
+      // Kontrollera unikt publicName
       const publicUsersRef = collection(db, "publicUsers");
       const q = query(publicUsersRef, where("publicName", "==", name.toLowerCase()));
-      const querySnapshot = await getDocs(q);
+      const snapshot = await getDocs(q);
 
-      if (!querySnapshot.empty) {
+      if (!snapshot.empty) {
         alert("This name is already taken. Please choose another.");
         registerBtn.disabled = false;
         registerBtn.textContent = "Register / Enter App";
@@ -90,17 +105,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Spara i Firestore
       await Promise.all([
         setDoc(doc(db, "users", user.uid), {
           name: name,
           publicName: name.toLowerCase(),
-          email: email,
+          email,
           createdAt: serverTimestamp()
         }),
-        setDoc(doc(db, "publicUsers", user.uid), {
-          publicName: name.toLowerCase()
-        }),
+        setDoc(doc(db, "publicUsers", user.uid), { publicName: name.toLowerCase() }),
         updateProfile(user, { displayName: name })
       ]);
 
@@ -109,15 +121,10 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Registration error:", error);
 
-      if (error.code === "auth/email-already-in-use") {
-        alert("This email already exists.");
-      } else if (error.code === "auth/invalid-email" || /badly formatted/.test(error.message)) {
-        alert("Please enter a valid email address.");
-      } else if (error.code === "auth/weak-password") {
-        alert("Password must be at least 6 characters.");
-      } else {
-        alert("Registration failed. Please check your inputs.");
-      }
+      if (error.code === "auth/email-already-in-use") alert("This email already exists.");
+      else if (error.code === "auth/invalid-email" || /badly formatted/.test(error.message)) alert("Please enter a valid email address.");
+      else if (error.code === "auth/weak-password") alert("Password must be at least 6 characters.");
+      else alert("Registration failed. Please check your inputs.");
     } finally {
       registerBtn.disabled = false;
       registerBtn.textContent = "Register / Enter App";
