@@ -21,9 +21,12 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // ===== App Check med reCAPTCHA v3 =====
-initializeAppCheck(app, {
-  provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"),
-  isTokenAutoRefreshEnabled: true
+// Initiera direkt när sidan laddas
+document.addEventListener("DOMContentLoaded", () => {
+  initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"),
+    isTokenAutoRefreshEnabled: true
+  });
 });
 
 // ===== UI =====
@@ -48,6 +51,9 @@ loginBtn.addEventListener("click", async () => {
     // ===== Logga in användaren =====
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
+
+    // ===== Vänta lite så App Check-token hinner initieras =====
+    await new Promise(resolve => setTimeout(resolve, 500)); // 0.5s brukar räcka
 
     // ===== Hämta Firestore-data =====
     const userRef = doc(db, "users", user.uid);
