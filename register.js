@@ -60,9 +60,9 @@ document.addEventListener("DOMContentLoaded", () => {
     registerBtn.textContent = "Registering...";
 
     try {
-      // Kontrollera om namnet redan finns i Firestore (case-insensitive)
-      const usersRef = firebase.firestore().collection("users");
-      const nameQuery = await usersRef
+      // Kontrollera om namnet redan finns i publicUsers (case-insensitive)
+      const publicUsersRef = firebase.firestore().collection("publicUsers");
+      const nameQuery = await publicUsersRef
         .where("publicName", "==", name.toLowerCase())
         .get();
 
@@ -77,13 +77,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Sätt displayName och skapa Firestore-dokument parallellt
       await Promise.all([
-        user.updateProfile({ displayName: name }),
+        // Privat info i users/
         firebase.firestore().collection("users").doc(user.uid).set({
           name: name,
           publicName: name.toLowerCase(),
           email: email,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        })
+        }),
+        // Public info i publicUsers/
+        firebase.firestore().collection("publicUsers").doc(user.uid).set({
+          publicName: name.toLowerCase()
+        }),
+        // Sätt displayName i Auth
+        user.updateProfile({ displayName: name })
       ]);
 
       // Skicka användaren till index.html
