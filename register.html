@@ -9,6 +9,7 @@
     <!-- Google Font: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
+    <!-- All JS is in register.js -->
     <script type="module" src="register.js"></script>
 
     <style>
@@ -19,13 +20,7 @@
         flex-direction: column;
         min-height: 100vh;
       }
-
-      header {
-        text-align: center;
-        color: white;
-        padding: 2rem 1rem;
-      }
-
+      header { text-align: center; color: white; padding: 2rem 1rem; }
       .register-form {
         background-color: white;
         border: 2px solid white;
@@ -33,109 +28,26 @@
         margin: 3rem auto;
         padding: 2rem;
         border-radius: 12px;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
       }
-
-      .register-form h2 {
-        text-align: center;
-        margin-bottom: 1.5rem;
-        color: #333;
-      }
-
-      .register-form label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-        color: #333;
-      }
-
-      .register-form input {
-        width: 100%;
-        padding: 0.7rem;
-        margin-bottom: 0.5rem;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        font-size: 1rem;
-        box-sizing: border-box;
-      }
-
+      .register-form h2 { text-align: center; margin-bottom: 1.5rem; color: #333; }
+      .register-form label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333; }
+      .register-form input { width: 100%; padding: 0.7rem; margin-bottom: 0.5rem; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; box-sizing: border-box; }
       .register-form button {
-        width: 100%;
-        padding: 0.8rem;
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 1rem;
-        cursor: pointer;
+        width: 100%; padding: 0.8rem; background-color: #4caf50; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer;
       }
-
-      .register-form button:hover {
-        background-color: #45a049;
-      }
-
-      .register-form p.info {
-        color: #333;
-        font-size: 0.85rem;
-        margin-top: 1rem;
-        text-align: center;
-      }
-
-      #passwordError {
-        color: red;
-        font-size: 0.85rem;
-        margin-top: -0.3rem;
-        margin-bottom: 1rem;
-      }
-
-      footer {
-        text-align: center;
-        padding: 1rem;
-        margin-top: auto;
-        color: white;
-      }
-
-      /* Flex-rad för register-knappen */
-      .loader-row {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 1rem;
-      }
-
-      /* Password field med in-field toggle */
-      .password-wrapper {
-        position: relative;
-        width: 100%;
-      }
-
-      .password-wrapper input {
-        width: 100%;
-        padding-right: 60px; /* plats för toggle-knappen */
-        height: 40px;
-      }
-
+      .register-form button:hover { background-color: #45a049; }
+      .register-form p.info { color: #333; font-size: 0.85rem; margin-top: 1rem; text-align: center; }
+      #passwordError { color: red; font-size: 0.85rem; margin-top: -0.3rem; margin-bottom: 1rem; }
+      footer { text-align: center; padding: 1rem; margin-top: auto; color: white; }
+      .loader-row { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+      .password-wrapper { position: relative; width: 100%; }
+      .password-wrapper input { width: 100%; padding-right: 60px; height: 40px; }
       .password-wrapper button {
-        position: absolute;
-        top: 50%;
-        right: 5px;
-        transform: translateY(-60%); /* lite högre i fältet */
-        background-color: #4caf50; /* grön knapp */
-        border: 1px solid #388e3c; /* mörkare grön kant */
-        border-radius: 4px;
-        cursor: pointer;
-        height: 25px;   /* mindre höjd */
-        width: 40px;    /* mindre bredd */
-        font-size: 0.75rem; /* mindre text */
-        font-weight: bold;
-        color: white;
-
-        /* Perfekt centrerad text */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 0;
+        position: absolute; top: 50%; right: 5px; transform: translateY(-60%);
+        background-color: #4caf50; border: 1px solid #388e3c; border-radius: 4px;
+        cursor: pointer; height: 25px; width: 40px; font-size: 0.75rem; font-weight: bold; color: white;
+        display: flex; align-items: center; justify-content: center; text-align: center; padding: 0;
       }
     </style>
   </head>
@@ -168,15 +80,7 @@
         <button id="registerBtn">Register / Enter App</button>
       </div>
 
-      <button
-        id="goLoginBtn"
-        style="
-          margin-top: 1rem;
-          background-color: white;
-          color: #4caf50;
-          border: 2px solid white;
-        "
-      >
+      <button id="goLoginBtn" style="margin-top: 1rem; background-color: white; color: #4caf50; border: 2px solid white;">
         Login
       </button>
 
@@ -186,27 +90,5 @@
     <footer>
       <p>&copy; 2026 Global Food Share</p>
     </footer>
-
-    <script>
-      const goLoginBtn = document.getElementById("goLoginBtn");
-      goLoginBtn.addEventListener("click", () => {
-        window.location.href = "login.html";
-      });
-
-      // Toggle password visibility
-      const togglePasswordBtn = document.getElementById("togglePassword");
-      const passwordInput = document.getElementById("password");
-      const confirmPasswordInput = document.getElementById("confirmPassword");
-
-      togglePasswordBtn.addEventListener("click", () => {
-        const isPasswordVisible = passwordInput.type === "text";
-
-        passwordInput.type = isPasswordVisible ? "password" : "text";
-        confirmPasswordInput.type = isPasswordVisible ? "password" : "text";
-
-        togglePasswordBtn.textContent = isPasswordVisible ? "OFF" : "ON";
-      });
-    </script>
   </body>
 </html>
-
