@@ -7,10 +7,18 @@ import "firebase/compat/firestore";
 // ===== Din vanliga Firebase-konfiguration =====
 const app = initializeApp(firebaseConfig);
 
+// ===== Aktivera debug-läge för App Check =====
+self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // Debug-läge aktiverat
+
 // ===== Aktivera App Check =====
 const appCheck = initializeAppCheck(app, {
   provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"),
   isTokenAutoRefreshEnabled: true // automatisk tokenförnyelse
+});
+
+// ===== Logga App Check-token för testning =====
+appCheck.onTokenChanged((tokenResult) => {
+  console.log("App Check token:", tokenResult.token);
 });
 
 // ===============================================
