@@ -1,6 +1,7 @@
 // ===== Firebase setup =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
@@ -14,6 +15,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 // ===== DOMContentLoaded =====
 document.addEventListener("DOMContentLoaded", () => {
@@ -125,7 +127,22 @@ document.addEventListener("DOMContentLoaded", () => {
     registerBtn.textContent = "Registering...";
 
     try {
+      // Skapa användare i Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // ===== Lägg till displayName =====
+      await updateProfile(user, { displayName: name });
+
+      // ===== Spara användare i Firestore 'users' collection =====
+      await setDoc(doc(db, "users", user.uid), {
+        name: name,
+        publicName: name.toLowerCase(),
+        email: email,
+        createdAt: serverTimestamp()
+      });
+
+      // ===== Redirect =====
       window.location.href = "index.html";
     } catch (error) {
       console.error("Registration error:", error);
