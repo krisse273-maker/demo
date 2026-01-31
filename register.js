@@ -1,12 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
   const passwordInput = document.getElementById("password");
-  const loader = document.getElementById("loader");
 
+  // Enkel email-validering
   function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
+  // Name-validering: max 15 tecken, bara bokstäver och siffror
   function isValidName(name) {
     return /^[a-zA-Z0-9]{1,15}$/.test(name);
   }
@@ -17,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = passwordInput.value;
     const confirmPassword = document.getElementById("confirmPassword").value;
 
+    // Kolla att alla fält är fyllda
     if (!name || !email || !password || !confirmPassword) {
       alert("Please fill in all fields!");
       return;
@@ -47,9 +49,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // ✅ Visa loader och disable knapp
+    // ✅ Disable knapp under registrering
     registerBtn.disabled = true;
-    loader.style.visibility = "visible";
 
     try {
       const usersRef = firebase.firestore().collection("users");
@@ -73,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
       ]);
 
+      // Skicka användaren till index.html
       window.location.href = "index.html";
 
     } catch (error) {
@@ -91,8 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Registration failed. Please check your inputs.");
       }
     } finally {
-      // ✅ Göm loader och enable knapp
-      loader.style.visibility = "hidden";
+      // ✅ Enable knapp igen
       registerBtn.disabled = false;
     }
   });
