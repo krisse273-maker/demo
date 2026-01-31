@@ -76,6 +76,7 @@
         border-radius: 8px;
         border: 1px solid #ccc;
         font-size: 1rem;
+        box-sizing: border-box;
       }
 
       .register-form button {
@@ -125,25 +126,29 @@
       /* Password field med in-field toggle */
       .password-wrapper {
         position: relative;
-        display: flex;
-        align-items: center;
+        width: 100%;
       }
 
       .password-wrapper input {
         width: 100%;
-        padding-right: 55px; /* plats för toggle-knappen */
+        padding-right: 60px; /* plats för toggle-knappen */
+        height: 40px;
       }
 
       .password-wrapper button {
         position: absolute;
+        top: 50%;
         right: 5px;
-        background-color: #eee;
-        border: 1px solid #ccc;
+        transform: translateY(-60%); /* lite högre i fältet */
+        background-color: #4caf50; /* grön knapp */
+        border: 1px solid #388e3c; /* mörkare grön kant */
         border-radius: 4px;
         cursor: pointer;
-        height: 30px;
-        width: 50px;
-        font-size: 0.85rem;
+        height: 25px;   /* mindre höjd */
+        width: 40px;    /* mindre bredd */
+        font-size: 0.75rem; /* mindre text */
+        color: white;
+        font-weight: bold;
       }
     </style>
   </head>
