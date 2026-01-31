@@ -90,6 +90,9 @@
         border-radius: 8px;
         font-size: 1rem;
         cursor: pointer;
+        display: flex;           /* gör knappen flex för loader + text */
+        align-items: center;
+        justify-content: center;
       }
 
       .register-form button:hover {
@@ -117,6 +120,27 @@
         margin-top: auto;
         color: white;
       }
+
+      /* Loader-cirkel */
+      .loader {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 3px solid #4caf50;
+        border-radius: 50%;
+        border-top-color: white; /* gör snurr-effekten tydlig */
+        animation: spin 1s linear infinite;
+        vertical-align: middle;
+        margin-right: 8px;       /* lite avstånd mellan cirkel och text */
+        box-shadow: 0 0 4px rgba(0,0,0,0.3);
+        visibility: hidden;      /* göms som default */
+      }
+
+      /* Animation för snurr */
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
     </style>
   </head>
   <body>
@@ -142,9 +166,9 @@
       <input type="password" id="confirmPassword" placeholder="Confirm password" />
 
       <button id="registerBtn">
-  <span id="loader" class="loader"></span>
-  Register / Enter App<span id="dots"></span>
-</button>
+        <span id="loader" class="loader"></span>
+        Register / Enter App<span id="dots"></span>
+      </button>
 
       <button
         id="goLoginBtn"
@@ -174,5 +198,3 @@
     </script>
   </body>
 </html>
-
-
