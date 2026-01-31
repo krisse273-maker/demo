@@ -1,29 +1,32 @@
-import { initializeApp } from "firebase/app";
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
-import firebase from "firebase/compat/app";
-import "firebase/compat/auth";
-import "firebase/compat/firestore";
+// register.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check.js";
 
-// ===== Din vanliga Firebase-konfiguration =====
+// ===== Firebase-konfiguration =====
+const firebaseConfig = {
+  apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
+  authDomain: "global-food-share.firebaseapp.com",
+  projectId: "global-food-share",
+  storageBucket: "global-food-share.firebasestorage.app",
+  messagingSenderId: "902107453892",
+  appId: "1:902107453892:web:dd9625974b8744cc94ac91",
+  measurementId: "G-S1G7JY0TH5",
+};
+
+// ===== Initiera Firebase =====
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// ===== Aktivera debug-läge för App Check =====
-self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // Debug-läge aktiverat
-
-// ===== Aktivera App Check =====
-const appCheck = initializeAppCheck(app, {
+// ===== App Check =====
+initializeAppCheck(app, {
   provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"),
-  isTokenAutoRefreshEnabled: true // automatisk tokenförnyelse
+  isTokenAutoRefreshEnabled: true
 });
 
-// ===== Logga App Check-token för testning =====
-appCheck.onTokenChanged((tokenResult) => {
-  console.log("App Check token:", tokenResult.token);
-});
-
-// ===============================================
-// Din register-logik börjar här
-// ===============================================
+// ===== Register-logik =====
 document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
   const passwordInput = document.getElementById("password");
@@ -67,53 +70,48 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (password.length > 128) {
-      alert("Password must be 128 characters or less.");
-      return;
-    }
-
-    const originalBtnText = registerBtn.textContent;
     registerBtn.disabled = true;
     registerBtn.textContent = "Registering...";
 
     try {
-      const publicUsersRef = firebase.firestore().collection("publicUsers");
-      const nameQuery = await publicUsersRef
-        .where("publicName", "==", name.toLowerCase())
-        .get();
+      // Kolla om publicName redan finns
+      const publicUsersRef = collection(db, "publicUsers");
+      const q = query(publicUsersRef, where("publicName", "==", name.toLowerCase()));
+      const querySnapshot = await getDocs(q);
 
-      if (!nameQuery.empty) {
+      if (!querySnapshot.empty) {
         alert("This name is already taken. Please choose another.");
+        registerBtn.disabled = false;
+        registerBtn.textContent = "Register / Enter App";
         return;
       }
 
-      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+      // Skapa användare
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      // Spara i Firestore
       await Promise.all([
-        firebase.firestore().collection("users").doc(user.uid).set({
+        setDoc(doc(db, "users", user.uid), {
           name: name,
           publicName: name.toLowerCase(),
           email: email,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          createdAt: serverTimestamp()
         }),
-        firebase.firestore().collection("publicUsers").doc(user.uid).set({
+        setDoc(doc(db, "publicUsers", user.uid), {
           publicName: name.toLowerCase()
         }),
-        user.updateProfile({ displayName: name })
+        updateProfile(user, { displayName: name })
       ]);
 
       window.location.href = "index.html";
 
     } catch (error) {
-      console.error("Error during registration:", error);
+      console.error("Registration error:", error);
 
       if (error.code === "auth/email-already-in-use") {
         alert("This email already exists.");
-      } else if (
-        error.code === "auth/invalid-email" ||
-        /badly formatted/.test(error.message)
-      ) {
+      } else if (error.code === "auth/invalid-email" || /badly formatted/.test(error.message)) {
         alert("Please enter a valid email address.");
       } else if (error.code === "auth/weak-password") {
         alert("Password must be at least 6 characters.");
@@ -121,8 +119,8 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Registration failed. Please check your inputs.");
       }
     } finally {
-      registerBtn.textContent = originalBtnText;
       registerBtn.disabled = false;
+      registerBtn.textContent = "Register / Enter App";
     }
   });
 });
