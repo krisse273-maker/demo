@@ -21,7 +21,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // ===== App Check med din reCAPTCHA v3 site key =====
-initializeAppCheck(app, {
+const appCheck = initializeAppCheck(app, {
   provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"),
   isTokenAutoRefreshEnabled: true
 });
@@ -34,10 +34,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const togglePasswordBtn = document.getElementById("togglePassword");
   const goLoginBtn = document.getElementById("goLoginBtn");
 
-  // Go to login page
   goLoginBtn.addEventListener("click", () => window.location.href = "login.html");
 
-  // Toggle password visibility
   togglePasswordBtn.addEventListener("click", () => {
     const isVisible = passwordInput.type === "text";
     passwordInput.type = isVisible ? "password" : "text";
@@ -88,6 +86,9 @@ document.addEventListener("DOMContentLoaded", () => {
     registerBtn.textContent = "Registering...";
 
     try {
+      // ✅ Vänta på App Check-token innan Firestore-anrop
+      await appCheck.getToken(true);
+
       // Kontrollera unikt publicName
       const publicUsersRef = collection(db, "publicUsers");
       const q = query(publicUsersRef, where("publicName", "==", name.toLowerCase()));
