@@ -13,6 +13,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      // 0️⃣ Kontrollera om namnet redan finns i Firestore
+      const usersRef = firebase.firestore().collection("users");
+      const nameQuery = await usersRef.where("name", "==", name).get();
+      if (!nameQuery.empty) {
+        alert("This name is already taken. Please choose another.");
+        return;
+      }
+
       // 1️⃣ Skapa användare i Firebase Auth
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
