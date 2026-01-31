@@ -1,4 +1,20 @@
-// ===== Firebase och annat är som innan =====
+// ===== Firebase och allt =====
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
+  authDomain: "global-food-share.firebaseapp.com",
+  projectId: "global-food-share",
+  storageBucket: "global-food-share.firebasestorage.app",
+  messagingSenderId: "902107453892",
+  appId: "1:902107453892:web:dd9625974b8744cc94ac91",
+  measurementId: "G-S1G7JY0TH5",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
 document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
   const togglePasswordBtn = document.getElementById("togglePassword");
@@ -36,16 +52,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===== Toggle password visibility =====
-  if (togglePasswordBtn && passwordInput && confirmPasswordInput) {
-    togglePasswordBtn.addEventListener("click", () => {
-      const isVisible = passwordInput.type === "text";
-      passwordInput.type = isVisible ? "password" : "text";
-      confirmPasswordInput.type = isVisible ? "password" : "text";
-      togglePasswordBtn.textContent = isVisible ? "OFF" : "ON";
-    });
-  }
+  togglePasswordBtn.addEventListener("click", () => {
+    const isVisible = passwordInput.type === "text";
+    passwordInput.type = isVisible ? "password" : "text";
+    confirmPasswordInput.type = isVisible ? "password" : "text";
+    togglePasswordBtn.textContent = isVisible ? "OFF" : "ON";
+  });
 
-  // ===== Clear errors when typing =====
+  // ===== Clear errors on input =====
   [nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(input => {
     input.addEventListener("input", () => {
       input.style.borderColor = "";
@@ -59,13 +73,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ===== Show password error =====
-  function showPasswordError(message) {
+  function showPasswordError(type) {
     passwordLengthError.style.display = "none";
     uppercaseNumberError.style.display = "none";
 
-    if (message === "length") {
+    if (type === "length") {
       passwordLengthError.style.display = "block";
-    } else if (message === "uppercaseNumber") {
+    } else if (type === "uppercaseNumber") {
       uppercaseNumberError.style.display = "block";
     }
 
@@ -80,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = passwordInput.value;
     const confirmPassword = confirmPasswordInput.value;
 
-    // Clear all previous errors
+    // Clear previous errors
     [nameError, emailError].forEach(el => (el.style.display = "none"));
     passwordLengthError.style.display = "none";
     uppercaseNumberError.style.display = "none";
@@ -90,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let hasError = false;
 
-    // ===== Name validation =====
+    // ===== Name =====
     if (!name) {
       nameError.textContent = "Name is required";
       nameError.style.display = "block";
@@ -103,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
       hasError = true;
     }
 
-    // ===== Email validation =====
+    // ===== Email =====
     if (!email) {
       emailError.textContent = "Email is required";
       emailError.style.display = "block";
@@ -116,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
       hasError = true;
     }
 
-    // ===== Password validation =====
+    // ===== Password =====
     if (!password || !confirmPassword) {
       if (!password) passwordInput.style.borderColor = "red";
       if (!confirmPassword) confirmPasswordInput.style.borderColor = "red";
