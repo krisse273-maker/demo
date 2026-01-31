@@ -1,4 +1,4 @@
-// ===== Firebase och allt =====
+// ===== Firebase setup =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
@@ -15,41 +15,24 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+// ===== DOMContentLoaded =====
 document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
   const togglePasswordBtn = document.getElementById("togglePassword");
-
   const nameInput = document.getElementById("name");
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
   const confirmPasswordInput = document.getElementById("confirmPassword");
 
-  // Inline error spans
-  const nameError = document.createElement("p");
-  const emailError = document.createElement("p");
+  const nameError = document.getElementById("nameError");
+  const emailError = document.getElementById("emailError");
   const passwordLengthError = document.getElementById("passwordLengthError");
   const uppercaseNumberError = document.getElementById("uppercaseNumberError");
 
-  [nameError, emailError].forEach(el => {
-    el.classList.add("password-error");
-    el.style.display = "none";
-  });
-
-  nameInput.insertAdjacentElement("afterend", nameError);
-  emailInput.insertAdjacentElement("afterend", emailError);
-
-  // ===== Validation functions =====
-  function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
-  function isValidName(name) {
-    return /^[a-zA-Z0-9]{1,15}$/.test(name);
-  }
-
-  function hasUppercaseAndNumber(password) {
-    return /[A-Z]/.test(password) && /[0-9]/.test(password);
-  }
+  // ===== Validation helpers =====
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidName = (name) => /^[a-zA-Z0-9]{1,15}$/.test(name);
+  const hasUppercaseAndNumber = (pw) => /[A-Z]/.test(pw) && /[0-9]/.test(pw);
 
   // ===== Toggle password visibility =====
   togglePasswordBtn.addEventListener("click", () => {
@@ -63,48 +46,37 @@ document.addEventListener("DOMContentLoaded", () => {
   [nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(input => {
     input.addEventListener("input", () => {
       input.style.borderColor = "";
-      if (input === nameInput) nameError.style.display = "none";
-      if (input === emailInput) emailError.style.display = "none";
-      if (input === passwordInput || input === confirmPasswordInput) {
-        passwordLengthError.style.display = "none";
-        uppercaseNumberError.style.display = "none";
-      }
+      nameError.style.display = "none";
+      emailError.style.display = "none";
+      passwordLengthError.style.display = "none";
+      uppercaseNumberError.style.display = "none";
     });
   });
 
   // ===== Show password error =====
-  function showPasswordError(type) {
+  const showPasswordError = (type) => {
     passwordLengthError.style.display = "none";
     uppercaseNumberError.style.display = "none";
-
-    if (type === "length") {
-      passwordLengthError.style.display = "block";
-    } else if (type === "uppercaseNumber") {
-      uppercaseNumberError.style.display = "block";
-    }
-
+    if (type === "length") passwordLengthError.style.display = "block";
+    if (type === "uppercaseNumber") uppercaseNumberError.style.display = "block";
     passwordInput.style.borderColor = "red";
     confirmPasswordInput.style.borderColor = "red";
-  }
+  };
 
-  // ===== Register button =====
+  // ===== Register button click =====
   registerBtn.addEventListener("click", async () => {
     const name = nameInput.value.trim();
     const email = emailInput.value.trim();
     const password = passwordInput.value;
     const confirmPassword = confirmPasswordInput.value;
-
-    // Clear previous errors
-    [nameError, emailError].forEach(el => (el.style.display = "none"));
-    passwordLengthError.style.display = "none";
-    uppercaseNumberError.style.display = "none";
-    [nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(
-      el => (el.style.borderColor = "")
-    );
-
     let hasError = false;
 
-    // ===== Name =====
+    [nameError, emailError].forEach(el => el.style.display = "none");
+    passwordLengthError.style.display = "none";
+    uppercaseNumberError.style.display = "none";
+    [nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(el => el.style.borderColor = "");
+
+    // ===== Name validation =====
     if (!name) {
       nameError.textContent = "Name is required";
       nameError.style.display = "block";
@@ -117,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
       hasError = true;
     }
 
-    // ===== Email =====
+    // ===== Email validation =====
     if (!email) {
       emailError.textContent = "Email is required";
       emailError.style.display = "block";
@@ -130,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
       hasError = true;
     }
 
-    // ===== Password =====
+    // ===== Password validation =====
     if (!password || !confirmPassword) {
       if (!password) passwordInput.style.borderColor = "red";
       if (!confirmPassword) confirmPasswordInput.style.borderColor = "red";
@@ -143,13 +115,8 @@ document.addEventListener("DOMContentLoaded", () => {
       hasError = true;
     }
 
-    if (!hasUppercaseAndNumber(password)) {
-      showPasswordError("uppercaseNumber");
-      hasError = true;
-    } else if (password.length < 6) {
-      showPasswordError("length");
-      hasError = true;
-    }
+    if (!hasUppercaseAndNumber(password)) showPasswordError("uppercaseNumber"), hasError = true;
+    else if (password.length < 6) showPasswordError("length"), hasError = true;
 
     if (hasError) return;
 
