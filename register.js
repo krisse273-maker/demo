@@ -47,11 +47,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // ✅ Visa loader och ändra knapptext
-    const originalBtnText = registerBtn.textContent;
+    // ✅ Visa loader och disable knapp
     registerBtn.disabled = true;
     loader.style.visibility = "visible";
-    registerBtn.textContent = "Registering…";
 
     try {
       const usersRef = firebase.firestore().collection("users");
@@ -93,10 +91,9 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Registration failed. Please check your inputs.");
       }
     } finally {
-      // ✅ Göm loader och återställ knapptext
+      // ✅ Göm loader och enable knapp
       loader.style.visibility = "hidden";
       registerBtn.disabled = false;
-      registerBtn.textContent = originalBtnText;
     }
   });
 });
