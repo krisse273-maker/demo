@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore, collection, doc, setDoc, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check.js";
+import { initializeAppCheck, ReCaptchaV3Provider, getAppCheck } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check.js";
 
 // ===== Firebase-konfiguration =====
 const firebaseConfig = {
@@ -27,8 +27,7 @@ initializeAppCheck(app, {
 });
 
 // ===== Logga App Check-token =====
-import * as appCheckModule from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check.js";
-const appCheck = appCheckModule.getAppCheck(app);
+const appCheck = getAppCheck(app);
 appCheck.getToken(true)
   .then(token => console.log("App Check token:", token.token))
   .catch(err => console.error("App Check error:", err));
