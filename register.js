@@ -13,9 +13,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      // 0️⃣ Kontrollera om namnet redan finns i Firestore
+      // 0️⃣ Kontrollera om namnet redan finns i Firestore (case-insensitive)
       const usersRef = firebase.firestore().collection("users");
-      const nameQuery = await usersRef.where("name", "==", name).get();
+      const nameQuery = await usersRef
+        .where("publicName", "==", name.toLowerCase())
+        .get();
+
       if (!nameQuery.empty) {
         alert("This name is already taken. Please choose another.");
         return;
@@ -28,9 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
       // 2️⃣ Sätt displayName för Auth-användaren
       await user.updateProfile({ displayName: name });
 
-      // 3️⃣ Skapa Firestore-dokument för användaren
+      // 3️⃣ Skapa Firestore-dokument för användaren med publicName
       await firebase.firestore().collection("users").doc(user.uid).set({
         name: name,
+        publicName: name.toLowerCase(), // för name-check, email hålls privat
         email: email,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
