@@ -24,46 +24,58 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // Kontrollera name
     if (!isValidName(name)) {
       alert("Name must be 1-15 characters and contain only letters and numbers.");
       return;
     }
 
+    // Kontrollera email
     if (!isValidEmail(email) || email.length > 100) {
       alert("Please enter a valid email address.");
       return;
     }
 
+    // Kontrollera password match
     if (password !== confirmPassword) {
       alert("Passwords do not match.");
       return;
     }
 
+    // Kontrollera minsta längd
     if (password.length < 6) {
       alert("Password must be at least 6 characters.");
       return;
     }
 
+    // Maxlängd password
     if (password.length > 128) {
       alert("Password must be 128 characters or less.");
       return;
     }
 
-    // ✅ Disable knapp under registrering
+    // Disable knappen medan vi väntar
+    const originalBtnText = registerBtn.textContent;
     registerBtn.disabled = true;
+    registerBtn.textContent = "Registering...";
 
     try {
+      // Kontrollera om namnet redan finns i Firestore (case-insensitive)
       const usersRef = firebase.firestore().collection("users");
-      const nameQuery = await usersRef.where("publicName", "==", name.toLowerCase()).get();
+      const nameQuery = await usersRef
+        .where("publicName", "==", name.toLowerCase())
+        .get();
 
       if (!nameQuery.empty) {
         alert("This name is already taken. Please choose another.");
         return;
       }
 
+      // Skapa användare i Firebase Auth
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
 
+      // Sätt displayName och skapa Firestore-dokument parallellt
       await Promise.all([
         user.updateProfile({ displayName: name }),
         firebase.firestore().collection("users").doc(user.uid).set({
@@ -93,7 +105,8 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Registration failed. Please check your inputs.");
       }
     } finally {
-      // ✅ Enable knapp igen
+      // Enable knappen igen
+      registerBtn.textContent = originalBtnText;
       registerBtn.disabled = false;
     }
   });
