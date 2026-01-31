@@ -15,7 +15,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
     <script>
-      // Firebase-konfiguration
       const firebaseConfig = {
         apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
         authDomain: "global-food-share.firebaseapp.com",
@@ -25,8 +24,6 @@
         appId: "1:902107453892:web:dd9625974b8744cc94ac91",
         measurementId: "G-S1G7JY0TH5",
       };
-
-      // Initiera Firebase
       firebase.initializeApp(firebaseConfig);
       const auth = firebase.auth();
       const db = firebase.firestore();
@@ -117,7 +114,7 @@
         color: white;
       }
 
-      /* Loader-cirkel CSS */
+      /* Loader-cirkel */
       .loader {
         width: 20px;
         height: 20px;
@@ -126,7 +123,7 @@
         border-top-color: white;
         animation: spin 1s linear infinite;
         box-shadow: 0 0 4px rgba(0,0,0,0.3);
-        visibility: hidden; /* göms som default */
+        visibility: hidden;
       }
 
       @keyframes spin {
@@ -165,7 +162,7 @@
       <label for="confirmPassword">Confirm Password:</label>
       <input type="password" id="confirmPassword" placeholder="Confirm password" />
 
-      <!-- Loader + knapp rad -->
+      <!-- Loader + knapp -->
       <div class="loader-row">
         <span id="loader" class="loader"></span>
         <button id="registerBtn">Register / Enter App</button>
@@ -191,7 +188,6 @@
     </footer>
 
     <script>
-      // Navigera till login-sidan
       const goLoginBtn = document.getElementById("goLoginBtn");
       goLoginBtn.addEventListener("click", () => {
         window.location.href = "login.html";
