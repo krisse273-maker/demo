@@ -46,34 +46,50 @@ document.addEventListener("DOMContentLoaded", () => {
     return /^[a-zA-Z0-9]{1,15}$/.test(name);
   }
 
+  // Ny funktion: kolla 1 stor bokstav och 1 siffra
+  function hasUppercaseAndNumber(password) {
+    return /^(?=.*[A-Z])(?=.*\d).+$/.test(password);
+  }
+
   registerBtn.addEventListener("click", async () => {
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
     const password = passwordInput.value;
     const confirmPassword = confirmPasswordInput.value;
 
+    // Alla fält ifyllda?
     if (!name || !email || !password || !confirmPassword) {
       alert("Please fill in all fields!");
       return;
     }
 
+    // Namn validering
     if (!isValidName(name)) {
       alert("Name must be 1-15 characters and contain only letters and numbers.");
       return;
     }
 
+    // Email validering
     if (!isValidEmail(email) || email.length > 100) {
       alert("Please enter a valid email address.");
       return;
     }
 
+    // Lösenord matchar confirm?
     if (password !== confirmPassword) {
       alert("Passwords do not match.");
       return;
     }
 
+    // Minst 6 tecken
     if (password.length < 6) {
       alert("Password must be at least 6 characters.");
+      return;
+    }
+
+    // Minst 1 stor bokstav och 1 siffra
+    if (!hasUppercaseAndNumber(password)) {
+      alert("Password must contain at least 1 uppercase letter and 1 number.");
       return;
     }
 
