@@ -78,16 +78,19 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "index.html";
 
     } catch (error) {
-  console.error("Error during registration:", error);
+      console.error("Error during registration:", error);
 
-  // Visa förenklade felmeddelanden
-  if (error.code === "auth/email-already-in-use") {
-    alert("This email already exists.");
-  } else if (error.code === "auth/invalid-email") {
-    alert("Please enter a valid email address.");
-  } else {
-    alert("Registration failed. Please check your inputs.");
-  }
-}
+      // Visa förenklade felmeddelanden
+      if (error.code === "auth/email-already-in-use") {
+        alert("This email already exists.");
+      } else if (
+        error.code === "auth/invalid-email" ||
+        /badly formatted/.test(error.message)
+      ) {
+        alert("Please enter a valid email address.");
+      } else {
+        alert("Registration failed. Please check your inputs.");
+      }
+    }
   });
 });
