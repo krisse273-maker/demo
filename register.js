@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .get();
 
       if (!nameQuery.empty) {
-        alert("This name is already taken. Please choose another.");
+        alert("This name already exists");
         return;
       }
 
@@ -44,7 +44,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     } catch (error) {
       console.error("Error during registration:", error);
-      alert("Registration failed: " + error.message);
+
+      // Kolla om felet är e-post redan registrerad
+      if (error.code === "auth/email-already-in-use") {
+        alert("This email already exists");
+      } else {
+        alert("Registration failed: " + error.message);
+      }
     }
   });
 });
