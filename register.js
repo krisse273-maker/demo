@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Kontrollera email innan Firebase
     if (!isValidEmail(email) || email.length > 100) {
-      alert("Please enter a valid email address (max 100 characters).");
+      alert("Please enter a valid email address.");
       return;
     }
 
@@ -94,3 +94,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
