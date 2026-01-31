@@ -19,13 +19,21 @@ document.addEventListener("DOMContentLoaded", () => {
     return /[A-Z]/.test(password) && /[0-9]/.test(password);
   }
 
-  // ===== Toggle password visibility =====
-  togglePasswordBtn.addEventListener("click", () => {
-    const isVisible = passwordInput.type === "text";
-    passwordInput.type = isVisible ? "password" : "text";
-    confirmPasswordInput.type = isVisible ? "password" : "text";
-    togglePasswordBtn.textContent = isVisible ? "OFF" : "ON";
-  });
+  // ===== Toggle password visibility (backup-versionens logik) =====
+  if (togglePasswordBtn && passwordInput && confirmPasswordInput) {
+    togglePasswordBtn.addEventListener("click", () => {
+      // Om lösenordet är "password", sätt det till text, annars till password
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        confirmPasswordInput.type = "text";
+        togglePasswordBtn.textContent = "ON";
+      } else {
+        passwordInput.type = "password";
+        confirmPasswordInput.type = "password";
+        togglePasswordBtn.textContent = "OFF";
+      }
+    });
+  }
 
   // ===== Register-knapp =====
   registerBtn.addEventListener("click", async () => {
