@@ -42,6 +42,12 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // ✅ Kontrollera minsta längd
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters.");
+      return;
+    }
+
     // Maxlängd password
     if (password.length > 128) {
       alert("Password must be 128 characters or less.");
