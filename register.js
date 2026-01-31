@@ -21,10 +21,9 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // ===== App Check =====
-self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // om du testar lokalt
 initializeAppCheck(app, {
-  provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"),
-  isTokenAutoRefreshEnabled: true
+  provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"), // din reCAPTCHA nyckel
+  isTokenAutoRefreshEnabled: true // Automatisk uppdatering av token
 });
 
 // ===== Register-logik + UI =====
@@ -131,3 +130,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
