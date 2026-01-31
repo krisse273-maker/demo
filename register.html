@@ -165,10 +165,15 @@
       <label for="confirmPassword">Confirm Password:</label>
       <input type="password" id="confirmPassword" placeholder="Confirm password" />
 
-      <button id="registerBtn">
-        <span id="loader" class="loader"></span>
-        Register / Enter App<span id="dots"></span>
-      </button>
+     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1rem;">
+  <!-- Loader-cirkeln -->
+  <span id="loader" class="loader"></span>
+
+  <!-- Själva knappen -->
+  <button id="registerBtn">
+    Register / Enter App
+  </button>
+</div>
 
       <button
         id="goLoginBtn"
@@ -198,3 +203,4 @@
     </script>
   </body>
 </html>
+
