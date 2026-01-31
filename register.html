@@ -6,6 +6,9 @@
     <title>Global Food Share - Register</title>
     <link rel="stylesheet" href="style.css" />
 
+    <!-- Google Font: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -34,7 +37,7 @@
     <style>
       body {
         background-color: #4caf50;
-        font-family: Arial, sans-serif;
+        font-family: 'Poppins', Arial, sans-serif;
         display: flex;
         flex-direction: column;
         min-height: 100vh;
@@ -65,14 +68,14 @@
       .register-form label {
         display: block;
         margin-bottom: 0.5rem;
-        font-weight: bold;
+        font-weight: 600;
         color: #333;
       }
 
       .register-form input {
         width: 100%;
         padding: 0.7rem;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
         border-radius: 8px;
         border: 1px solid #ccc;
         font-size: 1rem;
@@ -100,6 +103,14 @@
         text-align: center;
       }
 
+      /* Röd text under passwordfältet */
+      #passwordError {
+        color: red;
+        font-size: 0.85rem;
+        margin-top: -0.3rem;
+        margin-bottom: 1rem;
+      }
+
       footer {
         text-align: center;
         padding: 1rem;
@@ -125,8 +136,8 @@
 
       <label for="password">Password:</label>
       <input type="password" id="password" placeholder="Demo password" />
+      <p id="passwordError">Password must be at least 6 characters.</p>
 
-      <!-- Nytt fält för confirm password -->
       <label for="confirmPassword">Confirm Password:</label>
       <input type="password" id="confirmPassword" placeholder="Confirm password" />
 
@@ -160,4 +171,3 @@
     </script>
   </body>
 </html>
-
