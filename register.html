@@ -9,7 +9,7 @@
     <!-- Google Font: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- All JS is in register.js -->
+    <!-- JS -->
     <script type="module" src="register.js"></script>
 
     <style>
@@ -39,6 +39,7 @@
       .register-form button:hover { background-color: #45a049; }
       .register-form p.info { color: #333; font-size: 0.85rem; margin-top: 1rem; text-align: center; }
       #passwordError { color: red; font-size: 0.85rem; margin-top: -0.3rem; margin-bottom: 1rem; }
+      .password-hint { font-size: 0.85rem; color: #777; margin: 0; margin-bottom: 0.2rem; }
       footer { text-align: center; padding: 1rem; margin-top: auto; color: white; }
       .loader-row { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
       .password-wrapper { position: relative; width: 100%; }
@@ -71,7 +72,9 @@
         <input type="password" id="password" placeholder="Demo password" />
         <button type="button" id="togglePassword">OFF</button>
       </div>
-      <p id="passwordError">Password must be at least 6 characters.</p>
+      <!-- Hints -->
+      <p class="password-hint">Password must contain at least 1 uppercase letter and 1 number</p>
+      <p class="password-hint" id="passwordError">Password must be at least 6 characters.</p>
 
       <label for="confirmPassword">Confirm Password:</label>
       <input type="password" id="confirmPassword" placeholder="Confirm password" />
