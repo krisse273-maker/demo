@@ -1,6 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
 
+  // Funktion för enkel email-validering
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  // Funktion för name-validering: max 15 tecken, bara bokstäver och siffror
+  function isValidName(name) {
+    return /^[a-zA-Z0-9]{1,15}$/.test(name);
+  }
+
   registerBtn.addEventListener("click", async () => {
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
@@ -13,23 +23,27 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Kontrollera att lösenord matchar
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
+    // Kontrollera name
+    if (!isValidName(name)) {
+      alert("Name must be 1-15 characters and contain only letters and numbers.");
       return;
     }
 
-    // Validera maxlängder (valfritt)
-    if (name.length > 50) {
-      alert("Name must be 50 characters or less");
+    // Kontrollera email
+    if (!isValidEmail(email) || email.length > 100) {
+      alert("Please enter a valid email address (max 100 characters).");
       return;
     }
-    if (email.length > 100) {
-      alert("Email must be 100 characters or less");
+
+    // Kontrollera password match
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
       return;
     }
+
+    // Maxlängd password
     if (password.length > 128) {
-      alert("Password must be 128 characters or less");
+      alert("Password must be 128 characters or less.");
       return;
     }
 
