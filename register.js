@@ -26,10 +26,14 @@ const appCheck = initializeAppCheck(app, {
   isTokenAutoRefreshEnabled: true
 });
 
-// Logga App Check-token för test
+// ===== Testa App Check-token (för att säkerställa att det fungerar) =====
 appCheck.getToken(true)
-  .then(token => console.log("App Check token:", token.token))
-  .catch(err => console.error("App Check error:", err));
+  .then(token => {
+    console.log("✅ App Check fungerar! Token:", token.token);
+  })
+  .catch(err => {
+    console.error("❌ App Check-fel:", err);
+  });
 
 // ===== Register-logik + UI =====
 document.addEventListener("DOMContentLoaded", () => {
