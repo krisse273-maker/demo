@@ -20,15 +20,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ===== App Check med reCAPTCHA v3 =====
-// Initiera direkt när sidan laddas
-document.addEventListener("DOMContentLoaded", () => {
-  initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"),
-    isTokenAutoRefreshEnabled: true
-  });
-});
-
 // ===== UI =====
 const loginBtn = document.getElementById("loginBtn");
 let msgElem = document.createElement("p");
@@ -36,6 +27,24 @@ msgElem.style.color = "red";
 msgElem.style.textAlign = "center";
 msgElem.style.marginTop = "0.5rem";
 document.querySelector(".login-form").appendChild(msgElem);
+
+// ===== Initiera App Check tidigt =====
+const appCheck = initializeAppCheck(app, {
+  provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"),
+  isTokenAutoRefreshEnabled: true
+});
+
+// Hjälpfunktion som väntar tills App Check-token är giltig
+function waitForAppCheckToken() {
+  return new Promise((resolve) => {
+    const unsubscribe = appCheck.onTokenChanged(token => {
+      if (token) {
+        unsubscribe(); // sluta lyssna
+        resolve();
+      }
+    });
+  });
+}
 
 loginBtn.addEventListener("click", async () => {
   const email = document.getElementById("email").value.trim();
@@ -52,8 +61,8 @@ loginBtn.addEventListener("click", async () => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // ===== Vänta lite så App Check-token hinner initieras =====
-    await new Promise(resolve => setTimeout(resolve, 500)); // 0.5s brukar räcka
+    // ===== Vänta tills App Check-token är giltig =====
+    await waitForAppCheckToken();
 
     // ===== Hämta Firestore-data =====
     const userRef = doc(db, "users", user.uid);
@@ -75,7 +84,6 @@ loginBtn.addEventListener("click", async () => {
 
   } catch (err) {
     console.error(err);
-    // Visa användarvänligt felmeddelande
     if (err.code === "auth/user-not-found") msgElem.textContent = "No user found with this email.";
     else if (err.code === "auth/wrong-password") msgElem.textContent = "Incorrect password.";
     else msgElem.textContent = "Login failed: " + err.message;
