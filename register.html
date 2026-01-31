@@ -114,7 +114,7 @@
         color: white;
       }
 
-      /* Flex-rad för knapp */
+      /* Flex-rad för register-knappen */
       .loader-row {
         display: flex;
         align-items: center;
@@ -122,15 +122,28 @@
         margin-bottom: 1rem;
       }
 
-      /* Snygg toggle-knapp */
-      #togglePassword {
-        width: 60px;
-        padding: 0.3rem 0.5rem;
-        font-size: 0.85rem;
+      /* Password field med in-field toggle */
+      .password-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .password-wrapper input {
+        width: 100%;
+        padding-right: 55px; /* plats för toggle-knappen */
+      }
+
+      .password-wrapper button {
+        position: absolute;
+        right: 5px;
         background-color: #eee;
         border: 1px solid #ccc;
         border-radius: 4px;
         cursor: pointer;
+        height: 30px;
+        width: 50px;
+        font-size: 0.85rem;
       }
     </style>
   </head>
@@ -150,15 +163,14 @@
       <input type="text" id="email" placeholder="demo@example.com" />
 
       <label for="password">Password:</label>
-      <input type="password" id="password" placeholder="Demo password" />
+      <div class="password-wrapper">
+        <input type="password" id="password" placeholder="Demo password" />
+        <button type="button" id="togglePassword">OFF</button>
+      </div>
       <p id="passwordError">Password must be at least 6 characters.</p>
 
       <label for="confirmPassword">Confirm Password:</label>
       <input type="password" id="confirmPassword" placeholder="Confirm password" />
-
-      <!-- Toggle password-knapp -->
-      <label for="togglePassword">Visa lösenord:</label>
-      <button type="button" id="togglePassword">OFF</button>
 
       <div class="loader-row">
         <button id="registerBtn">Register / Enter App</button>
