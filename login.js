@@ -2,7 +2,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check.js";
 
 // ===== Firebase-konfiguration =====
 const firebaseConfig = {
@@ -28,24 +27,6 @@ msgElem.style.textAlign = "center";
 msgElem.style.marginTop = "0.5rem";
 document.querySelector(".login-form").appendChild(msgElem);
 
-// ===== Initiera App Check tidigt =====
-const appCheck = initializeAppCheck(app, {
-  provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"),
-  isTokenAutoRefreshEnabled: true
-});
-
-// Hjälpfunktion som väntar tills App Check-token är giltig
-function waitForAppCheckToken() {
-  return new Promise((resolve) => {
-    const unsubscribe = appCheck.onTokenChanged(token => {
-      if (token) {
-        unsubscribe(); // sluta lyssna
-        resolve();
-      }
-    });
-  });
-}
-
 loginBtn.addEventListener("click", async () => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
@@ -60,9 +41,6 @@ loginBtn.addEventListener("click", async () => {
     // ===== Logga in användaren =====
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
-
-    // ===== Vänta tills App Check-token är giltig =====
-    await waitForAppCheckToken();
 
     // ===== Hämta Firestore-data =====
     const userRef = doc(db, "users", user.uid);
