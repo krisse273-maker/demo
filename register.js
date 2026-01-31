@@ -1,14 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
-  const dotsSpan = document.getElementById("dots"); // span för punkterna
   const passwordInput = document.getElementById("password");
+  const dotsSpan = document.getElementById("dots");
+  const loader = document.getElementById("loader");
 
-  // Enkel email-validering
+  // Funktion för enkel email-validering
   function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  // Name-validering: max 15 tecken, bara bokstäver och siffror
+  // Funktion för name-validering: max 15 tecken, bara bokstäver och siffror
   function isValidName(name) {
     return /^[a-zA-Z0-9]{1,15}$/.test(name);
   }
@@ -19,48 +20,56 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = passwordInput.value;
     const confirmPassword = document.getElementById("confirmPassword").value;
 
-    // ✅ Validera alla fält först
+    // Kolla att alla fält är fyllda
     if (!name || !email || !password || !confirmPassword) {
       alert("Please fill in all fields!");
       return;
     }
 
+    // Kontrollera name
     if (!isValidName(name)) {
       alert("Name must be 1-15 characters and contain only letters and numbers.");
       return;
     }
 
+    // Kontrollera email innan Firebase
     if (!isValidEmail(email) || email.length > 100) {
       alert("Please enter a valid email address.");
       return;
     }
 
+    // Kontrollera password match
     if (password !== confirmPassword) {
       alert("Passwords do not match.");
       return;
     }
 
+    // Kontrollera minsta längd
     if (password.length < 6) {
       alert("Password must be at least 6 characters.");
       return;
     }
 
+    // Maxlängd password
     if (password.length > 128) {
       alert("Password must be 128 characters or less.");
       return;
     }
 
-    // ✅ Starta “Registering…” animation
+    // ✅ Starta "Registering..." animation och loader
+    const originalBtnText = registerBtn.textContent;
     let dots = 0;
     registerBtn.disabled = true;
     dotsSpan.textContent = "";
+    loader.style.visibility = "visible"; // Visa loader-cirkeln
+
     const interval = setInterval(() => {
       dotsSpan.textContent = ".".repeat(dots % 4);
       dots++;
     }, 500);
 
     try {
-      // Kontrollera om namnet redan finns i Firestore
+      // Kontrollera om namnet redan finns i Firestore (case-insensitive)
       const usersRef = firebase.firestore().collection("users");
       const nameQuery = await usersRef
         .where("publicName", "==", name.toLowerCase())
@@ -75,16 +84,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
 
-      // Sätt displayName för Auth-användaren
-      await user.updateProfile({ displayName: name });
-
-      // Skapa Firestore-dokument för användaren
-      await firebase.firestore().collection("users").doc(user.uid).set({
-        name: name,
-        publicName: name.toLowerCase(),
-        email: email,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
+      // Sätt displayName och skapa Firestore-dokument parallellt
+      await Promise.all([
+        user.updateProfile({ displayName: name }),
+        firebase.firestore().collection("users").doc(user.uid).set({
+          name: name,
+          publicName: name.toLowerCase(),
+          email: email,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        })
+      ]);
 
       // Skicka användaren till index.html
       window.location.href = "index.html";
@@ -105,9 +114,11 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Registration failed. Please check your inputs.");
       }
     } finally {
-      // ✅ Stopp animation och återställ knapp
+      // ✅ Stoppa animation och göm loader
       clearInterval(interval);
       dotsSpan.textContent = "";
+      loader.style.visibility = "hidden"; // Göm loader
+      registerBtn.textContent = originalBtnText;
       registerBtn.disabled = false;
     }
   });
