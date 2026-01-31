@@ -4,7 +4,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
   const passwordInput = document.getElementById("password");
   const confirmPasswordInput = document.getElementById("confirmPassword");
+  const togglePasswordBtn = document.getElementById("togglePassword"); // Toggle-knappen
 
+  // ===== Funktionskontroller =====
   function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
@@ -14,10 +16,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function hasUppercaseAndNumber(password) {
-    // Minst en stor bokstav och minst en siffra
     return /[A-Z]/.test(password) && /[0-9]/.test(password);
   }
 
+  // ===== Toggle password visibility =====
+  togglePasswordBtn.addEventListener("click", () => {
+    const isVisible = passwordInput.type === "text";
+    passwordInput.type = isVisible ? "password" : "text";
+    confirmPasswordInput.type = isVisible ? "password" : "text";
+    togglePasswordBtn.textContent = isVisible ? "OFF" : "ON";
+  });
+
+  // ===== Register-knapp =====
   registerBtn.addEventListener("click", async () => {
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
@@ -50,21 +60,19 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // ✅ Ny kontroll för uppercase och number
     if (!hasUppercaseAndNumber(password)) {
       alert("Password must contain at least 1 uppercase letter and 1 number");
       return;
     }
 
-    // Här kan resten av din registreringskod fortsätta (Firebase osv.)
+    // ===== Firebase-registration =====
     registerBtn.disabled = true;
     registerBtn.textContent = "Registering...";
-    
+
     try {
-      // Skapa användare med Firebase
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      // ... Resten av din kod
+      // Eventuell extra kod här
       window.location.href = "index.html";
     } catch (error) {
       console.error("Registration error:", error);
