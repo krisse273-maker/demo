@@ -2,12 +2,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
   const passwordInput = document.getElementById("password");
 
-  // Funktion för enkel email-validering
   function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  // Funktion för name-validering: max 15 tecken, bara bokstäver och siffror
   function isValidName(name) {
     return /^[a-zA-Z0-9]{1,15}$/.test(name);
   }
@@ -18,44 +16,47 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = passwordInput.value;
     const confirmPassword = document.getElementById("confirmPassword").value;
 
-    // Kolla att alla fält är fyllda
-    if (!name || !email || !password || !confirmPassword) {
-      alert("Please fill in all fields!");
-      return;
-    }
+    const originalBtnText = registerBtn.textContent; // Spara originaltext
 
-    // Kontrollera name
-    if (!isValidName(name)) {
-      alert("Name must be 1-15 characters and contain only letters and numbers.");
-      return;
-    }
-
-    // Kontrollera email innan Firebase
-    if (!isValidEmail(email) || email.length > 100) {
-      alert("Please enter a valid email address.");
-      return;
-    }
-
-    // Kontrollera password match
-    if (password !== confirmPassword) {
-      alert("Passwords do not match.");
-      return;
-    }
-
-    // ✅ Kontrollera minsta längd
-    if (password.length < 6) {
-      alert("Password must be at least 6 characters.");
-      return;
-    }
-
-    // Maxlängd password
-    if (password.length > 128) {
-      alert("Password must be 128 characters or less.");
-      return;
-    }
+    // Starta “animated dots” för texten
+    let dots = 0;
+    registerBtn.disabled = true;
+    const interval = setInterval(() => {
+      registerBtn.textContent = "Registering" + ".".repeat(dots % 4);
+      dots++;
+    }, 500);
 
     try {
-      // Kontrollera om namnet redan finns i Firestore (case-insensitive)
+      if (!name || !email || !password || !confirmPassword) {
+        alert("Please fill in all fields!");
+        return;
+      }
+
+      if (!isValidName(name)) {
+        alert("Name must be 1-15 characters and contain only letters and numbers.");
+        return;
+      }
+
+      if (!isValidEmail(email) || email.length > 100) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
+
+      if (password.length < 6) {
+        alert("Password must be at least 6 characters.");
+        return;
+      }
+
+      if (password.length > 128) {
+        alert("Password must be 128 characters or less.");
+        return;
+      }
+
       const usersRef = firebase.firestore().collection("users");
       const nameQuery = await usersRef
         .where("publicName", "==", name.toLowerCase())
@@ -66,28 +67,24 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Skapa användare i Firebase Auth
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
 
-      // Sätt displayName för Auth-användaren
-      await user.updateProfile({ displayName: name });
+      await Promise.all([
+        user.updateProfile({ displayName: name }),
+        firebase.firestore().collection("users").doc(user.uid).set({
+          name: name,
+          publicName: name.toLowerCase(),
+          email: email,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        })
+      ]);
 
-      // Skapa Firestore-dokument för användaren
-      await firebase.firestore().collection("users").doc(user.uid).set({
-        name: name,
-        publicName: name.toLowerCase(),
-        email: email,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-
-      // Skicka användaren till index.html
       window.location.href = "index.html";
 
     } catch (error) {
       console.error("Error during registration:", error);
 
-      // Visa förenklade felmeddelanden
       if (error.code === "auth/email-already-in-use") {
         alert("This email already exists.");
       } else if (
@@ -100,6 +97,11 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         alert("Registration failed. Please check your inputs.");
       }
+    } finally {
+      // Stoppa animationen och återställ knapp
+      clearInterval(interval);
+      registerBtn.textContent = originalBtnText;
+      registerBtn.disabled = false;
     }
   });
 });
