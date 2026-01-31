@@ -1,13 +1,29 @@
+import { initializeApp } from "firebase/app";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
+import "firebase/compat/firestore";
+
+// ===== Din vanliga Firebase-konfiguration =====
+const app = initializeApp(firebaseConfig);
+
+// ===== Aktivera App Check =====
+const appCheck = initializeAppCheck(app, {
+  provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"),
+  isTokenAutoRefreshEnabled: true // automatisk tokenförnyelse
+});
+
+// ===============================================
+// Din register-logik börjar här
+// ===============================================
 document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
   const passwordInput = document.getElementById("password");
 
-  // Enkel email-validering
   function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  // Name-validering: max 15 tecken, bara bokstäver och siffror
   function isValidName(name) {
     return /^[a-zA-Z0-9]{1,15}$/.test(name);
   }
@@ -18,49 +34,41 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = passwordInput.value;
     const confirmPassword = document.getElementById("confirmPassword").value;
 
-    // Kolla att alla fält är fyllda
     if (!name || !email || !password || !confirmPassword) {
       alert("Please fill in all fields!");
       return;
     }
 
-    // Kontrollera name
     if (!isValidName(name)) {
       alert("Name must be 1-15 characters and contain only letters and numbers.");
       return;
     }
 
-    // Kontrollera email
     if (!isValidEmail(email) || email.length > 100) {
       alert("Please enter a valid email address.");
       return;
     }
 
-    // Kontrollera password match
     if (password !== confirmPassword) {
       alert("Passwords do not match.");
       return;
     }
 
-    // Kontrollera minsta längd
     if (password.length < 6) {
       alert("Password must be at least 6 characters.");
       return;
     }
 
-    // Maxlängd password
     if (password.length > 128) {
       alert("Password must be 128 characters or less.");
       return;
     }
 
-    // Disable knappen medan vi väntar
     const originalBtnText = registerBtn.textContent;
     registerBtn.disabled = true;
     registerBtn.textContent = "Registering...";
 
     try {
-      // Kontrollera om namnet redan finns i publicUsers (case-insensitive)
       const publicUsersRef = firebase.firestore().collection("publicUsers");
       const nameQuery = await publicUsersRef
         .where("publicName", "==", name.toLowerCase())
@@ -71,28 +79,22 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Skapa användare i Firebase Auth
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
 
-      // Sätt displayName och skapa Firestore-dokument parallellt
       await Promise.all([
-        // Privat info i users/
         firebase.firestore().collection("users").doc(user.uid).set({
           name: name,
           publicName: name.toLowerCase(),
           email: email,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }),
-        // Public info i publicUsers/
         firebase.firestore().collection("publicUsers").doc(user.uid).set({
           publicName: name.toLowerCase()
         }),
-        // Sätt displayName i Auth
         user.updateProfile({ displayName: name })
       ]);
 
-      // Skicka användaren till index.html
       window.location.href = "index.html";
 
     } catch (error) {
@@ -111,7 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Registration failed. Please check your inputs.");
       }
     } finally {
-      // Enable knappen igen
       registerBtn.textContent = originalBtnText;
       registerBtn.disabled = false;
     }
