@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Kontrollera email
+    // Kontrollera email innan Firebase
     if (!isValidEmail(email) || email.length > 100) {
       alert("Please enter a valid email address (max 100 characters).");
       return;
@@ -80,11 +80,11 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Error during registration:", error);
 
-      // Visa förenklat felmeddelande för email och annat
+      // Visa förenklade felmeddelanden
       if (error.code === "auth/email-already-in-use") {
         alert("This email already exists.");
       } else {
-        alert("Registration failed: " + error.message);
+        alert("Registration failed. Please check your inputs.");
       }
     }
   });
