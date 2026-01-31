@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore, collection, doc, setDoc, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { initializeAppCheck, ReCaptchaV3Provider, getAppCheck } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check.js";
+import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check.js";
 
 // ===== Firebase-konfiguration =====
 const firebaseConfig = {
@@ -20,14 +20,13 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ===== App Check med reCAPTCHA v3 =====
-initializeAppCheck(app, {
-  provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"), // din site key
+// ===== App Check med din reCAPTCHA v3 site key =====
+const appCheck = initializeAppCheck(app, {
+  provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"),
   isTokenAutoRefreshEnabled: true
 });
 
-// ===== Logga App Check-token =====
-const appCheck = getAppCheck(app);
+// Logga App Check-token för test
 appCheck.getToken(true)
   .then(token => console.log("App Check token:", token.token))
   .catch(err => console.error("App Check error:", err));
