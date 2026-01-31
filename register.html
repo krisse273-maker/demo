@@ -121,6 +121,17 @@
         gap: 12px;
         margin-bottom: 1rem;
       }
+
+      /* Snygg toggle-knapp */
+      #togglePassword {
+        width: 60px;
+        padding: 0.3rem 0.5rem;
+        font-size: 0.85rem;
+        background-color: #eee;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -145,7 +156,10 @@
       <label for="confirmPassword">Confirm Password:</label>
       <input type="password" id="confirmPassword" placeholder="Confirm password" />
 
-      <!-- Endast knapp -->
+      <!-- Toggle password-knapp -->
+      <label for="togglePassword">Visa lösenord:</label>
+      <button type="button" id="togglePassword">OFF</button>
+
       <div class="loader-row">
         <button id="registerBtn">Register / Enter App</button>
       </div>
@@ -173,6 +187,20 @@
       const goLoginBtn = document.getElementById("goLoginBtn");
       goLoginBtn.addEventListener("click", () => {
         window.location.href = "login.html";
+      });
+
+      // Toggle password visibility
+      const togglePasswordBtn = document.getElementById("togglePassword");
+      const passwordInput = document.getElementById("password");
+      const confirmPasswordInput = document.getElementById("confirmPassword");
+
+      togglePasswordBtn.addEventListener("click", () => {
+        const isPasswordVisible = passwordInput.type === "text";
+
+        passwordInput.type = isPasswordVisible ? "password" : "text";
+        confirmPasswordInput.type = isPasswordVisible ? "password" : "text";
+
+        togglePasswordBtn.textContent = isPasswordVisible ? "OFF" : "ON";
       });
     </script>
   </body>
