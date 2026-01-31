@@ -21,19 +21,10 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // ===== App Check med din reCAPTCHA v3 site key =====
-const appCheck = initializeAppCheck(app, {
+initializeAppCheck(app, {
   provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"),
   isTokenAutoRefreshEnabled: true
 });
-
-// ===== Testa App Check-token (för att säkerställa att det fungerar) =====
-appCheck.getToken(true)
-  .then(token => {
-    console.log("✅ App Check fungerar! Token:", token.token);
-  })
-  .catch(err => {
-    console.error("❌ App Check-fel:", err);
-  });
 
 // ===== Register-logik + UI =====
 document.addEventListener("DOMContentLoaded", () => {
