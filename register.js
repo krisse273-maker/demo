@@ -2,10 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore, collection, doc, setDoc, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { initializeAppCheck, ReCaptchaV3Provider, getAppCheck } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check.js";
-
-// ===== Debug-mode för App Check =====
-self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // <-- använd bara för test
+import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check.js";
 
 // ===== Firebase-konfiguration =====
 const firebaseConfig = {
@@ -23,14 +20,15 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ===== App Check =====
+// ===== App Check med reCAPTCHA v3 =====
 initializeAppCheck(app, {
-  provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"), // ersätt med din riktiga site key när klar
+  provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"), // din site key
   isTokenAutoRefreshEnabled: true
 });
 
-// ===== Logga token =====
-const appCheck = getAppCheck(app);
+// ===== Logga App Check-token =====
+import * as appCheckModule from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check.js";
+const appCheck = appCheckModule.getAppCheck(app);
 appCheck.getToken(true)
   .then(token => console.log("App Check token:", token.token))
   .catch(err => console.error("App Check error:", err));
