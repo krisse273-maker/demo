@@ -48,7 +48,7 @@
     .register-form input {
       width: 100%;
       padding: 0.7rem;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.3rem;
       border-radius: 8px;
       border: 1px solid #ccc;
       font-size: 1rem;
@@ -78,7 +78,8 @@
     .password-error {
       color: red;
       font-size: 0.85rem;
-      margin: 0;
+      margin: 0 0 0.5rem 0;
+      display: none; /* göm som default */
     }
 
     footer {
@@ -144,11 +145,15 @@
   <div class="register-form">
     <h2>Register / Demo Account</h2>
 
+    <!-- Name -->
     <label for="name">Name:</label>
     <input type="text" id="name" placeholder="Your name" />
+    <p class="password-error" id="nameError"></p>
 
+    <!-- Email -->
     <label for="email">Email:</label>
     <input type="text" id="email" placeholder="demo@example.com" />
+    <p class="password-error" id="emailError"></p>
 
     <!-- Password label + längdtext bredvid -->
     <div class="password-label-container">
@@ -168,6 +173,7 @@
       Password must contain at least 1 uppercase letter and 1 number
     </p>
 
+    <!-- Confirm password -->
     <label for="confirmPassword">Confirm Password:</label>
     <input type="password" id="confirmPassword" placeholder="Confirm password" />
 
