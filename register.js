@@ -45,11 +45,11 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Error during registration:", error);
 
-      // Kolla om felet är e-post redan registrerad
+      // Visa endast egna felmeddelanden
       if (error.code === "auth/email-already-in-use") {
         alert("This email already exists");
       } else {
-        alert("Registration failed: " + error.message);
+        alert("Registration failed");
       }
     }
   });
