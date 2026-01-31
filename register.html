@@ -9,27 +9,7 @@
     <!-- Google Font: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-    <script>
-      const firebaseConfig = {
-        apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
-        authDomain: "global-food-share.firebaseapp.com",
-        projectId: "global-food-share",
-        storageBucket: "global-food-share.firebasestorage.app",
-        messagingSenderId: "902107453892",
-        appId: "1:902107453892:web:dd9625974b8744cc94ac91",
-        measurementId: "G-S1G7JY0TH5",
-      };
-      firebase.initializeApp(firebaseConfig);
-      const auth = firebase.auth();
-      const db = firebase.firestore();
-    </script>
-
-    <script src="register.js" defer></script>
+    <script type="module" src="register.js"></script>
 
     <style>
       body {
@@ -229,3 +209,4 @@
     </script>
   </body>
 </html>
+
