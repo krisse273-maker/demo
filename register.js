@@ -89,6 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
         /badly formatted/.test(error.message)
       ) {
         alert("Please enter a valid email address.");
+      } else if (error.code === "auth/weak-password") {
+        alert("Password must be at least 6 characters.");
       } else {
         alert("Registration failed. Please check your inputs.");
       }
