@@ -26,24 +26,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const confirmPasswordInput = document.getElementById("confirmPassword");
   const togglePasswordBtn = document.getElementById("togglePassword");
   const goLoginBtn = document.getElementById("goLoginBtn");
-  const passwordError = document.getElementById("passwordError");
 
-  // Lägg till hint-text ovanför passwordError
-  const passwordHint = document.createElement("p");
-  passwordHint.className = "password-hint";
-  passwordHint.textContent = "Password must contain at least 1 uppercase letter and 1 number";
-  passwordError.parentNode.insertBefore(passwordHint, passwordError);
-
-  // Visa fel direkt under input
-  function showPasswordError(message) {
-    passwordError.textContent = message;
-    passwordError.style.color = "red";
-  }
-
-  function clearPasswordError() {
-    passwordError.textContent = "Password must be at least 6 characters."; // alltid visa denna
-    passwordError.style.color = "#777";
-  }
+  // Felmeddelanden
+  const uppercaseNumberError = document.getElementById("uppercaseNumberError");
+  const passwordLengthError = document.getElementById("passwordLengthError");
 
   // Gå till login page
   goLoginBtn.addEventListener("click", () => window.location.href = "login.html");
@@ -65,12 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function hasUppercaseAndNumber(password) {
-    return /^(?=.*[A-Z])(?=.*\d).+$/.test(password);
+    return /[A-Z]/.test(password) && /\d/.test(password);
   }
-
-  // Clear error while typing
-  passwordInput.addEventListener("input", clearPasswordError);
-  confirmPasswordInput.addEventListener("input", clearPasswordError);
 
   registerBtn.addEventListener("click", async () => {
     const name = document.getElementById("name").value.trim();
@@ -78,43 +60,45 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = passwordInput.value;
     const confirmPassword = confirmPasswordInput.value;
 
-    // Alla fält ifyllda?
+    // Reset felmeddelanden till grå om ok
+    uppercaseNumberError.style.color = "#777";
+    passwordLengthError.style.color = "#777";
+
+    // ===== Validering =====
     if (!name || !email || !password || !confirmPassword) {
       alert("Please fill in all fields!");
       return;
     }
 
-    // Namn validering
     if (!isValidName(name)) {
       alert("Name must be 1-15 characters and contain only letters and numbers.");
       return;
     }
 
-    // Email validering
     if (!isValidEmail(email) || email.length > 100) {
       alert("Please enter a valid email address.");
       return;
     }
 
-    // Lösenord matchar confirm?
     if (password !== confirmPassword) {
-      showPasswordError("Passwords do not match.");
+      alert("Passwords do not match.");
       return;
     }
 
-    // Minst 6 tecken
+    let hasError = false;
+
     if (password.length < 6) {
-      showPasswordError("Password must be at least 6 characters.");
-      return;
+      passwordLengthError.style.color = "red";
+      hasError = true;
     }
 
-    // Minst 1 stor bokstav och 1 siffra
     if (!hasUppercaseAndNumber(password)) {
-      showPasswordError("Password must contain at least 1 uppercase letter and 1 number.");
-      return;
+      uppercaseNumberError.style.color = "red";
+      hasError = true;
     }
 
-    clearPasswordError();
+    if (hasError) return; // Stoppa registrering om fel
+
     registerBtn.disabled = true;
     registerBtn.textContent = "Registering...";
 
@@ -153,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (error.code === "auth/email-already-in-use") alert("This email already exists.");
       else if (error.code === "auth/invalid-email" || /badly formatted/.test(error.message)) alert("Please enter a valid email address.");
-      else if (error.code === "auth/weak-password") showPasswordError("Password must be at least 6 characters.");
+      else if (error.code === "auth/weak-password") alert("Password must be at least 6 characters.");
       else alert("Registration failed. Please check your inputs.");
     } finally {
       registerBtn.disabled = false;
