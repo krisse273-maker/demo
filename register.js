@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore, collection, doc, setDoc, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check.js";
+import { initializeAppCheck, ReCaptchaV3Provider, getAppCheck } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check.js";
 
 // ===== Firebase-konfiguration =====
 const firebaseConfig = {
@@ -24,6 +24,12 @@ const db = getFirestore(app);
 initializeAppCheck(app, {
   provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"),
   isTokenAutoRefreshEnabled: true
+});
+
+// ===== Logga App Check-token för att se att det fungerar =====
+const appCheck = getAppCheck(app);
+appCheck.onTokenChanged((token) => {
+  console.log("App Check-token uppdaterad:", token?.token);
 });
 
 // ===== Register-logik + UI =====
