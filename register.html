@@ -90,9 +90,6 @@
         border-radius: 8px;
         font-size: 1rem;
         cursor: pointer;
-        display: flex;           /* gör knappen flex för loader + text */
-        align-items: center;
-        justify-content: center;
       }
 
       .register-form button:hover {
@@ -106,7 +103,6 @@
         text-align: center;
       }
 
-      /* Röd text under passwordfältet */
       #passwordError {
         color: red;
         font-size: 0.85rem;
@@ -121,25 +117,29 @@
         color: white;
       }
 
-      /* Loader-cirkel */
+      /* Loader-cirkel CSS */
       .loader {
-        display: inline-block;
-        width: 18px;
-        height: 18px;
+        width: 20px;
+        height: 20px;
         border: 3px solid #4caf50;
         border-radius: 50%;
-        border-top-color: white; /* gör snurr-effekten tydlig */
+        border-top-color: white;
         animation: spin 1s linear infinite;
-        vertical-align: middle;
-        margin-right: 8px;       /* lite avstånd mellan cirkel och text */
         box-shadow: 0 0 4px rgba(0,0,0,0.3);
-        visibility: hidden;      /* göms som default */
+        visibility: hidden; /* göms som default */
       }
 
-      /* Animation för snurr */
       @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
+      }
+
+      /* Flex-rad för loader + knapp */
+      .loader-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 1rem;
       }
     </style>
   </head>
@@ -165,15 +165,11 @@
       <label for="confirmPassword">Confirm Password:</label>
       <input type="password" id="confirmPassword" placeholder="Confirm password" />
 
-     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1rem;">
-  <!-- Loader-cirkeln -->
-  <span id="loader" class="loader"></span>
-
-  <!-- Själva knappen -->
-  <button id="registerBtn">
-    Register / Enter App
-  </button>
-</div>
+      <!-- Loader + knapp rad -->
+      <div class="loader-row">
+        <span id="loader" class="loader"></span>
+        <button id="registerBtn">Register / Enter App</button>
+      </div>
 
       <button
         id="goLoginBtn"
@@ -203,4 +199,3 @@
     </script>
   </body>
 </html>
-
