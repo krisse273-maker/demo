@@ -1,45 +1,175 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Global Food Share - Register</title>
-    <link rel="stylesheet" href="style.css" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Global Food Share - Register</title>
+  <link rel="stylesheet" href="style.css" />
 
-    <!-- Google Font: Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Google Font: Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- JS -->
-    <script type="module" src="register.js"></script>
+  <!-- JS -->
+  <script type="module" src="register.js"></script>
 
-    <style>
-      body {
-        background-color: #4caf50;
-        font-family: 'Poppins', Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
-      header { text-align: center; color: white; padding: 2rem 1rem; }
-      .register-form {
-        background-color: white;
-        border: 2px solid white;
-        max-width: 400px;
-        margin: 3rem auto;
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-      }
-      .register-form h2 { text-align: center; margin-bottom: 1.5rem; color: #333; }
-      .register-form label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333; }
-      .register-form input { width: 100%; padding: 0.7rem; margin-bottom: 0.5rem; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; box-sizing: border-box; }
-      .register-form button {
-        width: 100%; padding: 0.8rem; background-color: #4caf50; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer;
-      }
-      .register-form button:hover { background-color: #45a049; }
-      .register-form p.info { color: #333; font-size: 0.85rem; margin-top: 1rem; text-align: center; }
-      .password-error {
-        color: red;             /* Röd text */
-        font-size: 0.85rem;     /* Samma storlek på båda */
-        margin: 0;              /* Ta bort extra margin */
-        margin-bottom: 0
+  <style>
+    body {
+      background-color: #4caf50;
+      font-family: 'Poppins', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      text-align: center;
+      color: white;
+      padding: 2rem 1rem;
+    }
+    .register-form {
+      background-color: white;
+      border: 2px solid white;
+      max-width: 400px;
+      margin: 3rem auto;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+    .register-form h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+    .register-form label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #333;
+    }
+    .register-form input {
+      width: 100%;
+      padding: 0.7rem;
+      margin-bottom: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .register-form button {
+      width: 100%;
+      padding: 0.8rem;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .register-form button:hover {
+      background-color: #45a049;
+    }
+    .register-form p.info {
+      color: #333;
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    /* Felmeddelanden */
+    .password-error {
+      color: red;             /* Röd text */
+      font-size: 0.85rem;     /* Samma storlek på båda */
+      margin: 0;
+      margin-bottom: 0.5rem;  /* Liten mellanrum under meddelande */
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      margin-top: auto;
+      color: white;
+    }
+    .loader-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1rem;
+    }
+    .password-wrapper {
+      position: relative;
+      width: 100%;
+    }
+    .password-wrapper input {
+      width: 100%;
+      padding-right: 60px;
+      height: 40px;
+    }
+    .password-wrapper button {
+      position: absolute;
+      top: 50%;
+      right: 5px;
+      transform: translateY(-60%);
+      background-color: #4caf50;
+      border: 1px solid #388e3c;
+      border-radius: 4px;
+      cursor: pointer;
+      height: 25px;
+      width: 40px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌍 Global Food Share</h1>
+    <p>Register a new account or try the demo</p>
+  </header>
+
+  <div class="register-form">
+    <h2>Register / Demo Account</h2>
+
+    <label for="name">Name:</label>
+    <input type="text" id="name" placeholder="Your name" />
+
+    <label for="email">Email:</label>
+    <input type="text" id="email" placeholder="demo@example.com" />
+
+    <label for="password">Password:</label>
+    <div class="password-wrapper">
+      <input type="password" id="password" placeholder="Demo password" />
+      <button type="button" id="togglePassword">OFF</button>
+    </div>
+
+    <!-- Felmeddelanden under lösenordet -->
+    <p class="password-error" id="uppercaseNumberError">
+      Password must contain at least 1 uppercase letter and 1 number
+    </p>
+    <p class="password-error" id="passwordLengthError">
+      Password must be at least 6 characters.
+    </p>
+
+    <label for="confirmPassword">Confirm Password:</label>
+    <input type="password" id="confirmPassword" placeholder="Confirm password" />
+
+    <div class="loader-row">
+      <button id="registerBtn">Register / Enter App</button>
+    </div>
+
+    <button id="goLoginBtn" style="margin-top: 1rem; background-color: white; color: #4caf50; border: 2px solid white;">
+      Login
+    </button>
+
+    <p class="info">This is a demo. No real user data is stored.</p>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Global Food Share</p>
+  </footer>
+</body>
+</html>
