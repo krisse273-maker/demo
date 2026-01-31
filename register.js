@@ -1,11 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
+  const dotsSpan = document.getElementById("dots"); // span för punkterna
   const passwordInput = document.getElementById("password");
 
+  // Enkel email-validering
   function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
+  // Name-validering: max 15 tecken, bara bokstäver och siffror
   function isValidName(name) {
     return /^[a-zA-Z0-9]{1,15}$/.test(name);
   }
@@ -16,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = passwordInput.value;
     const confirmPassword = document.getElementById("confirmPassword").value;
 
-    // ✅ Först: validera alla fält
+    // ✅ Validera alla fält först
     if (!name || !email || !password || !confirmPassword) {
       alert("Please fill in all fields!");
       return;
@@ -47,16 +50,17 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // ✅ Nu validerat allt – starta “Registering…” animation
-    const originalBtnText = registerBtn.textContent;
+    // ✅ Starta “Registering…” animation
     let dots = 0;
     registerBtn.disabled = true;
+    dotsSpan.textContent = "";
     const interval = setInterval(() => {
-      registerBtn.textContent = "Registering" + ".".repeat(dots % 4);
+      dotsSpan.textContent = ".".repeat(dots % 4);
       dots++;
     }, 500);
 
     try {
+      // Kontrollera om namnet redan finns i Firestore
       const usersRef = firebase.firestore().collection("users");
       const nameQuery = await usersRef
         .where("publicName", "==", name.toLowerCase())
@@ -67,19 +71,22 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
+      // Skapa användare i Firebase Auth
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
 
-      await Promise.all([
-        user.updateProfile({ displayName: name }),
-        firebase.firestore().collection("users").doc(user.uid).set({
-          name: name,
-          publicName: name.toLowerCase(),
-          email: email,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        })
-      ]);
+      // Sätt displayName för Auth-användaren
+      await user.updateProfile({ displayName: name });
 
+      // Skapa Firestore-dokument för användaren
+      await firebase.firestore().collection("users").doc(user.uid).set({
+        name: name,
+        publicName: name.toLowerCase(),
+        email: email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      // Skicka användaren till index.html
       window.location.href = "index.html";
 
     } catch (error) {
@@ -100,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } finally {
       // ✅ Stopp animation och återställ knapp
       clearInterval(interval);
-      registerBtn.textContent = originalBtnText;
+      dotsSpan.textContent = "";
       registerBtn.disabled = false;
     }
   });
