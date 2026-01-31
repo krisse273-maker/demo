@@ -1,5 +1,33 @@
-const loginBtn = document.getElementById("loginBtn");
+// login.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check.js";
 
+// ===== Firebase-konfiguration =====
+const firebaseConfig = {
+  apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
+  authDomain: "global-food-share.firebaseapp.com",
+  projectId: "global-food-share",
+  storageBucket: "global-food-share.firebasestorage.app",
+  messagingSenderId: "902107453892",
+  appId: "1:902107453892:web:dd9625974b8744cc94ac91",
+  measurementId: "G-S1G7JY0TH5",
+};
+
+// ===== Initiera Firebase =====
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ===== App Check med reCAPTCHA v3 =====
+initializeAppCheck(app, {
+  provider: new ReCaptchaV3Provider("6Lcba1wsAAAAAECFkpeZx5uHJZRb1NnUoCqHj7Ff"),
+  isTokenAutoRefreshEnabled: true
+});
+
+// ===== UI =====
+const loginBtn = document.getElementById("loginBtn");
 let msgElem = document.createElement("p");
 msgElem.style.color = "red";
 msgElem.style.textAlign = "center";
@@ -9,7 +37,6 @@ document.querySelector(".login-form").appendChild(msgElem);
 loginBtn.addEventListener("click", async () => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
-
   msgElem.textContent = "";
 
   if (!email || !password) {
@@ -18,29 +45,33 @@ loginBtn.addEventListener("click", async () => {
   }
 
   try {
-    // Logga in användaren med e-post och lösenord
-    const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+    // ===== Logga in användaren =====
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Hämta användarens data från Firestore (om du har sparat något där)
-    const userRef = firebase.firestore().collection('users').doc(user.uid);
-    const userDoc = await userRef.get();
+    // ===== Hämta Firestore-data =====
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
 
-    if (userDoc.exists) {
-      // Användarinformation finns i Firestore
-      const userData = userDoc.data();
-      console.log("User data from Firestore: ", userData);
+    if (userSnap.exists()) {
+      console.log("User data from Firestore:", userSnap.data());
     } else {
-      // Om användaren inte har något dokument i Firestore, skapa ett nytt
-      await userRef.set({
+      // Skapa dokument om det saknas
+      await setDoc(userRef, {
         email: user.email,
-        name: user.displayName || "Anonymous"
+        name: user.displayName || "Anonymous",
+        createdAt: new Date()
       });
     }
 
-    // Skicka användaren till index.html eller annan sida
+    // Skicka användaren vidare
     window.location.href = "index.html";
+
   } catch (err) {
-    msgElem.textContent = err.message;
+    console.error(err);
+    // Visa användarvänligt felmeddelande
+    if (err.code === "auth/user-not-found") msgElem.textContent = "No user found with this email.";
+    else if (err.code === "auth/wrong-password") msgElem.textContent = "Incorrect password.";
+    else msgElem.textContent = "Login failed: " + err.message;
   }
 });
