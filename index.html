@@ -6,7 +6,6 @@
     <title>Global Food Share</title>
     <link rel="stylesheet" href="style.css" />
 
-    <!-- ENDA ÄNDRINGAR: FÄRGER + TA BORT BOXEN RUNT MATLISTAN + NAVIGATION UNDER WELCOME -->
     <style>
       body {
         background-color: #4caf50;
@@ -15,6 +14,7 @@
 
       header {
         background-color: #262d37;
+        text-align: center;
         padding: 1rem;
       }
 
@@ -24,36 +24,41 @@
 
       #welcomeMsg {
         color: #cfd8dc;
-        margin: 0.5rem 0;
       }
 
-      /* Navigation under welcome message */
-      .header-nav {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1rem;
-      }
-
-      .header-nav a {
-        text-decoration: none;
+      /* Centrera knapparna under welcome text */
+      #logoutBtn, #myFoodBtn {
+        margin-top: 1rem;
         padding: 0.5rem 1rem;
         border-radius: 6px;
-        background-color: #ffb74d; /* tonad orange */
-        color: #1c222b;
-        font-weight: bold;
-        transition: all 0.2s ease;
+        border: none;
+        color: #fff;
         cursor: pointer;
       }
 
-      .header-nav a:hover {
-        background-color: #ffa733; /* ljusare orange */
-        color: #262d37;
+      #logoutBtn {
+        background-color: #f44336; /* Röd för tydlighet */
       }
 
+      #logoutBtn:hover {
+        background-color: #e53935;
+      }
+
+      #myFoodBtn {
+        background-color: #ffb74d; /* Tonad orange */
+      }
+
+      #myFoodBtn:hover {
+        background-color: #ffa733; /* Ljusare orange */
+      }
+
+      /* Filters */
       section.filters {
         background-color: #262d37;
         border: 2px solid #1c222b;
         border-radius: 6px;
+        padding: 1rem;
+        text-align: center;
       }
 
       section.filters h2 {
@@ -68,16 +73,21 @@
         background-color: #2b3340;
         color: #cfd8dc;
         border: 2px solid #1c222b;
+        width: 100%;
+        padding: 0.5rem;
+        margin: 0.5rem 0;
+        border-radius: 6px;
       }
 
+      /* Food List */
       section.food-list {
-        background: none;
-        border: none;
-        padding: 0;
+        background: none; /* Ingen form eller bakgrund på matlistan */
+        padding: 1rem;
       }
 
       section.food-list h2 {
         color: #4caf50;
+        text-align: center;
       }
 
       .food-item {
@@ -85,6 +95,8 @@
         color: #cfd8dc;
         border: 2px solid #1c222b;
         border-radius: 6px;
+        margin-bottom: 1rem;
+        padding: 1rem;
       }
 
       .food-item h3 {
@@ -93,20 +105,9 @@
 
       footer {
         color: #cfd8dc;
-      }
-
-      #filterBtn {
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        border: none;
-        background-color: #4caf50;
-        color: white;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-
-      #filterBtn:hover {
-        background-color: #45a045;
+        text-align: center;
+        padding: 1rem;
+        background-color: #262d37;
       }
     </style>
   </head>
@@ -115,11 +116,10 @@
     <header>
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
-
-      <!-- Navigation under welcome -->
-      <div class="header-nav">
-        <a href="#" id="myFoodNav">My Food List</a>
-        <a href="#" id="logoutNav">Log Out</a>
+      <!-- Centrera knapparna här -->
+      <div>
+        <button id="logoutBtn">Log Out</button>
+        <button id="myFoodBtn">My Food List</button>
       </div>
     </header>
 
@@ -156,7 +156,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-    <!-- JS: HELT ORÖRD, bara navigation länkar -->
+    <!-- JS -->
     <script>
       const firebaseConfig = {
         apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
@@ -171,13 +171,12 @@
       const auth = firebase.auth();
       const db = firebase.firestore();
 
+      const logoutBtn = document.getElementById("logoutBtn");
+      const myFoodBtn = document.getElementById("myFoodBtn");
       const countrySelect = document.getElementById("country");
       const citySelect = document.getElementById("city");
       const filterBtn = document.getElementById("filterBtn");
       const foodList = document.querySelector(".global-food-list");
-
-      const myFoodNav = document.getElementById("myFoodNav");
-      const logoutNav = document.getElementById("logoutNav");
 
       let countriesData = [];
       let allFoods = [];
@@ -190,9 +189,8 @@
         loadGlobalFood();
       });
 
-      // Navigation länkar
-      myFoodNav.addEventListener("click", ()=>window.location.href="myfood.html");
-      logoutNav.addEventListener("click", ()=>auth.signOut().then(()=>window.location.href="login.html"));
+      logoutBtn.addEventListener("click",()=>auth.signOut().then(()=>window.location.href="login.html"));
+      myFoodBtn.addEventListener("click",()=>window.location.href="myfood.html");
 
       async function loadCountries(){
         const res = await fetch("https://countriesnow.space/api/v0.1/countries");
@@ -207,7 +205,7 @@
         });
       }
 
-      countrySelect.addEventListener("change", ()=>{
+      countrySelect.addEventListener("change",()=>{ 
         citySelect.innerHTML='<option value="">Select city</option>';
         citySelect.disabled=true;
         const countryObj = countriesData.find(c=>c.country===countrySelect.value);
@@ -221,7 +219,7 @@
         citySelect.disabled=false;
       });
 
-      filterBtn.addEventListener("click", ()=>{ 
+      filterBtn.addEventListener("click",()=>{ 
         const filtered=allFoods.filter(f=>
           (!countrySelect.value||f.country===countrySelect.value)&&
           (!citySelect.value||f.city===citySelect.value)
