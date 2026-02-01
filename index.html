@@ -6,21 +6,19 @@
     <title>Global Food Share</title>
     <link rel="stylesheet" href="style.css" />
     <style>
-      /* Grundfärger */
       body {
-        background-color: #4caf50; /* grön bakgrund som login/register */
-        color: #cfd8dc; /* ljus text */
+        background-color: #4caf50;
+        color: #cfd8dc;
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
       }
 
-      /* Header */
+      /* ===== Header (edge to edge) ===== */
       header {
-        background-color: #262d37; /* mörk igen */
+        background-color: #262d37;
         padding: 1rem;
         text-align: center;
-        width: 100%; /* För att sträcka sig ut maximalt */
       }
 
       header h1 {
@@ -28,18 +26,24 @@
         margin: 0;
       }
 
-      header p#welcomeMsg {
-        color: #cfd8dc;
+      header p {
         margin: 0.5rem 0;
       }
 
-      /* Knappar - samma hover som login/register */
+      /* ===== CENTER CONTAINER ===== */
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+
+      /* ===== Buttons ===== */
       button {
         border-radius: 6px;
         border: 2px solid #1c222b;
         padding: 0.5rem 1rem;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: 0.2s;
       }
 
       #logoutBtn {
@@ -64,17 +68,8 @@
         background-color: #ff9800;
         color: #1c222b;
       }
-      #myFoodBtn:hover {
-        background-color: #ffa733;
-      }
 
-      /* Filter-sektionen centreras */
-      .container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 1rem;
-      }
-
+      /* ===== Filters ===== */
       section.filters {
         background-color: #262d37;
         border: 2px solid #1c222b;
@@ -92,32 +87,26 @@
         color: #cfd8dc;
         border: 2px solid #1c222b;
         border-radius: 6px;
-        padding: 0.25rem 0.5rem;
-        margin-top: 0.25rem;
+        padding: 0.4rem;
         width: 100%;
-        box-sizing: border-box;
       }
 
-      /* Available Food - Sektion centreras */
+      /* ===== Food list (NO BOX) ===== */
       section.food-list {
-        background-color: #262d37;
-        border: 2px solid #1c222b;
-        border-radius: 6px;
-        padding: 3rem; /* större, mer luftig */
-        margin-top: 1rem;
+        margin-top: 1.5rem;
       }
 
       section.food-list h2 {
         color: #4caf50;
       }
 
-      .global-food-list .food-item {
+      .food-item {
         background-color: #2b3340;
         color: #cfd8dc;
         border: 2px solid #1c222b;
         border-radius: 6px;
-        padding: 0.5rem;
-        margin-bottom: 0.5rem;
+        padding: 0.6rem;
+        margin-bottom: 0.6rem;
       }
 
       .food-item h3 {
@@ -126,43 +115,40 @@
       }
 
       footer {
-        color: #cfd8dc;
         text-align: center;
-        margin-top: 2rem;
+        margin: 2rem 0 1rem;
       }
     </style>
   </head>
+
   <body>
     <header>
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
-      <button id="logoutBtn" style="margin-top:1rem;padding:0.5rem 1rem;">Log Out</button>
+      <button id="logoutBtn">Log Out</button>
     </header>
 
-    <!-- Container som centrerar innehållet -->
+    <!-- CENTERED CONTENT -->
     <div class="container">
-      <!-- Filter-sektionen -->
       <section class="filters">
         <h2>Filter by Location</h2>
-        <div class="filter-group">
-          <label for="country">Country:</label>
-          <select id="country">
-            <option value="">Select country</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label for="city">City:</label>
-          <select id="city" disabled>
-            <option value="">Select city</option>
-          </select>
-        </div>
+
+        <label>Country</label>
+        <select id="country">
+          <option value="">Select country</option>
+        </select>
+
+        <label>City</label>
+        <select id="city" disabled>
+          <option value="">Select city</option>
+        </select>
+
         <div style="margin-top:1rem">
           <button id="filterBtn">Search</button>
-          <button id="myFoodBtn" style="margin-left:0.5rem;">My Food List</button>
+          <button id="myFoodBtn">My Food List</button>
         </div>
       </section>
 
-      <!-- Available Food-sektionen -->
       <section class="food-list">
         <h2>Available Food</h2>
         <div class="global-food-list"></div>
@@ -178,6 +164,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
+    <!-- JS ORÖRD -->
     <script>
       const firebaseConfig = {
         apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
@@ -191,67 +178,23 @@
 
       const auth = firebase.auth();
       const db = firebase.firestore();
-
-      const logoutBtn = document.getElementById("logoutBtn");
-      const myFoodBtn = document.getElementById("myFoodBtn");
-      const countrySelect = document.getElementById("country");
-      const citySelect = document.getElementById("city");
-      const filterBtn = document.getElementById("filterBtn");
       const foodList = document.querySelector(".global-food-list");
 
-      let countriesData = [];
       let allFoods = [];
 
-      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-      auth.onAuthStateChanged(async user => {
-        if (!user) return window.location.href = "login.html";
-
-        document.getElementById("welcomeMsg").textContent = `Welcome, ${user.displayName || user.email}!`;
-
-        await loadCountries();
-        loadGlobalFood();
+      auth.onAuthStateChanged(user=>{
+        if(!user) location.href="login.html";
       });
 
-      logoutBtn.addEventListener("click", () => auth.signOut().then(() => window.location.href = "login.html"));
-      myFoodBtn.addEventListener("click", () => window.location.href = "myfood.html");
-
-      async function loadCountries() {
-        try {
-          const res = await fetch("https://countriesnow.space/api/v0.1/countries");
-          const data = await res.json();
-          countriesData = data.data;
-
-          countrySelect.innerHTML = '<option value="">Select country</option>';
-          countriesData.forEach(c => {
-            const opt = document.createElement("option");
-            opt.value = c.country;
-            opt.textContent = c.country;
-            countrySelect.appendChild(opt);
-          });
-          countrySelect.disabled = false;
-        } catch (err) {
-          console.error("Could not fetch countries:", err);
-          alert("Failed to load countries. Try refreshing.");
-        }
-      }
-
-      countrySelect.addEventListener("change", () => {
-        citySelect.innerHTML = '<option value="">Select city</option>';
-        citySelect.disabled = true;
-        const selectedCountry = countrySelect.value;
-        if (!selectedCountry) return;
-        const countryObj = countriesData.find(c => c.country === selectedCountry);
-        if (!countryObj || !countryObj.cities.length) return;
-        countryObj.cities.forEach(city => {
-          const opt = document.createElement("option");
-          opt.value = city;
-          opt.textContent = city;
-          citySelect.appendChild(opt);
+      function renderFoodItems(items){
+        foodList.innerHTML="";
+        items.forEach(i=>{
+          const d=document.createElement("div");
+          d.className="food-item";
+          d.innerHTML=`<h3>${i.title}</h3><p>${i.city}, ${i.country}</p>`;
+          foodList.appendChild(d);
         });
-        citySelect.disabled = false;
-      });
-
-      filterBtn.addEventListener("click", () => {
-        const country = countrySelect.value;
-        const city =
+      }
+    </script>
+  </body>
+</html>
