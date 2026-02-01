@@ -20,13 +20,16 @@ const db = getFirestore(app);
 
 // ===== UI =====
 const loginBtn = document.getElementById("loginBtn");
+const goRegisterBtn = document.getElementById("goRegisterBtn"); // ✅ NY
 const spinner = document.getElementById("spinner");
+
 let msgElem = document.createElement("p");
 msgElem.style.color = "red";
 msgElem.style.textAlign = "center";
 msgElem.style.marginTop = "0.5rem";
 document.querySelector(".login-form").appendChild(msgElem);
 
+// ===== LOGIN =====
 loginBtn.addEventListener("click", async () => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
@@ -39,13 +42,9 @@ loginBtn.addEventListener("click", async () => {
 
   console.log("Login button clicked");
 
-  // ===== Disable the button, show spinner and update button text =====
   loginBtn.disabled = true;
-
-  // Debugger: Kontrollera om spinnern ska synas
-  console.log("Showing spinner...");
-  spinner.style.display = "block";  // Prova block istället för inline-block
-  loginBtn.textContent = "Logging in...";  // Change button text
+  spinner.style.display = "block";
+  loginBtn.textContent = "Logging in...";
 
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -54,9 +53,7 @@ loginBtn.addEventListener("click", async () => {
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
 
-    if (userSnap.exists()) {
-      console.log("User data from Firestore:", userSnap.data());
-    } else {
+    if (!userSnap.exists()) {
       await setDoc(userRef, {
         email: user.email,
         name: user.displayName || "Anonymous",
@@ -72,9 +69,15 @@ loginBtn.addEventListener("click", async () => {
     else if (err.code === "auth/wrong-password") msgElem.textContent = "Incorrect password.";
     else msgElem.textContent = "Login failed: " + err.message;
   } finally {
-    console.log("Hiding spinner...");
     loginBtn.disabled = false;
-    spinner.style.display = "none";  // Hide spinner
-    loginBtn.textContent = "Login";  // Reset button text
+    spinner.style.display = "none";
+    loginBtn.textContent = "Login";
   }
 });
+
+// ===== REGISTER / ENTER APP =====
+if (goRegisterBtn) {
+  goRegisterBtn.addEventListener("click", () => {
+    window.location.href = "register.html";
+  });
+}
