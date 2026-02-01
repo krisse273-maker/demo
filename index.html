@@ -16,6 +16,7 @@
         background-color: #262d37;
         text-align: center;
         padding: 1rem;
+        position: relative; /* för att kunna positionera Log Out-knappen separat */
       }
 
       header h1 {
@@ -26,30 +27,39 @@
         color: #cfd8dc;
       }
 
-      /* Centrera knapparna under welcome text */
-      #logoutBtn, #myFoodBtn {
-        margin-top: 1rem;
+      /* Log Out knapp vänster */
+      #logoutBtn {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
         padding: 0.5rem 1rem;
         border-radius: 6px;
         border: none;
+        background-color: #f44336;
         color: #fff;
         cursor: pointer;
-      }
-
-      #logoutBtn {
-        background-color: #f44336; /* Röd för tydlighet */
+        transition: all 0.2s ease;
       }
 
       #logoutBtn:hover {
         background-color: #e53935;
       }
 
+      /* My Food List knapp centrerad */
       #myFoodBtn {
-        background-color: #ffb74d; /* Tonad orange */
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: none;
+        background-color: #ffb74d;
+        color: #1c222b;
+        cursor: pointer;
+        transition: all 0.2s ease;
       }
 
       #myFoodBtn:hover {
-        background-color: #ffa733; /* Ljusare orange */
+        background-color: #ffa733;
       }
 
       /* Filters */
@@ -79,9 +89,23 @@
         border-radius: 6px;
       }
 
+      #filterBtn {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: none;
+        background-color: #4caf50;
+        color: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      #filterBtn:hover {
+        background-color: #45a045;
+      }
+
       /* Food List */
       section.food-list {
-        background: none; /* Ingen form eller bakgrund på matlistan */
+        background: none;
         padding: 1rem;
       }
 
@@ -116,9 +140,10 @@
     <header>
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
-      <!-- Centrera knapparna här -->
+      <!-- Log Out knapp vänster -->
+      <button id="logoutBtn">Log Out</button>
+      <!-- My Food List knapp centrerad -->
       <div>
-        <button id="logoutBtn">Log Out</button>
         <button id="myFoodBtn">My Food List</button>
       </div>
     </header>
