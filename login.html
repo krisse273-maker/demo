@@ -96,15 +96,25 @@
       }
 
       /* Spinner-stil */
+/* Spinner-stil */
 .spinner {
-  border: 3px solid #2196F3; /* Ljusgrå bakgrund för spinnern */
+  border: 3px solid #f3f3f3; /* Ljusgrå bakgrund för spinnern */
   border-top: 3px solid #2196F3; /* Blå färg för toppen på spinnern */
   border-radius: 50%;
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   animation: spin 1s linear infinite;
   margin-right: 10px; /* Avstånd mellan spinner och text */
+  display: none; /* Spinnern är initialt osynlig */
+  z-index: 10; /* Se till att spinnern är över knappen */
 }
+
+/* Spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 
 /* Spinner animation */
 @keyframes spin {
@@ -156,6 +166,7 @@
     </footer>
   </body>
 </html>
+
 
 
 
