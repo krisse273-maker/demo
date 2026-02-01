@@ -73,8 +73,9 @@ loginBtn.addEventListener("click", async () => {
   } finally {
     // ===== Re-enable the button, hide spinner and reset text =====
     loginBtn.disabled = false;
-    spinner.style.display = "none";  // Hide spinner
+    spinner.style.display = "hidden";  // Hide spinner
     loginBtn.textContent = "Login";  // Reset button text
   }
 });
+
 
