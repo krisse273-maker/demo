@@ -6,20 +6,21 @@
     <title>Global Food Share</title>
     <link rel="stylesheet" href="style.css" />
     <style>
-      /* ===== Grund ===== */
+      /* Grundfärger */
       body {
-        background-color: #4caf50;
-        color: #cfd8dc;
+        background-color: #4caf50; /* grön bakgrund som login/register */
+        color: #cfd8dc; /* ljus text */
         font-family: Arial, sans-serif;
         margin: 0;
-        padding: 0; /* VIKTIGT */
+        padding: 0;
       }
 
-      /* ===== Header (edge to edge) ===== */
+      /* Header */
       header {
-        background-color: #262d37;
+        background-color: #262d37; /* mörk igen */
         padding: 1rem;
         text-align: center;
+        width: 100%; /* För att sträcka sig ut maximalt */
       }
 
       header h1 {
@@ -32,7 +33,7 @@
         margin: 0.5rem 0;
       }
 
-      /* ===== Buttons ===== */
+      /* Knappar - samma hover som login/register */
       button {
         border-radius: 6px;
         border: 2px solid #1c222b;
@@ -67,21 +68,26 @@
         background-color: #ffa733;
       }
 
-      /* ===== Filters ===== */
+      /* Filter-sektionen centreras */
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+
       section.filters {
         background-color: #262d37;
         border: 2px solid #1c222b;
         border-radius: 6px;
         padding: 1rem;
-        margin: 1rem;
+        margin-top: 1rem;
       }
 
       section.filters h2 {
         color: #4caf50;
       }
 
-      #country,
-      #city {
+      #country, #city {
         background-color: #2b3340;
         color: #cfd8dc;
         border: 2px solid #1c222b;
@@ -92,19 +98,19 @@
         box-sizing: border-box;
       }
 
-      /* ===== Available Food (INGEN BOX) ===== */
+      /* Available Food - Sektion centreras */
       section.food-list {
-        background-color: transparent;
-        border: none;
-        padding: 0; /* <-- FIXEN */
-        margin: 1rem;
+        background-color: #262d37;
+        border: 2px solid #1c222b;
+        border-radius: 6px;
+        padding: 3rem; /* större, mer luftig */
+        margin-top: 1rem;
       }
 
       section.food-list h2 {
         color: #4caf50;
       }
 
-      /* ===== Food items (ORÖRDA) ===== */
       .global-food-list .food-item {
         background-color: #2b3340;
         color: #cfd8dc;
@@ -122,45 +128,46 @@
       footer {
         color: #cfd8dc;
         text-align: center;
-        margin: 2rem 0 1rem;
+        margin-top: 2rem;
       }
     </style>
   </head>
-
   <body>
     <header>
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
-      <button id="logoutBtn">Log Out</button>
+      <button id="logoutBtn" style="margin-top:1rem;padding:0.5rem 1rem;">Log Out</button>
     </header>
 
-    <section class="filters">
-      <h2>Filter by Location</h2>
+    <!-- Container som centrerar innehållet -->
+    <div class="container">
+      <!-- Filter-sektionen -->
+      <section class="filters">
+        <h2>Filter by Location</h2>
+        <div class="filter-group">
+          <label for="country">Country:</label>
+          <select id="country">
+            <option value="">Select country</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="city">City:</label>
+          <select id="city" disabled>
+            <option value="">Select city</option>
+          </select>
+        </div>
+        <div style="margin-top:1rem">
+          <button id="filterBtn">Search</button>
+          <button id="myFoodBtn" style="margin-left:0.5rem;">My Food List</button>
+        </div>
+      </section>
 
-      <div class="filter-group">
-        <label for="country">Country:</label>
-        <select id="country">
-          <option value="">Select country</option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label for="city">City:</label>
-        <select id="city" disabled>
-          <option value="">Select city</option>
-        </select>
-      </div>
-
-      <div style="margin-top:1rem">
-        <button id="filterBtn">Search</button>
-        <button id="myFoodBtn">My Food List</button>
-      </div>
-    </section>
-
-    <section class="food-list">
-      <h2>Available Food</h2>
-      <div class="global-food-list"></div>
-    </section>
+      <!-- Available Food-sektionen -->
+      <section class="food-list">
+        <h2>Available Food</h2>
+        <div class="global-food-list"></div>
+      </section>
+    </div>
 
     <footer>
       <p>&copy; 2026 Global Food Share</p>
@@ -171,7 +178,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-    <!-- ORIGINAL JS (ORÖRD) -->
     <script>
       const firebaseConfig = {
         apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
@@ -196,75 +202,56 @@
       let countriesData = [];
       let allFoods = [];
 
-      const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
       auth.onAuthStateChanged(async user => {
-        if (!user) return window.location.href="login.html";
-        document.getElementById("welcomeMsg").textContent =
-          `Welcome, ${user.displayName || user.email}!`;
+        if (!user) return window.location.href = "login.html";
+
+        document.getElementById("welcomeMsg").textContent = `Welcome, ${user.displayName || user.email}!`;
+
         await loadCountries();
         loadGlobalFood();
       });
 
-      logoutBtn.addEventListener("click",()=>auth.signOut().then(()=>window.location.href="login.html"));
-      myFoodBtn.addEventListener("click",()=>window.location.href="myfood.html");
+      logoutBtn.addEventListener("click", () => auth.signOut().then(() => window.location.href = "login.html"));
+      myFoodBtn.addEventListener("click", () => window.location.href = "myfood.html");
 
-      async function loadCountries(){
-        const res = await fetch("https://countriesnow.space/api/v0.1/countries");
-        const data = await res.json();
-        countriesData = data.data;
-        countrySelect.innerHTML='<option value="">Select country</option>';
-        countriesData.forEach(c=>{
-          const opt=document.createElement("option");
-          opt.value=c.country;
-          opt.textContent=c.country;
-          countrySelect.appendChild(opt);
-        });
+      async function loadCountries() {
+        try {
+          const res = await fetch("https://countriesnow.space/api/v0.1/countries");
+          const data = await res.json();
+          countriesData = data.data;
+
+          countrySelect.innerHTML = '<option value="">Select country</option>';
+          countriesData.forEach(c => {
+            const opt = document.createElement("option");
+            opt.value = c.country;
+            opt.textContent = c.country;
+            countrySelect.appendChild(opt);
+          });
+          countrySelect.disabled = false;
+        } catch (err) {
+          console.error("Could not fetch countries:", err);
+          alert("Failed to load countries. Try refreshing.");
+        }
       }
 
-      countrySelect.addEventListener("change",()=>{
-        citySelect.innerHTML='<option value="">Select city</option>';
-        citySelect.disabled=true;
-        const c=countriesData.find(x=>x.country===countrySelect.value);
-        if(!c) return;
-        c.cities.forEach(city=>{
-          const opt=document.createElement("option");
-          opt.value=city;
-          opt.textContent=city;
+      countrySelect.addEventListener("change", () => {
+        citySelect.innerHTML = '<option value="">Select city</option>';
+        citySelect.disabled = true;
+        const selectedCountry = countrySelect.value;
+        if (!selectedCountry) return;
+        const countryObj = countriesData.find(c => c.country === selectedCountry);
+        if (!countryObj || !countryObj.cities.length) return;
+        countryObj.cities.forEach(city => {
+          const opt = document.createElement("option");
+          opt.value = city;
+          opt.textContent = city;
           citySelect.appendChild(opt);
         });
-        citySelect.disabled=false;
+        citySelect.disabled = false;
       });
 
-      filterBtn.addEventListener("click",()=>{
-        const country=countrySelect.value;
-        const city=citySelect.value;
-        renderFoodItems(allFoods.filter(f=>(!country||f.country===country)&&(!city||f.city===city)));
-      });
-
-      function loadGlobalFood(){
-        db.collection("publicFoods").orderBy("createdAt","desc")
-          .onSnapshot(s=>{
-            allFoods=s.docs.map(d=>d.data());
-            renderFoodItems(allFoods);
-          });
-      }
-
-      function renderFoodItems(items){
-        foodList.innerHTML="";
-        if(!items.length){foodList.innerHTML="<p>No food found.</p>";return;}
-        items.forEach(i=>{
-          const d=document.createElement("div");
-          d.className="food-item";
-          d.innerHTML=`
-            <span class="icon">${i.emoji||"🍽️"}</span>
-            <h3>${i.title||""}</h3>
-            <p>Location: ${i.city}, ${i.country}</p>
-            <p>Shared by: ${i.user||"Anonymous"}</p>
-          `;
-          foodList.appendChild(d);
-        });
-      }
-    </script>
-  </body>
-</html>
+      filterBtn.addEventListener("click", () => {
+        const country = countrySelect.value;
+        const city =
