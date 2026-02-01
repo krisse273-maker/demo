@@ -11,25 +11,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-    <script>
-      // Firebase-konfiguration
-      const firebaseConfig = {
-        apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
-        authDomain: "global-food-share.firebaseapp.com",
-        projectId: "global-food-share",
-        storageBucket: "global-food-share.firebasestorage.app",
-        messagingSenderId: "902107453892",
-        appId: "1:902107453892:web:dd9625974b8744cc94ac91",
-        measurementId: "G-S1G7JY0TH5",
-      };
-
-      // Initiera Firebase
-      firebase.initializeApp(firebaseConfig);
-      const auth = firebase.auth();
-      const db = firebase.firestore();
-    </script>
-
-    <script src="script.js" defer></script>
+    <!-- Linka login.js här -->
+    <script src="login.js" defer></script>
 
     <style>
       body {
@@ -168,60 +151,5 @@
     <footer>
       <p>&copy; 2026 Global Food Share</p>
     </footer>
-
-    <script>
-      const goRegisterBtn = document.getElementById("goRegisterBtn");
-      goRegisterBtn.addEventListener("click", () => {
-        window.location.href = "register.html";
-      });
-
-      // Login med Firebase
-      const loginBtn = document.getElementById("loginBtn");
-      const spinner = document.getElementById("spinner");
-
-      loginBtn.addEventListener("click", () => {
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-
-        // Disable the login button, show spinner and change text
-        loginBtn.disabled = true;
-        spinner.style.display = "inline-block";  // Show spinner
-        loginBtn.textContent = "Logging in...";
-
-        auth
-          .signInWithEmailAndPassword(email, password)
-          .then(async (userCredential) => {
-            const user = userCredential.user;
-
-            // Hämta användarens data från Firestore
-            const userRef = db.collection('users').doc(user.uid);
-            const userDoc = await userRef.get();
-
-            if (userDoc.exists) {
-              // Användarens data finns i Firestore
-              const userData = userDoc.data();
-              console.log("User data from Firestore: ", userData);
-            } else {
-              // Om användaren inte har något dokument i Firestore, skapa ett nytt
-              await userRef.set({
-                email: user.email,
-                name: user.displayName || "Anonymous"
-              });
-            }
-
-            // Skicka användaren till myfood.html eller annan sida
-            window.location.href = "myfood.html";
-          })
-          .catch((error) => {
-            alert("Login failed: " + error.message);
-          })
-          .finally(() => {
-            // Re-enable the button, hide spinner and reset text
-            loginBtn.disabled = false;
-            spinner.style.display = "none";  // Hide spinner
-            loginBtn.textContent = "Login";
-          });
-      });
-    </script>
   </body>
 </html>
