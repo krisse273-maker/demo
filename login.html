@@ -10,24 +10,26 @@
     <style>
       /* --- Body & bakgrund --- */
       body {
-        background-color: #2b3340; /* mörk bakgrund */
+        background-color: #2b3340; /* mörk bakgrund överallt */
         font-family: 'Poppins', sans-serif;
         display: flex;
         flex-direction: column;
         min-height: 100vh;
         color: #cfd8dc;
+        margin: 0;
       }
 
       /* --- Header --- */
       header {
         text-align: center;
         padding: 2rem 1rem;
+        background-color: #2b3340; /* mörk bakgrund */
       }
 
       header h1 {
         font-size: 2.8rem;
         margin-bottom: 0.3rem;
-        color: #4caf50; /* ljusgrön */
+        color: #cfd8dc; /* ljus text, ingen grön här */
         text-shadow: 0 2px 4px rgba(0,0,0,0.4);
       }
 
@@ -52,7 +54,7 @@
       .login-form h2 {
         text-align: center;
         margin-bottom: 2rem;
-        color: #4caf50; /* ljusgrön */
+        color: #4caf50; /* ljusgrön accent */
       }
 
       .login-form label {
@@ -88,8 +90,8 @@
       .login-form button {
         width: 100%;
         padding: 0.9rem;
-        background-color: #4caf50;
-        color: #2b3340;
+        background-color: #4caf50; /* ljusgrön */
+        color: #2b3340; /* mörk text */
         border: none;
         border-radius: 12px;
         font-size: 1.1rem;
@@ -104,7 +106,6 @@
       .login-form button:hover {
         background-color: #66bb6a;
         box-shadow: 0 6px 15px rgba(0,0,0,0.4);
-        color: #2b3340;
       }
 
       .login-form p.info {
