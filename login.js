@@ -20,8 +20,13 @@ const db = getFirestore(app);
 
 // ===== UI =====
 const loginBtn = document.getElementById("loginBtn");
-const goRegisterBtn = document.getElementById("goRegisterBtn"); // ✅ NY
+const goRegisterBtn = document.getElementById("goRegisterBtn");
 const spinner = document.getElementById("spinner");
+
+// Lägg till ett span för knapp-texten
+let btnText = document.createElement("span");
+btnText.textContent = "Login";
+loginBtn.insertBefore(btnText, spinner.nextSibling);
 
 let msgElem = document.createElement("p");
 msgElem.style.color = "red";
@@ -40,11 +45,9 @@ loginBtn.addEventListener("click", async () => {
     return;
   }
 
-  console.log("Login button clicked");
-
   loginBtn.disabled = true;
-  spinner.style.display = "block";
-  loginBtn.textContent = "Logging in...";
+  spinner.style.display = "inline-block";  // Visa spinner
+  btnText.textContent = "Logging in...";   // Uppdatera texten utan att ta bort spinnern
 
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -70,8 +73,8 @@ loginBtn.addEventListener("click", async () => {
     else msgElem.textContent = "Login failed: " + err.message;
   } finally {
     loginBtn.disabled = false;
-    spinner.style.display = "none";
-    loginBtn.textContent = "Login";
+    spinner.style.display = "none";  // Dölj spinner
+    btnText.textContent = "Login";   // Återställ texten
   }
 });
 
