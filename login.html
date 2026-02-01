@@ -10,7 +10,7 @@
     <style>
       /* --- Body & bakgrund --- */
       body {
-        background-color: #2b3340; /* mörk bakgrund överallt */
+        background-color: #2b3340; /* mörk bakgrund */
         font-family: 'Poppins', sans-serif;
         display: flex;
         flex-direction: column;
@@ -23,13 +23,13 @@
       header {
         text-align: center;
         padding: 2rem 1rem;
-        background-color: #2b3340; /* mörk bakgrund */
+        background-color: #2b3340;
       }
 
       header h1 {
         font-size: 2.8rem;
         margin-bottom: 0.3rem;
-        color: #cfd8dc; /* ljus text */
+        color: #cfd8dc;
         text-shadow: 0 2px 4px rgba(0,0,0,0.4);
       }
 
@@ -41,28 +41,28 @@
 
       /* --- Login-form --- */
       .login-form {
-        background-color: #39414a; /* lite ljusare än bakgrund */
+        background-color: #4caf50; /* hela login-rutan grön */
         border-radius: 16px;
-        border: 2px solid #4caf50; /* sexig grön border */
+        border: 2px solid #388e3c; /* lite mörkare grön border */
         max-width: 400px;
         margin: 3rem auto;
         padding: 2.5rem;
         box-shadow: 0 12px 25px rgba(0, 0, 0, 0.5);
-        color: #cfd8dc;
+        color: #ffffff;
         position: relative;
       }
 
       .login-form h2 {
         text-align: center;
         margin-bottom: 2rem;
-        color: #4caf50; /* ljusgrön accent */
+        color: #e8f5e9; /* ljusgrön för kontrast */
       }
 
       .login-form label {
         display: block;
         margin-bottom: 0.5rem;
         font-weight: 600;
-        color: #cfd8dc;
+        color: #e8f5e9;
       }
 
       .login-form input {
@@ -70,20 +70,20 @@
         padding: 0.9rem;
         margin-bottom: 1.2rem;
         border-radius: 12px;
-        border: 1px solid #4caf50;
-        background-color: #2b3340;
-        color: #cfd8dc;
+        border: 1px solid #388e3c; /* lite mörkare grön border */
+        background-color: #66bb6a; /* lite ljusare grön än form */
+        color: #ffffff;
         font-size: 1rem;
         transition: 0.3s;
       }
 
       .login-form input::placeholder {
-        color: #81c784; /* ljusgrön placeholder */
+        color: #c8e6c9; /* ljusgrön placeholder */
       }
 
       .login-form input:focus {
-        border-color: #4caf50;
-        box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+        border-color: #2e7d32;
+        box-shadow: 0 0 8px rgba(46,125,50,0.5);
         outline: none;
       }
 
@@ -91,9 +91,9 @@
       .login-form button {
         width: 100%;
         padding: 0.9rem;
-        background-color: #2b3340; /* matchar bakgrunden */
-        color: #4caf50; /* grön text */
-        border: 2px solid #4caf50;
+        background-color: #4caf50; /* samma som form */
+        color: #2b3340; /* mörk text */
+        border: none;
         border-radius: 12px;
         font-size: 1.1rem;
         cursor: pointer;
@@ -105,16 +105,30 @@
       }
 
       .login-form button:hover {
-        background-color: #4caf50;
-        color: #2b3340;
-        box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        background-color: #43a047; /* lite mörkare grön på hover */
       }
 
       .login-form p.info {
-        color: #cfd8dc;
+        color: #e8f5e9;
         font-size: 0.85rem;
         margin-top: 1rem;
         text-align: center;
+      }
+
+      #goRegisterBtn {
+        background-color: #4caf50; /* matchar formuläret */
+        color: #2b3340;
+        border: 2px solid #388e3c; /* mörkare grön border */
+        border-radius: 12px;
+        margin-top: 0.8rem;
+        padding: 0.9rem;
+        cursor: pointer;
+        transition: 0.3s;
+        font-weight: 600;
+      }
+
+      #goRegisterBtn:hover {
+        background-color: #43a047;
       }
 
       footer {
@@ -127,8 +141,8 @@
 
       /* --- Spinner --- */
       .spinner {
-        border: 3px solid #cfd8dc;
-        border-top: 3px solid #4caf50;
+        border: 3px solid #ffffff;
+        border-top: 3px solid #2b3340;
         border-radius: 50%;
         width: 20px;
         height: 20px;
@@ -142,6 +156,7 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
+
     </style>
   </head>
   <body>
