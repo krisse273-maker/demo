@@ -144,20 +144,29 @@
       }
 
       .food-item div h3 {
-        color: #4caf50;
+        color: #7fff7f; /* ljusare grön */
         margin: 0;
+        font-weight: 600;
+        font-size: 1.25rem;
+        text-shadow: 0 0 5px rgba(127, 255, 127, 0.5); /* subtil glow */
       }
 
       .food-item div p {
-        font-size: 0.9rem;
+        font-size: 1rem;
         color: #b0bec5;
         margin: 0.2rem 0;
+        line-height: 1.4;
+      }
+
+      .food-item div p span.icon {
+        margin-right: 0.3rem;
       }
 
       /* Datum på matpost */
       .food-item div .date {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         color: #90a4ae;
+        font-style: italic;
       }
 
       footer {
@@ -311,9 +320,9 @@
             <span>${item.emoji||"🍽️"}</span>
             <div>
               <h3>${item.title||""}</h3>
-              <p>Location: ${item.city||""}, ${item.country||""}</p>
-              <p>Shared by: ${item.user||"Anonymous"}</p>
-              <p class="date">${dateStr}</p>
+              <p><span class="icon">📍</span>${item.city||""}, ${item.country||""}</p>
+              <p><span class="icon">👤</span>${item.user||"Anonymous"}</p>
+              <p class="date"><span class="icon">📅</span>${dateStr}</p>
             </div>
           `;
           foodList.appendChild(div);
