@@ -154,6 +154,12 @@
         margin: 0.2rem 0;
       }
 
+      /* Datum på matpost */
+      .food-item div .date {
+        font-size: 0.8rem;
+        color: #90a4ae;
+      }
+
       footer {
         color: #cfd8dc;
         text-align: center;
@@ -288,15 +294,26 @@
       function renderFoodItems(items){
         foodList.innerHTML="";
         if(!items.length){foodList.innerHTML="<p>No food found.</p>";return;}
+        
         items.forEach(item=>{
           const div=document.createElement("div");
           div.className="food-item";
+
+          // Konvertera Firebase timestamp till läsbart datum
+          let dateStr = "";
+          if(item.createdAt){
+            const date = item.createdAt.toDate ? item.createdAt.toDate() : new Date(item.createdAt);
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            dateStr = date.toLocaleDateString('en-US', options);
+          }
+
           div.innerHTML=`
             <span>${item.emoji||"🍽️"}</span>
             <div>
               <h3>${item.title||""}</h3>
               <p>Location: ${item.city||""}, ${item.country||""}</p>
               <p>Shared by: ${item.user||"Anonymous"}</p>
+              <p class="date">${dateStr}</p>
             </div>
           `;
           foodList.appendChild(div);
