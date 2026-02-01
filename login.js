@@ -1,227 +1,76 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Global Food Share - Login</title>
-    <link rel="stylesheet" href="style.css" />
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+// ===== Firebase-konfiguration =====
+const firebaseConfig = {
+  apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
+  authDomain: "global-food-share.firebaseapp.com",
+  projectId: "global-food-share",
+  storageBucket: "global-food-share.firebasestorage.app",
+  messagingSenderId: "902107453892",
+  appId: "1:902107453892:web:dd9625974b8744cc94ac91",
+  measurementId: "G-S1G7JY0TH5",
+};
 
-    <script>
-      // Firebase-konfiguration
-      const firebaseConfig = {
-        apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
-        authDomain: "global-food-share.firebaseapp.com",
-        projectId: "global-food-share",
-        storageBucket: "global-food-share.firebasestorage.app",
-        messagingSenderId: "902107453892",
-        appId: "1:902107453892:web:dd9625974b8744cc94ac91",
-        measurementId: "G-S1G7JY0TH5",
-      };
+// ===== Initiera Firebase =====
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-      // Initiera Firebase
-      firebase.initializeApp(firebaseConfig);
-      const auth = firebase.auth();
-      const db = firebase.firestore();
-    </script>
+// ===== UI =====
+const loginBtn = document.getElementById("loginBtn");
+let msgElem = document.createElement("p");
+msgElem.style.color = "red";
+msgElem.style.textAlign = "center";
+msgElem.style.marginTop = "0.5rem";
+document.querySelector(".login-form").appendChild(msgElem);
 
-    <script src="script.js" defer></script>
+loginBtn.addEventListener("click", async () => {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  msgElem.textContent = "";
 
-    <style>
-      body {
-        background-color: #4caf50;
-        font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
+  if (!email || !password) {
+    msgElem.textContent = "Please fill in all fields!";
+    return;
+  }
 
-      header {
-        text-align: center;
-        color: white;
-        padding: 2rem 1rem;
-      }
+  // ===== Disable the button and show loading =====
+  loginBtn.disabled = true;
+  loginBtn.textContent = "Logging in...";
 
-      .login-form {
-        background-color: white;
-        border: 2px solid white;
-        max-width: 400px;
-        margin: 3rem auto;
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-      }
+  try {
+    // ===== Logga in användaren =====
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
-      .login-form h2 {
-        text-align: center;
-        margin-bottom: 1.5rem;
-        color: #333;
-      }
+    // ===== Hämta Firestore-data =====
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
 
-      .login-form label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: bold;
-        color: #333;
-      }
-
-      .login-form input {
-        width: 100%;
-        padding: 0.7rem;
-        margin-bottom: 1rem;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        font-size: 1rem;
-      }
-
-      .login-form button {
-        width: 100%;
-        padding: 0.8rem;
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 1rem;
-        cursor: pointer;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .login-form button:hover {
-        background-color: #45a049;
-      }
-
-      .login-form p.info {
-        color: #333;
-        font-size: 0.85rem;
-        margin-top: 1rem;
-        text-align: center;
-      }
-
-      footer {
-        text-align: center;
-        padding: 1rem;
-        margin-top: auto;
-        color: white;
-      }
-
-      /* Spinner-stil */
-      .spinner {
-        border: 3px solid #f3f3f3; /* Grå bakgrund */
-        border-top: 3px solid #4caf50; /* Grön färg för spinnern */
-        border-radius: 50%;
-        width: 16px;
-        height: 16px;
-        animation: spin 1s linear infinite;
-        margin-right: 8px; /* Avstånd mellan spinner och text */
-      }
-
-      /* Spinner animation */
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <h1>🌍 Global Food Share</h1>
-      <p>Log in to your account</p>
-    </header>
-
-    <div class="login-form">
-      <h2>Login</h2>
-      <label for="email">Email:</label>
-      <input type="email" id="email" placeholder="demo@example.com" />
-
-      <label for="password">Password:</label>
-      <input type="password" id="password" placeholder="Demo password" />
-
-      <button id="loginBtn">
-        <span id="spinner" class="spinner" style="display: none;"></span>
-        Login
-      </button>
-
-      <p class="info">Don't have an account?</p>
-      <button
-        id="goRegisterBtn"
-        style="
-          width: 100%;
-          margin-top: 0.5rem;
-          padding: 0.8rem;
-          background-color: white;
-          color: #4caf50;
-          border: 2px solid white;
-          border-radius: 8px;
-          cursor: pointer;
-        "
-      >
-        Register / Enter App
-      </button>
-    </div>
-
-    <footer>
-      <p>&copy; 2026 Global Food Share</p>
-    </footer>
-
-    <script>
-      const goRegisterBtn = document.getElementById("goRegisterBtn");
-      goRegisterBtn.addEventListener("click", () => {
-        window.location.href = "register.html";
+    if (userSnap.exists()) {
+      console.log("User data from Firestore:", userSnap.data());
+    } else {
+      // Skapa dokument om det saknas
+      await setDoc(userRef, {
+        email: user.email,
+        name: user.displayName || "Anonymous",
+        createdAt: new Date()
       });
+    }
 
-      // Login med Firebase
-      const loginBtn = document.getElementById("loginBtn");
-      const spinner = document.getElementById("spinner");
+    // Skicka användaren vidare
+    window.location.href = "index.html";
 
-      loginBtn.addEventListener("click", () => {
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-
-        // Disable the login button, show spinner and change text
-        loginBtn.disabled = true;
-        spinner.style.display = "inline-block";  // Show spinner
-        loginBtn.textContent = "Logging in...";
-
-        auth
-          .signInWithEmailAndPassword(email, password)
-          .then(async (userCredential) => {
-            const user = userCredential.user;
-
-            // Hämta användarens data från Firestore
-            const userRef = db.collection('users').doc(user.uid);
-            const userDoc = await userRef.get();
-
-            if (userDoc.exists) {
-              // Användarens data finns i Firestore
-              const userData = userDoc.data();
-              console.log("User data from Firestore: ", userData);
-            } else {
-              // Om användaren inte har något dokument i Firestore, skapa ett nytt
-              await userRef.set({
-                email: user.email,
-                name: user.displayName || "Anonymous"
-              });
-            }
-
-            // Skicka användaren till myfood.html eller annan sida
-            window.location.href = "myfood.html";
-          })
-          .catch((error) => {
-            alert("Login failed: " + error.message);
-          })
-          .finally(() => {
-            // Re-enable the button, hide spinner and reset text
-            loginBtn.disabled = false;
-            spinner.style.display = "none";  // Hide spinner
-            loginBtn.textContent = "Login";
-          });
-      });
-    </script>
-  </body>
-</html>
+  } catch (err) {
+    console.error(err);
+    if (err.code === "auth/user-not-found") msgElem.textContent = "No user found with this email.";
+    else if (err.code === "auth/wrong-password") msgElem.textContent = "Incorrect password.";
+    else msgElem.textContent = "Login failed: " + err.message;
+  } finally {
+    // ===== Re-enable the button and reset text =====
+    loginBtn.disabled = false;
+    loginBtn.textContent = "Login";
+  }
+});
