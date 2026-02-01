@@ -70,6 +70,38 @@
       footer {
         color: #cfd8dc;
       }
+
+      /* "My Food List" Button - Tonad Orange */
+      #myFoodBtn {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: none;
+        background-color: #ffb74d; /* tonad orange */
+        color: #1c222b;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      #myFoodBtn:hover {
+        background-color: #ffa733; /* ljusare orange */
+        color: #262d37;
+      }
+
+      /* Search Button */
+      #filterBtn {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: none;
+        background-color: #4caf50;
+        color: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      #filterBtn:hover {
+        background-color: #45a045;
+      }
+
     </style>
   </head>
 
@@ -102,13 +134,11 @@
       <div style="margin-top:1rem">
         <button
           id="filterBtn"
-          style="padding:0.5rem 1rem;border-radius:6px;border:none;background-color:#4caf50;color:white;cursor:pointer;"
         >
           Search
         </button>
         <button
           id="myFoodBtn"
-          style="padding:0.5rem 1rem;border-radius:6px;border:none;background-color:#ff9800;color:white;cursor:pointer;margin-left:0.5rem;"
         >
           My Food List
         </button>
@@ -192,7 +222,7 @@
         citySelect.disabled=false;
       });
 
-      filterBtn.addEventListener("click",()=>{
+      filterBtn.addEventListener("click",()=>{ 
         const filtered=allFoods.filter(f=>
           (!countrySelect.value||f.country===countrySelect.value)&&
           (!citySelect.value||f.city===citySelect.value)
