@@ -6,30 +6,53 @@
     <title>Global Food Share</title>
     <link rel="stylesheet" href="style.css" />
     <style>
-      /* Uppdaterade färger och borders för att matcha login/register */
+      /* Grundfärger */
       body {
-        background-color: #4caf50; /* samma gröna bakgrund som login/register */
+        background-color: #4caf50; /* grön bakgrund som login/register */
         color: #cfd8dc; /* ljus text */
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 1rem;
       }
 
-      header, section.filters, section.food-list {
-        background-color: #262d37; /* mörk bakgrund som fälten */
-        border: 2px solid #1c222b; /* samma mörka border */
+      /* Header */
+      header {
+        background-color: #4caf50; /* grön */
+        padding: 1rem;
         border-radius: 6px;
+        text-align: center;
       }
 
-      header h1, section.filters h2, section.food-list h2 {
-        color: #4caf50; /* accentfärg som knappar */
+      header h1 {
+        color: #ffffff;
+        margin: 0;
       }
 
       header p#welcomeMsg {
-        color: #cfd8dc;
+        color: #ffffff;
+        margin: 0.5rem 0;
       }
 
       header button#logoutBtn {
-        background-color: #262d37;
+        background-color: #ffffff;
         color: #4caf50;
         border: 2px solid #1c222b;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+      }
+
+      /* Filters */
+      section.filters {
+        background-color: #262d37;
+        border: 2px solid #1c222b;
+        border-radius: 6px;
+        padding: 1rem;
+        margin-top: 1rem;
+      }
+
+      section.filters h2 {
+        color: #4caf50;
       }
 
       #country, #city {
@@ -37,6 +60,10 @@
         color: #cfd8dc;
         border: 2px solid #1c222b;
         border-radius: 6px;
+        padding: 0.25rem 0.5rem;
+        margin-top: 0.25rem;
+        width: 100%;
+        box-sizing: border-box;
       }
 
       #filterBtn {
@@ -44,6 +71,8 @@
         color: #4caf50;
         border: 2px solid #1c222b;
         border-radius: 6px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
       }
 
       #myFoodBtn {
@@ -51,6 +80,22 @@
         color: #1c222b;
         border: 2px solid #1c222b;
         border-radius: 6px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        margin-left: 0.5rem;
+      }
+
+      /* Available Food Section */
+      section.food-list {
+        background-color: #262d37;
+        border: 2px solid #1c222b;
+        border-radius: 6px;
+        padding: 1.5rem; /* mer luftig */
+        margin-top: 1rem;
+      }
+
+      section.food-list h2 {
+        color: #4caf50;
       }
 
       .global-food-list .food-item {
@@ -64,10 +109,13 @@
 
       .food-item h3 {
         color: #4caf50;
+        margin: 0;
       }
 
       footer {
         color: #cfd8dc;
+        text-align: center;
+        margin-top: 2rem;
       }
     </style>
   </head>
@@ -75,7 +123,7 @@
     <header>
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
-      <button id="logoutBtn" style="margin-top:1rem;padding:0.5rem 1rem;cursor:pointer;">Log Out</button>
+      <button id="logoutBtn">Log Out</button>
     </header>
 
     <section class="filters">
@@ -94,7 +142,7 @@
       </div>
       <div style="margin-top:1rem">
         <button id="filterBtn">Search</button>
-        <button id="myFoodBtn" style="margin-left:0.5rem;">My Food List</button>
+        <button id="myFoodBtn">My Food List</button>
       </div>
     </section>
 
