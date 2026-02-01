@@ -31,15 +31,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const passwordLengthError = document.getElementById("passwordLengthError");
   const uppercaseNumberError = document.getElementById("uppercaseNumberError");
 
-  // ===== Spinner =====
+  // ===== Spinner & Button Text =====
   const spinner = document.createElement("span");
   spinner.className = "spinner";
   spinner.style.display = "none";
   spinner.style.marginRight = "10px";
-  registerBtn.prepend(spinner); // Lägger spinnern längst fram på knappen
+  registerBtn.prepend(spinner); // spinner first
 
   const btnText = document.createElement("span");
-  btnText.textContent = "Register / Enter App";
+  btnText.textContent = "Register"; // ✅ Only says "Register"
   registerBtn.appendChild(btnText);
 
   // ===== Validation helpers =====
@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } finally {
       registerBtn.disabled = false;
       spinner.style.display = "none";
-      btnText.textContent = "Register / Enter App";
+      btnText.textContent = "Register"; // ✅ Back to "Register"
     }
   });
 });
