@@ -25,9 +25,7 @@
         color: #4caf50;
       }
 
-      #welcomeMsg {
-        color: #cfd8dc;
-      }
+      #welcomeMsg { color: #cfd8dc; }
 
       #logoutBtn {
         position: absolute;
@@ -107,7 +105,8 @@
 
       .food-item {
         display: flex;
-        align-items: flex-start;
+        flex-direction: column;
+        align-items: center; /* Centrera allt */
         gap: 1rem;
         background-color: #2b3340;
         color: #cfd8dc;
@@ -116,7 +115,6 @@
         padding: 1rem;
         box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
-        flex-direction: column;
         text-align: center; /* Centrera text */
       }
 
@@ -128,9 +126,8 @@
       .food-header {
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: center; /* Centrera emoji + titel */
         gap: 0.5rem;
-        margin-bottom: 0.5rem;
       }
 
       .food-header span {
@@ -146,10 +143,17 @@
         text-shadow: 0 0 5px rgba(127, 255, 127, 0.5);
       }
 
+      .food-details {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Centrera alla p-rader */
+        gap: 0.2rem;
+      }
+
       .food-details p {
         font-size: 1rem;
         color: #b0bec5;
-        margin: 0.2rem 0;
+        margin: 0;
         line-height: 1.4;
         word-break: break-word;
       }
