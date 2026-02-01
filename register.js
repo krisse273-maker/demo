@@ -21,6 +21,7 @@ const db = getFirestore(app);
 document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
   const togglePasswordBtn = document.getElementById("togglePassword");
+  const goLoginBtn = document.getElementById("goLoginBtn"); // ✅ Login-knapp
   const nameInput = document.getElementById("name");
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
@@ -36,10 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
   spinner.className = "spinner";
   spinner.style.display = "none";
   spinner.style.marginRight = "10px";
-  registerBtn.prepend(spinner); // spinner first
+  registerBtn.prepend(spinner);
 
   const btnText = document.createElement("span");
-  btnText.textContent = "Register"; // ✅ Only says "Register"
+  btnText.textContent = "Register";
   registerBtn.appendChild(btnText);
 
   // ===== Validation helpers =====
@@ -160,7 +161,12 @@ document.addEventListener("DOMContentLoaded", () => {
     } finally {
       registerBtn.disabled = false;
       spinner.style.display = "none";
-      btnText.textContent = "Register"; // ✅ Back to "Register"
+      btnText.textContent = "Register";
     }
+  });
+
+  // ===== Login button click =====
+  goLoginBtn.addEventListener("click", () => {
+    window.location.href = "login.html"; // ✅ Navigerar till login.html
   });
 });
