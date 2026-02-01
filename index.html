@@ -98,6 +98,15 @@
 
       #filterBtn:hover { background-color: #45a045; }
 
+      .food-list h2 {
+        text-align: center;
+        color: #ffffff;
+        font-size: 1.8rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        margin: 1rem 0;
+      }
+
       .global-food-list {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -137,13 +146,12 @@
         flex-shrink: 0;
       }
 
-      /* NY FÄRG: vit på titeln */
       .food-header h3 {
         color: #ffffff;
         margin: 0;
         font-weight: 600;
         font-size: 1.25rem;
-        text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+        text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
       }
 
       .food-details {
@@ -220,7 +228,7 @@
     </section>
 
     <section class="food-list">
-      <h2>Available Food</h2>
+      <h2>Shared Meals</h2>
       <div class="global-food-list"></div>
     </section>
 
