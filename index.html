@@ -98,15 +98,32 @@
 
       #filterBtn:hover { background-color: #45a045; }
 
-      /* FIX FÖR 4 POSTER PER RAD MED BEHÅLLEN PADDING */
+      /* 4 poster per rad på stora skärmar */
       .global-food-list {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(4, 1fr); /* alltid 4 kolumner */
         gap: 1rem;
         padding: 1rem;
-        justify-items: center; /* centrera poster horisontellt */
-        max-width: 1400px; /* maxbredd så det inte stretchas för mycket */
+        max-width: 1400px;
         margin: 0 auto;
+      }
+
+      @media (max-width: 1200px) {
+        .global-food-list {
+          grid-template-columns: repeat(3, 1fr); /* 3 kolumner på medelstora skärmar */
+        }
+      }
+
+      @media (max-width: 900px) {
+        .global-food-list {
+          grid-template-columns: repeat(2, 1fr); /* 2 kolumner på små skärmar */
+        }
+      }
+
+      @media (max-width: 600px) {
+        .global-food-list {
+          grid-template-columns: 1fr; /* 1 kolumn på mobil */
+        }
       }
 
       .food-item {
@@ -121,7 +138,7 @@
         box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         text-align: center;
-        width: 100%; /* så min-width:250px fungerar med grid */
+        width: 100%;
       }
 
       .food-item:hover {
@@ -175,7 +192,7 @@
       }
 
       .food-details p span.icon-small {
-        font-size: 1.2rem; /* mindre än mat-emoji */
+        font-size: 1.2rem;
         flex-shrink: 0;
       }
 
