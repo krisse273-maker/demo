@@ -87,6 +87,10 @@
         border-radius: 8px;
         font-size: 1rem;
         cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
       }
 
       .login-form button:hover {
@@ -106,6 +110,25 @@
         margin-top: auto;
         color: white;
       }
+
+      /* Spinner-stil */
+      .spinner {
+        border: 3px solid #f3f3f3; /* Grå bakgrund */
+        border-top: 3px solid #ffffff; /* Vit färg för spinnern */
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        margin-right: 10px; /* Avstånd mellan spinner och text */
+        position: absolute;
+        left: 10px;
+      }
+
+      /* Spinner animation */
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
     </style>
   </head>
   <body>
@@ -122,7 +145,9 @@
       <label for="password">Password:</label>
       <input type="password" id="password" placeholder="Demo password" />
 
-      <button id="loginBtn">Login</button>
+      <button id="loginBtn">
+        <span id="spinner" class="spinner" style="display: none;"></span> Login
+      </button>
 
       <p class="info">Don't have an account?</p>
       <button
@@ -154,13 +179,16 @@
 
       // Login med Firebase
       const loginBtn = document.getElementById("loginBtn");
+      const spinner = document.getElementById("spinner");
+
       loginBtn.addEventListener("click", () => {
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
 
-        // Disable the login button and show loading text
+        // Disable the login button, show spinner and change text
         loginBtn.disabled = true;
-        loginBtn.textContent = "Logging in...";
+        spinner.style.display = "inline-block";  // Show spinner
+        loginBtn.textContent = ""; // Ta bort "Login"-texten för att visa bara spinnern
 
         auth
           .signInWithEmailAndPassword(email, password)
@@ -190,9 +218,10 @@
             alert("Login failed: " + error.message);
           })
           .finally(() => {
-            // Re-enable the button and reset the text
+            // Re-enable the button, hide spinner and reset text
             loginBtn.disabled = false;
-            loginBtn.textContent = "Login";
+            spinner.style.display = "none";  // Hide spinner
+            loginBtn.textContent = "Login";  // Reset button text
           });
       });
     </script>
