@@ -90,7 +90,6 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        position: relative;
       }
 
       .login-form button:hover {
@@ -113,15 +112,13 @@
 
       /* Spinner-stil */
       .spinner {
-        border: 3px solid #f3f3f3; /* Grå bakgrund */
-        border-top: 3px solid #ffffff; /* Vit färg för spinnern */
+        border: 3px solid #f3f3f3; /* Ljusgrå bakgrund för spinnern */
+        border-top: 3px solid #2196F3; /* Blå färg för toppen på spinnern */
         border-radius: 50%;
         width: 16px;
         height: 16px;
         animation: spin 1s linear infinite;
         margin-right: 10px; /* Avstånd mellan spinner och text */
-        position: absolute;
-        left: 15px; /* Placera spinnern till vänster om texten */
       }
 
       /* Spinner animation */
@@ -222,7 +219,7 @@
             // Re-enable the button, hide spinner and reset text
             loginBtn.disabled = false;
             spinner.style.display = "none";  // Hide spinner
-            loginBtn.textContent = "Login";  // Reset button text
+            loginBtn.textContent = "Login";
           });
       });
     </script>
