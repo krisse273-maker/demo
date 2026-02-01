@@ -5,90 +5,153 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Global Food Share - Register</title>
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Google Font: Poppins -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
     body {
-      background-color: #4caf50;
+      background-color: #4caf50; /* ljusgrön bakgrund */
       font-family: 'Poppins', Arial, sans-serif;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
+      margin: 0;
+      color: #cfd8dc;
     }
+
     header {
       text-align: center;
-      color: white;
+      color: #1c222b;
       padding: 2rem 1rem;
     }
+
+    header h1 {
+      margin: 0 0 0.3rem 0;
+      font-size: 2.8rem;
+      text-shadow: none;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      opacity: 0.85;
+    }
+
     .register-form {
-      background-color: white;
-      border: 2px solid white;
+      background: linear-gradient(145deg, #262d37, #39414a); /* mörk gradient */
+      border-radius: 12px;
       max-width: 400px;
       margin: 3rem auto;
       padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      border: 2px solid #000000; /* svart border */
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.45);
+      color: #cfd8dc;
+      position: relative;
     }
+
     .register-form h2 {
       text-align: center;
       margin-bottom: 1.5rem;
-      color: #333;
+      color: #4caf50;
     }
+
     .register-form label {
       display: block;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
       font-weight: 600;
-      color: #333;
+      color: #cfd8dc;
     }
+
     .register-form input {
       width: 100%;
-      padding: 0.7rem;
-      margin-bottom: 0.3rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      padding: 0.8rem;
+      margin-bottom: 0.5rem;
+      border-radius: 10px;
+      border: 1px solid #1c222b;
+      background-color: #2b3340;
+      color: #cfd8dc;
       font-size: 1rem;
+      transition: 0.25s;
       box-sizing: border-box;
     }
 
-    /* ===== BUTTON + SPINNER ===== */
-    .register-form button {
+    .register-form input::placeholder {
+      color: #81c784;
+    }
+
+    .register-form input:focus {
+      border-color: #69f0ae;
+      box-shadow: 0 0 12px 2px rgba(105, 240, 174, 0.6);
+      outline: none;
+    }
+
+    /* Password wrapper */
+    .password-wrapper input {
       width: 100%;
-      padding: 0.8rem;
+      padding-right: 60px;
+      height: 40px;
+    }
+
+    .password-wrapper button {
+      position: absolute;
+      top: 50%;
+      right: 5px;
+      transform: translateY(-60%);
       background-color: #4caf50;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
+      border: 1px solid #388e3c;
+      border-radius: 4px;
       cursor: pointer;
+      height: 25px;
+      width: 40px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: #1c222b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0;
+    }
+
+    /* --- Buttons --- */
+    .register-form button#registerBtn {
+      background-color: #4caf50;
+      color: #1c222b;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: 0.25s;
+      font-weight: 600;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      position: relative;
-    }
-    .register-form button:hover {
-      background-color: #45a049;
     }
 
-    /* Spinner */
-    .spinner {
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-top: 3px solid white;
-      border-radius: 50%;
-      width: 18px;
-      height: 18px;
-      animation: spin 1s linear infinite;
-      display: none;
+    .register-form button#registerBtn:hover {
+      background-color: #388e3c;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.35);
     }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+
+    #goLoginBtn {
+      margin-top: 1rem;
+      background-color: #2b3340;
+      color: #4caf50;
+      border: 2px solid #4caf50;
+      border-radius: 10px;
+      padding: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.25s;
+      width: 100%;
+    }
+
+    #goLoginBtn:hover {
+      background-color: #4caf50;
+      color: #1c222b;
     }
 
     .register-form p.info {
-      color: #333;
+      color: #cfd8dc;
       font-size: 0.85rem;
       margin-top: 1rem;
       text-align: center;
@@ -106,53 +169,38 @@
       text-align: center;
       padding: 1rem;
       margin-top: auto;
-      color: white;
+      color: #b0bec5;
+      font-size: 0.9rem;
     }
+
+    /* Spinner */
+    .spinner {
+      border: 3px solid #cfd8dc;
+      border-top: 3px solid #4caf50;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     .loader-row {
       display: flex;
       align-items: center;
       gap: 12px;
       margin-bottom: 1rem;
     }
-    .password-wrapper {
-      position: relative;
-      width: 100%;
-    }
-    .password-wrapper input {
-      width: 100%;
-      padding-right: 60px;
-      height: 40px;
-    }
-    .password-wrapper button {
-      position: absolute;
-      top: 50%;
-      right: 5px;
-      transform: translateY(-60%);
-      background-color: #4caf50;
-      border: 1px solid #388e3c;
-      border-radius: 4px;
-      cursor: pointer;
-      height: 25px;
-      width: 40px;
-      font-size: 0.75rem;
-      font-weight: bold;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 0;
-    }
 
-    /* Flex för label + text bredvid */
     .password-label-container {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 0.3rem;
-    }
-    .password-label-container span.password-error {
-      margin-left: 10px;
     }
   </style>
 </head>
@@ -199,11 +247,12 @@
 
     <div class="loader-row">
       <button id="registerBtn">
-        <!-- spinner + text added by JS -->
+        <span class="spinner"></span>
+        <span id="btnText">Register</span>
       </button>
     </div>
 
-    <button id="goLoginBtn" style="margin-top: 1rem; background-color: white; color: #4caf50; border: 2px solid white;">
+    <button id="goLoginBtn">
       Login
     </button>
 
@@ -214,7 +263,6 @@
     <p>&copy; 2026 Global Food Share</p>
   </footer>
 
-  <!-- ===== JS ===== -->
   <script type="module" src="register.js"></script>
 </body>
 </html>
