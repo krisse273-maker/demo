@@ -39,7 +39,7 @@ loginBtn.addEventListener("click", async () => {
 
   // ===== Disable the button, show spinner and update button text =====
   loginBtn.disabled = true;
-  spinner.style.display = "inline-block";  // Show spinner
+  spinner.style.display = "visible";  // Show spinner
   loginBtn.textContent = "Logging in...";  // Change button text
 
   try {
@@ -77,3 +77,4 @@ loginBtn.addEventListener("click", async () => {
     loginBtn.textContent = "Login";  // Reset button text
   }
 });
+
