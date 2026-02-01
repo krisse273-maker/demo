@@ -73,6 +73,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        position: relative; /* Lägger till relativ positionering */
       }
 
       .login-form button:hover {
@@ -102,6 +103,9 @@
         height: 16px;
         animation: spin 1s linear infinite;
         margin-right: 10px; /* Avstånd mellan spinner och text */
+        visibility: hidden; /* Spinnern är initialt osynlig */
+        position: absolute;
+        left: 10px; /* Placerar spinnern till vänster om texten */
       }
 
       /* Spinner animation */
@@ -126,7 +130,7 @@
       <input type="password" id="password" placeholder="Demo password" />
 
       <button id="loginBtn">
-        <span id="spinner" class="spinner" style="display: none;"></span>
+        <span id="spinner" class="spinner"></span>
         Login
       </button>
 
