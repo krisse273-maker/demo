@@ -22,12 +22,9 @@ const db = getFirestore(app);
 const loginBtn = document.getElementById("loginBtn");
 const goRegisterBtn = document.getElementById("goRegisterBtn");
 const spinner = document.getElementById("spinner");
+const btnText = document.getElementById("btnText"); // ✅ Hämta textspan från HTML
 
-// Lägg till ett span för knapp-texten
-let btnText = document.createElement("span");
-btnText.textContent = "Login";
-loginBtn.insertBefore(btnText, spinner.nextSibling);
-
+// Meddelande-element
 let msgElem = document.createElement("p");
 msgElem.style.color = "red";
 msgElem.style.textAlign = "center";
@@ -45,9 +42,10 @@ loginBtn.addEventListener("click", async () => {
     return;
   }
 
+  // Visa spinner och ändra knapptext
   loginBtn.disabled = true;
-  spinner.style.display = "inline-block";  // Visa spinner
-  btnText.textContent = "Logging in...";   // Uppdatera texten utan att ta bort spinnern
+  spinner.style.display = "inline-block";
+  btnText.textContent = "Logging in...";
 
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -72,9 +70,10 @@ loginBtn.addEventListener("click", async () => {
     else if (err.code === "auth/wrong-password") msgElem.textContent = "Incorrect password.";
     else msgElem.textContent = "Login failed: " + err.message;
   } finally {
+    // Dölj spinner och återställ text
     loginBtn.disabled = false;
-    spinner.style.display = "none";  // Dölj spinner
-    btnText.textContent = "Login";   // Återställ texten
+    spinner.style.display = "none";
+    btnText.textContent = "Login";
   }
 });
 
