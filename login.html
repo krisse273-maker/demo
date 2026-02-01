@@ -90,7 +90,6 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        position: relative;
       }
 
       .login-form button:hover {
@@ -114,14 +113,12 @@
       /* Spinner-stil */
       .spinner {
         border: 3px solid #f3f3f3; /* Grå bakgrund */
-        border-top: 3px solid #ffffff; /* Vit färg för spinnern */
+        border-top: 3px solid #4caf50; /* Grön färg för spinnern */
         border-radius: 50%;
-        width: 20px;
-        height: 20px;
+        width: 16px;
+        height: 16px;
         animation: spin 1s linear infinite;
-        margin-right: 10px; /* Avstånd mellan spinner och text */
-        position: absolute;
-        left: 10px;
+        margin-right: 8px; /* Avstånd mellan spinner och text */
       }
 
       /* Spinner animation */
@@ -146,7 +143,8 @@
       <input type="password" id="password" placeholder="Demo password" />
 
       <button id="loginBtn">
-        <span id="spinner" class="spinner" style="display: none;"></span> Login
+        <span id="spinner" class="spinner" style="display: none;"></span>
+        Login
       </button>
 
       <p class="info">Don't have an account?</p>
@@ -188,7 +186,7 @@
         // Disable the login button, show spinner and change text
         loginBtn.disabled = true;
         spinner.style.display = "inline-block";  // Show spinner
-        loginBtn.textContent = ""; // Ta bort "Login"-texten för att visa bara spinnern
+        loginBtn.textContent = "Logging in...";
 
         auth
           .signInWithEmailAndPassword(email, password)
@@ -221,7 +219,7 @@
             // Re-enable the button, hide spinner and reset text
             loginBtn.disabled = false;
             spinner.style.display = "none";  // Hide spinner
-            loginBtn.textContent = "Login";  // Reset button text
+            loginBtn.textContent = "Login";
           });
       });
     </script>
