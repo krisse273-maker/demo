@@ -31,6 +31,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const passwordLengthError = document.getElementById("passwordLengthError");
   const uppercaseNumberError = document.getElementById("uppercaseNumberError");
 
+  // ===== Spinner =====
+  const spinner = document.createElement("span");
+  spinner.className = "spinner";
+  spinner.style.display = "none";
+  spinner.style.marginRight = "10px";
+  registerBtn.prepend(spinner); // Lägger spinnern längst fram på knappen
+
+  const btnText = document.createElement("span");
+  btnText.textContent = "Register / Enter App";
+  registerBtn.appendChild(btnText);
+
   // ===== Validation helpers =====
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isValidName = (name) => /^[a-zA-Z0-9]{1,15}$/.test(name);
@@ -124,17 +135,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ===== Firebase registration =====
     registerBtn.disabled = true;
-    registerBtn.textContent = "Registering...";
+    spinner.style.display = "inline-block";
+    btnText.textContent = "Registering...";
 
     try {
-      // Skapa användare i Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // ===== Lägg till displayName =====
       await updateProfile(user, { displayName: name });
 
-      // ===== Spara användare i Firestore 'users' collection =====
       await setDoc(doc(db, "users", user.uid), {
         name: name,
         publicName: name.toLowerCase(),
@@ -142,7 +151,6 @@ document.addEventListener("DOMContentLoaded", () => {
         createdAt: serverTimestamp()
       });
 
-      // ===== Redirect =====
       window.location.href = "index.html";
     } catch (error) {
       console.error("Registration error:", error);
@@ -151,7 +159,8 @@ document.addEventListener("DOMContentLoaded", () => {
       emailError.style.display = "block";
     } finally {
       registerBtn.disabled = false;
-      registerBtn.textContent = "Register / Enter App";
+      spinner.style.display = "none";
+      btnText.textContent = "Register / Enter App";
     }
   });
 });
