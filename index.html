@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Global Food Share</title>
     <link rel="stylesheet" href="style.css" />
-    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
@@ -46,9 +45,7 @@
         font-weight: 600;
       }
 
-      #logoutBtn:hover {
-        background-color: #e53935;
-      }
+      #logoutBtn:hover { background-color: #e53935; }
 
       #myFoodBtn {
         margin-top: 1rem;
@@ -63,9 +60,7 @@
         font-weight: 600;
       }
 
-      #myFoodBtn:hover {
-        background-color: #388e3c;
-      }
+      #myFoodBtn:hover { background-color: #388e3c; }
 
       section.filters {
         background-color: #262d37;
@@ -75,13 +70,9 @@
         text-align: center;
       }
 
-      section.filters h2 {
-        color: #4caf50;
-      }
+      section.filters h2 { color: #4caf50; }
 
-      label {
-        color: #cfd8dc;
-      }
+      label { color: #cfd8dc; }
 
       select {
         background-color: #2b3340;
@@ -105,9 +96,7 @@
         font-weight: 600;
       }
 
-      #filterBtn:hover {
-        background-color: #45a045;
-      }
+      #filterBtn:hover { background-color: #45a045; }
 
       .global-food-list {
         display: grid;
@@ -128,6 +117,7 @@
         box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         flex-direction: column;
+        text-align: center; /* Centrera text */
       }
 
       .food-item:hover {
@@ -135,20 +125,28 @@
         box-shadow: 0 8px 12px rgba(0,0,0,0.4);
       }
 
-      .food-item span {
+      .food-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .food-header span {
         font-size: 2rem;
         flex-shrink: 0;
       }
 
-      .food-item div h3 {
+      .food-header h3 {
         color: #7fff7f;
-        margin: 0 0 0.6rem 0;
+        margin: 0;
         font-weight: 600;
         font-size: 1.25rem;
         text-shadow: 0 0 5px rgba(127, 255, 127, 0.5);
       }
 
-      .food-item div p {
+      .food-details p {
         font-size: 1rem;
         color: #b0bec5;
         margin: 0.2rem 0;
@@ -156,12 +154,12 @@
         word-break: break-word;
       }
 
-      .food-item div p strong {
+      .food-details p strong {
         color: #cfd8dc;
         font-weight: 600;
       }
 
-      .food-item div .date {
+      .food-details .date {
         font-size: 0.9rem;
         color: #90a4ae;
         font-style: italic;
@@ -312,9 +310,11 @@
           }
 
           div.innerHTML=`
-            <span>${item.emoji||"🍽️"}</span>
-            <div>
+            <div class="food-header">
+              <span>${item.emoji||"🍽️"}</span>
               <h3>${item.title||""}</h3>
+            </div>
+            <div class="food-details">
               <p><strong>Location:</strong> ${item.city||""}, ${item.country||""}</p>
               <p><strong>Published By:</strong> ${item.user||"Anonymous"}</p>
               <p><strong>Posted On:</strong> <span class="date">${dateStr}</span></p>
