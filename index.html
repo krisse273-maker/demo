@@ -6,7 +6,7 @@
     <title>Global Food Share</title>
     <link rel="stylesheet" href="style.css" />
 
-    <!-- ENDA ÄNDRINGEN: FÄRGER -->
+    <!-- ENDA ÄNDRINGAR: FÄRGER + TA BORT BOXEN RUNT MATLISTAN -->
     <style>
       body {
         background-color: #4caf50;
@@ -25,15 +25,13 @@
         color: #cfd8dc;
       }
 
-      section.filters,
-      section.food-list {
+      section.filters {
         background-color: #262d37;
         border: 2px solid #1c222b;
         border-radius: 6px;
       }
 
-      section.filters h2,
-      section.food-list h2 {
+      section.filters h2 {
         color: #4caf50;
       }
 
@@ -45,6 +43,17 @@
         background-color: #2b3340;
         color: #cfd8dc;
         border: 2px solid #1c222b;
+      }
+
+      /* 👇 HÄR: ingen box runt available food */
+      section.food-list {
+        background: none;
+        border: none;
+        padding: 0;
+      }
+
+      section.food-list h2 {
+        color: #4caf50;
       }
 
       .food-item {
@@ -120,7 +129,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-    <!-- JS: ORÖRD -->
+    <!-- JS: HELT ORÖRD -->
     <script>
       const firebaseConfig = {
         apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
@@ -145,14 +154,10 @@
       let countriesData = [];
       let allFoods = [];
 
-      const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
       auth.onAuthStateChanged(async user => {
         if (!user) return window.location.href="login.html";
-
         document.getElementById("welcomeMsg").textContent =
           `Welcome, ${user.displayName || user.email}!`;
-
         await loadCountries();
         loadGlobalFood();
       });
@@ -161,32 +166,23 @@
       myFoodBtn.addEventListener("click",()=>window.location.href="myfood.html");
 
       async function loadCountries(){
-        try{
-          const res = await fetch("https://countriesnow.space/api/v0.1/countries");
-          const data = await res.json();
-          countriesData = data.data;
-
-          countrySelect.innerHTML = '<option value="">Select country</option>';
-          countriesData.forEach(c=>{
-            const opt=document.createElement("option");
-            opt.value=c.country;
-            opt.textContent=c.country;
-            countrySelect.appendChild(opt);
-          });
-          countrySelect.disabled=false;
-        }catch(err){
-          console.error("Could not fetch countries:",err);
-          alert("Failed to load countries. Try refreshing.");
-        }
+        const res = await fetch("https://countriesnow.space/api/v0.1/countries");
+        const data = await res.json();
+        countriesData = data.data;
+        countrySelect.innerHTML = '<option value="">Select country</option>';
+        countriesData.forEach(c=>{
+          const opt=document.createElement("option");
+          opt.value=c.country;
+          opt.textContent=c.country;
+          countrySelect.appendChild(opt);
+        });
       }
 
       countrySelect.addEventListener("change",()=>{
         citySelect.innerHTML='<option value="">Select city</option>';
         citySelect.disabled=true;
-        const selectedCountry = countrySelect.value;
-        if(!selectedCountry) return;
-        const countryObj = countriesData.find(c=>c.country===selectedCountry);
-        if(!countryObj||!countryObj.cities.length) return;
+        const countryObj = countriesData.find(c=>c.country===countrySelect.value);
+        if(!countryObj) return;
         countryObj.cities.forEach(city=>{
           const opt=document.createElement("option");
           opt.value=city;
@@ -197,35 +193,29 @@
       });
 
       filterBtn.addEventListener("click",()=>{
-        const country=countrySelect.value;
-        const city=citySelect.value;
         const filtered=allFoods.filter(f=>
-          (!country||f.country===country)&&(!city||f.city===city)
+          (!countrySelect.value||f.country===countrySelect.value)&&
+          (!citySelect.value||f.city===citySelect.value)
         );
         renderFoodItems(filtered);
       });
 
       function loadGlobalFood(){
-        db.collection("publicFoods")
-          .orderBy("createdAt","desc")
-          .onSnapshot(snapshot=>{
-            allFoods=snapshot.docs.map(doc=>doc.data());
+        db.collection("publicFoods").orderBy("createdAt","desc")
+          .onSnapshot(snap=>{
+            allFoods=snap.docs.map(d=>d.data());
             renderFoodItems(allFoods);
           });
       }
 
       function renderFoodItems(items){
         foodList.innerHTML="";
-        if(!items.length){
-          foodList.innerHTML="<p>No food found.</p>";
-          return;
-        }
-
+        if(!items.length){foodList.innerHTML="<p>No food found.</p>";return;}
         items.forEach(item=>{
           const div=document.createElement("div");
-          div.classList.add("food-item");
+          div.className="food-item";
           div.innerHTML=`
-            <span class="icon">${item.emoji||"🍽️"}</span>
+            <span>${item.emoji||"🍽️"}</span>
             <h3>${item.title||""}</h3>
             <p>Location: ${item.city||""}, ${item.country||""}</p>
             <p>Shared by: ${item.user||"Anonymous"}</p>
