@@ -22,9 +22,9 @@ const db = getFirestore(app);
 const loginBtn = document.getElementById("loginBtn");
 const goRegisterBtn = document.getElementById("goRegisterBtn");
 const spinner = document.getElementById("spinner");
-const btnText = document.getElementById("btnText"); // ✅ Hämta textspan från HTML
+const btnText = document.getElementById("btnText");
 
-// Meddelande-element
+// Skapa meddelande-element för fel
 let msgElem = document.createElement("p");
 msgElem.style.color = "red";
 msgElem.style.textAlign = "center";
@@ -37,6 +37,7 @@ loginBtn.addEventListener("click", async () => {
   const password = document.getElementById("password").value;
   msgElem.textContent = "";
 
+  // Fältvalidering
   if (!email || !password) {
     msgElem.textContent = "Please fill in all fields!";
     return;
@@ -62,15 +63,24 @@ loginBtn.addEventListener("click", async () => {
       });
     }
 
+    // Redirect efter lyckad inloggning
     window.location.href = "index.html";
 
   } catch (err) {
     console.error(err);
-    if (err.code === "auth/user-not-found") msgElem.textContent = "No user found with this email.";
-    else if (err.code === "auth/wrong-password") msgElem.textContent = "Incorrect password.";
-    else msgElem.textContent = "Login failed: " + err.message;
+
+    // Användarvänligt felmeddelande
+    if (
+      err.code === "auth/user-not-found" ||
+      err.code === "auth/wrong-password" ||
+      err.code === "auth/invalid-email"
+    ) {
+      msgElem.textContent = "Wrong email or password.";
+    } else {
+      msgElem.textContent = "Login failed. Please try again.";
+    }
   } finally {
-    // Dölj spinner och återställ text
+    // Dölj spinner och återställ knapptext
     loginBtn.disabled = false;
     spinner.style.display = "none";
     btnText.textContent = "Login";
