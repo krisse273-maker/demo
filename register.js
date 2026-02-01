@@ -33,15 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const uppercaseNumberError = document.getElementById("uppercaseNumberError");
 
   // ===== Spinner & Button Text =====
-  const spinner = document.createElement("span");
-  spinner.className = "spinner";
-  spinner.style.display = "none";
-  spinner.style.marginRight = "10px";
-  registerBtn.prepend(spinner);
-
-  const btnText = document.createElement("span");
-  btnText.textContent = "Register";
-  registerBtn.appendChild(btnText);
+  // Använd redan existerande element från HTML istället för att skapa nya
+  const spinner = registerBtn.querySelector(".spinner");
+  const btnText = registerBtn.querySelector("#btnText");
 
   // ===== Validation helpers =====
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
