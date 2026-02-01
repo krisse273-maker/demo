@@ -20,6 +20,7 @@ const db = getFirestore(app);
 
 // ===== UI =====
 const loginBtn = document.getElementById("loginBtn");
+const spinner = document.getElementById("spinner");
 let msgElem = document.createElement("p");
 msgElem.style.color = "red";
 msgElem.style.textAlign = "center";
@@ -36,9 +37,10 @@ loginBtn.addEventListener("click", async () => {
     return;
   }
 
-  // ===== Disable the button and show loading =====
+  // ===== Disable the button, show spinner and update button text =====
   loginBtn.disabled = true;
-  loginBtn.textContent = "Logging in...";
+  spinner.style.display = "inline-block";  // Show spinner
+  loginBtn.textContent = "Logging in...";  // Change button text
 
   try {
     // ===== Logga in användaren =====
@@ -69,8 +71,9 @@ loginBtn.addEventListener("click", async () => {
     else if (err.code === "auth/wrong-password") msgElem.textContent = "Incorrect password.";
     else msgElem.textContent = "Login failed: " + err.message;
   } finally {
-    // ===== Re-enable the button and reset text =====
+    // ===== Re-enable the button, hide spinner and reset text =====
     loginBtn.disabled = false;
-    loginBtn.textContent = "Login";
+    spinner.style.display = "none";  // Hide spinner
+    loginBtn.textContent = "Login";  // Reset button text
   }
 });
