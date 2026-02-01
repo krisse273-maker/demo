@@ -1,4 +1,3 @@
-// login.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
@@ -37,6 +36,10 @@ loginBtn.addEventListener("click", async () => {
     return;
   }
 
+  // ===== Disable the button and show loading =====
+  loginBtn.disabled = true;
+  loginBtn.textContent = "Logging in...";
+
   try {
     // ===== Logga in användaren =====
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -65,5 +68,9 @@ loginBtn.addEventListener("click", async () => {
     if (err.code === "auth/user-not-found") msgElem.textContent = "No user found with this email.";
     else if (err.code === "auth/wrong-password") msgElem.textContent = "Incorrect password.";
     else msgElem.textContent = "Login failed: " + err.message;
+  } finally {
+    // ===== Re-enable the button and reset text =====
+    loginBtn.disabled = false;
+    loginBtn.textContent = "Login";
   }
 });
