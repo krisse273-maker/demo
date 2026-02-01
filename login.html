@@ -5,64 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Global Food Share - Login</title>
     <link rel="stylesheet" href="style.css" />
-
-    <!-- Länka till login.js som en modul -->
     <script src="login.js" type="module" defer></script>
 
     <style>
+      /* --- Body & bakgrund --- */
       body {
-        background-color: #4caf50;
-        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #6dd5ed, #2193b0); /* blå gradient */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         display: flex;
         flex-direction: column;
         min-height: 100vh;
+        color: #fff;
       }
 
       header {
         text-align: center;
-        color: white;
         padding: 2rem 1rem;
       }
 
+      header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+      }
+
+      /* --- Login-form --- */
       .login-form {
-        background-color: white;
-        border: 2px solid white;
+        background-color: #ffffffdd; /* vit med lite transparens */
+        border: 2px solid #0077b6; /* mörkblå border */
         max-width: 400px;
         margin: 3rem auto;
         padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        border-radius: 16px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        color: #023e8a; /* textfärg i formuläret */
       }
 
       .login-form h2 {
         text-align: center;
         margin-bottom: 1.5rem;
-        color: #333;
+        color: #0077b6;
       }
 
       .login-form label {
         display: block;
         margin-bottom: 0.5rem;
-        font-weight: bold;
-        color: #333;
+        font-weight: 600;
       }
 
       .login-form input {
         width: 100%;
-        padding: 0.7rem;
+        padding: 0.8rem;
         margin-bottom: 1rem;
-        border-radius: 8px;
-        border: 1px solid #ccc;
+        border-radius: 10px;
+        border: 1px solid #90e0ef; /* ljusblå border */
         font-size: 1rem;
+        transition: 0.2s;
       }
 
+      .login-form input:focus {
+        border-color: #0077b6;
+        box-shadow: 0 0 5px rgba(0, 119, 182, 0.5);
+        outline: none;
+      }
+
+      /* --- Buttons --- */
       .login-form button {
         width: 100%;
         padding: 0.8rem;
-        background-color: #4caf50;
+        background-color: #0077b6; /* mörkblå */
         color: white;
         border: none;
-        border-radius: 8px;
+        border-radius: 10px;
         font-size: 1rem;
         cursor: pointer;
         display: flex;
@@ -70,30 +88,48 @@
         align-items: center;
         position: relative;
         z-index: 2;
+        transition: 0.2s;
       }
 
       .login-form button:hover {
-        background-color: #45a049;
+        background-color: #0096c7;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       }
 
       .login-form p.info {
-        color: #333;
+        color: #023e8a;
         font-size: 0.85rem;
         margin-top: 1rem;
         text-align: center;
+      }
+
+      #goRegisterBtn {
+        background-color: #fff;
+        color: #0077b6;
+        border: 2px solid #0077b6;
+        border-radius: 10px;
+        margin-top: 0.5rem;
+        padding: 0.8rem;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      #goRegisterBtn:hover {
+        background-color: #e0f7fa;
       }
 
       footer {
         text-align: center;
         padding: 1rem;
         margin-top: auto;
-        color: white;
+        color: #ffffffcc;
+        font-size: 0.9rem;
       }
 
-      /* Spinner-stil */
+      /* --- Spinner --- */
       .spinner {
         border: 3px solid #f3f3f3;
-        border-top: 3px solid #2196F3;
+        border-top: 3px solid #0096c7;
         border-radius: 50%;
         width: 20px;
         height: 20px;
@@ -118,10 +154,10 @@
     <div class="login-form">
       <h2>Login</h2>
       <label for="email">Email:</label>
-      <input type="email" id="email" placeholder="demo@example.com" />
+      <input type="email" id="email" placeholder="demo@example.com" autocomplete="email" />
 
       <label for="password">Password:</label>
-      <input type="password" id="password" placeholder="Demo password" />
+      <input type="password" id="password" placeholder="Demo password" autocomplete="current-password" />
 
       <button id="loginBtn">
         <span id="spinner" class="spinner"></span>
@@ -129,19 +165,7 @@
       </button>
 
       <p class="info">Don't have an account?</p>
-      <button
-        id="goRegisterBtn"
-        style="
-          width: 100%;
-          margin-top: 0.5rem;
-          padding: 0.8rem;
-          background-color: white;
-          color: #4caf50;
-          border: 2px solid white;
-          border-radius: 8px;
-          cursor: pointer;
-        "
-      >
+      <button id="goRegisterBtn">
         Register / Enter App
       </button>
     </div>
