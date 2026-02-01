@@ -54,6 +54,8 @@
       font-size: 1rem;
       box-sizing: border-box;
     }
+
+    /* ===== BUTTON + SPINNER ===== */
     .register-form button {
       width: 100%;
       padding: 0.8rem;
@@ -63,10 +65,31 @@
       border-radius: 8px;
       font-size: 1rem;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      position: relative;
     }
     .register-form button:hover {
       background-color: #45a049;
     }
+
+    /* Spinner */
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     .register-form p.info {
       color: #333;
       font-size: 0.85rem;
@@ -178,7 +201,10 @@
     <input type="password" id="confirmPassword" placeholder="Confirm password" />
 
     <div class="loader-row">
-      <button id="registerBtn">Register / Enter App</button>
+      <button id="registerBtn">
+        <span class="spinner"></span>
+        <span>Register / Enter App</span>
+      </button>
     </div>
 
     <button id="goLoginBtn" style="margin-top: 1rem; background-color: white; color: #4caf50; border: 2px solid white;">
