@@ -21,7 +21,7 @@ const db = getFirestore(app);
 document.addEventListener("DOMContentLoaded", () => {
   const registerBtn = document.getElementById("registerBtn");
   const togglePasswordBtn = document.getElementById("togglePassword");
-  const goLoginBtn = document.getElementById("goLoginBtn"); // ✅ Login-knapp
+  const goLoginBtn = document.getElementById("goLoginBtn");
   const nameInput = document.getElementById("name");
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
@@ -33,9 +33,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const uppercaseNumberError = document.getElementById("uppercaseNumberError");
 
   // ===== Spinner & Button Text =====
-  // Använd redan existerande element från HTML istället för att skapa nya
-  const spinner = registerBtn.querySelector(".spinner");
-  const btnText = registerBtn.querySelector("#btnText");
+  const spinner = registerBtn.querySelector(".spinner"); // använder redan existerande span
+  const btnText = registerBtn.querySelector("#btnText"); // använder redan existerande span
 
   // ===== Validation helpers =====
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -161,6 +160,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ===== Login button click =====
   goLoginBtn.addEventListener("click", () => {
-    window.location.href = "login.html"; // ✅ Navigerar till login.html
+    window.location.href = "login.html";
   });
 });
