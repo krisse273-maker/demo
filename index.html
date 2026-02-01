@@ -237,7 +237,7 @@
     </section>
 
     <section class="food-list">
-      <h2>Shared Meals</h2>
+      <h2 id="foodTitle">Shared Meals</h2>
       <div class="global-food-list"></div>
     </section>
 
@@ -335,11 +335,25 @@
         renderFoodItems(filtered);
       });
 
+      // --- LOADING TITLE ANIMATION ---
+      const foodTitle = document.getElementById("foodTitle");
+      let dots = 0;
+      foodTitle.textContent = "Shared Meals";
+      const loadingInterval = setInterval(() => {
+        dots = (dots + 1) % 4; // 0,1,2,3
+        let dotStr = ".".repeat(dots);
+        foodTitle.textContent = `Shared Meals${dotStr}`;
+      }, 500);
+
       function loadGlobalFood(){
         db.collection("publicFoods").orderBy("createdAt","desc")
           .onSnapshot(snap=>{
-            allFoods=snap.docs.map(d=>d.data());
+            allFoods = snap.docs.map(d=>d.data());
             renderFoodItems(allFoods);
+
+            // Stoppa animationen och sätt riktig titel
+            clearInterval(loadingInterval);
+            foodTitle.textContent = "Shared Meals";
           });
       }
 
