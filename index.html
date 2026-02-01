@@ -5,12 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Global Food Share</title>
     <link rel="stylesheet" href="style.css" />
+
+    <!-- ENDA ÄNDRINGEN: FÄRGER -->
+    <style>
+      body {
+        background-color: #4caf50;
+        color: #cfd8dc;
+      }
+
+      header {
+        background-color: #262d37;
+      }
+
+      header h1 {
+        color: #4caf50;
+      }
+
+      #welcomeMsg {
+        color: #cfd8dc;
+      }
+
+      section.filters,
+      section.food-list {
+        background-color: #262d37;
+        border: 2px solid #1c222b;
+        border-radius: 6px;
+      }
+
+      section.filters h2,
+      section.food-list h2 {
+        color: #4caf50;
+      }
+
+      label {
+        color: #cfd8dc;
+      }
+
+      select {
+        background-color: #2b3340;
+        color: #cfd8dc;
+        border: 2px solid #1c222b;
+      }
+
+      .food-item {
+        background-color: #2b3340;
+        color: #cfd8dc;
+        border: 2px solid #1c222b;
+        border-radius: 6px;
+      }
+
+      .food-item h3 {
+        color: #4caf50;
+      }
+
+      footer {
+        color: #cfd8dc;
+      }
+    </style>
   </head>
+
   <body>
     <header>
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
-      <button id="logoutBtn" style="margin-top:1rem;padding:0.5rem 1rem;border-radius:6px;border:none;background-color:white;color:#4caf50;cursor:pointer;">Log Out</button>
+      <button
+        id="logoutBtn"
+        style="margin-top:1rem;padding:0.5rem 1rem;border-radius:6px;border:none;background-color:white;color:#4caf50;cursor:pointer;"
+      >
+        Log Out
+      </button>
     </header>
 
     <section class="filters">
@@ -28,8 +91,18 @@
         </select>
       </div>
       <div style="margin-top:1rem">
-        <button id="filterBtn" style="padding:0.5rem 1rem;border-radius:6px;border:none;background-color:#4caf50;color:white;cursor:pointer;">Search</button>
-        <button id="myFoodBtn" style="padding:0.5rem 1rem;border-radius:6px;border:none;background-color:#ff9800;color:white;cursor:pointer;margin-left:0.5rem;">My Food List</button>
+        <button
+          id="filterBtn"
+          style="padding:0.5rem 1rem;border-radius:6px;border:none;background-color:#4caf50;color:white;cursor:pointer;"
+        >
+          Search
+        </button>
+        <button
+          id="myFoodBtn"
+          style="padding:0.5rem 1rem;border-radius:6px;border:none;background-color:#ff9800;color:white;cursor:pointer;margin-left:0.5rem;"
+        >
+          My Food List
+        </button>
       </div>
     </section>
 
@@ -47,6 +120,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
+    <!-- JS: ORÖRD -->
     <script>
       const firebaseConfig = {
         apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
@@ -76,7 +150,8 @@
       auth.onAuthStateChanged(async user => {
         if (!user) return window.location.href="login.html";
 
-        document.getElementById("welcomeMsg").textContent = `Welcome, ${user.displayName || user.email}!`;
+        document.getElementById("welcomeMsg").textContent =
+          `Welcome, ${user.displayName || user.email}!`;
 
         await loadCountries();
         loadGlobalFood();
@@ -124,7 +199,9 @@
       filterBtn.addEventListener("click",()=>{
         const country=countrySelect.value;
         const city=citySelect.value;
-        const filtered=allFoods.filter(f=>(!country||f.country===country)&&(!city||f.city===city));
+        const filtered=allFoods.filter(f=>
+          (!country||f.country===country)&&(!city||f.city===city)
+        );
         renderFoodItems(filtered);
       });
 
@@ -132,40 +209,26 @@
         db.collection("publicFoods")
           .orderBy("createdAt","desc")
           .onSnapshot(snapshot=>{
-            allFoods=snapshot.docs.map(doc=>{
-              const data=doc.data();
-              return {
-                title:data.title||"",
-                city:data.city||"",
-                country:data.country||"",
-                emoji:data.emoji||"🍽️",
-                user:data.user||"Anonymous",
-                createdAt:data.createdAt||null
-              };
-            });
+            allFoods=snapshot.docs.map(doc=>doc.data());
             renderFoodItems(allFoods);
-          },err=>console.error("Error fetching global foods:",err));
+          });
       }
 
       function renderFoodItems(items){
         foodList.innerHTML="";
-        if(!items.length){foodList.innerHTML="<p>No food found.</p>";return;}
+        if(!items.length){
+          foodList.innerHTML="<p>No food found.</p>";
+          return;
+        }
 
         items.forEach(item=>{
-          let dateStr="";
-          if(item.createdAt){
-            const d=item.createdAt.toDate();
-            dateStr=`${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear()}`;
-          }
-
           const div=document.createElement("div");
           div.classList.add("food-item");
           div.innerHTML=`
-            <span class="icon">${item.emoji}</span>
-            <h3>${item.title}</h3>
-            <p>Location: ${item.city}, ${item.country}</p>
-            <p>Shared by: ${item.user}</p>
-            ${dateStr?`<p>Posted: ${dateStr}</p>`:""}
+            <span class="icon">${item.emoji||"🍽️"}</span>
+            <h3>${item.title||""}</h3>
+            <p>Location: ${item.city||""}, ${item.country||""}</p>
+            <p>Shared by: ${item.user||"Anonymous"}</p>
           `;
           foodList.appendChild(div);
         });
