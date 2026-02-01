@@ -37,23 +37,20 @@ loginBtn.addEventListener("click", async () => {
     return;
   }
 
-  // Debugger: Kontrollera om knappen är korrekt
   console.log("Login button clicked");
-  
+
   // ===== Disable the button, show spinner and update button text =====
   loginBtn.disabled = true;
-  
-  // Debugger: För att se om vi kan få spinnern att synas
+
+  // Debugger: Kontrollera om spinnern ska synas
   console.log("Showing spinner...");
-  spinner.style.display = "inline-block";  // Show spinner
+  spinner.style.display = "block";  // Prova block istället för inline-block
   loginBtn.textContent = "Logging in...";  // Change button text
 
   try {
-    // Logga in användaren
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Hämta Firestore-data
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
 
@@ -67,7 +64,6 @@ loginBtn.addEventListener("click", async () => {
       });
     }
 
-    // Skicka användaren vidare
     window.location.href = "index.html";
 
   } catch (err) {
@@ -76,16 +72,9 @@ loginBtn.addEventListener("click", async () => {
     else if (err.code === "auth/wrong-password") msgElem.textContent = "Incorrect password.";
     else msgElem.textContent = "Login failed: " + err.message;
   } finally {
-    // ===== Re-enable the button, hide spinner and reset text =====
     console.log("Hiding spinner...");
     loginBtn.disabled = false;
     spinner.style.display = "none";  // Hide spinner
     loginBtn.textContent = "Login";  // Reset button text
   }
 });
-
-
-
-
-
-
