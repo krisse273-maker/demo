@@ -158,6 +158,10 @@
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
 
+        // Disable the login button and show loading text
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Logging in...";
+
         auth
           .signInWithEmailAndPassword(email, password)
           .then(async (userCredential) => {
@@ -184,6 +188,11 @@
           })
           .catch((error) => {
             alert("Login failed: " + error.message);
+          })
+          .finally(() => {
+            // Re-enable the button and reset the text
+            loginBtn.disabled = false;
+            loginBtn.textContent = "Login";
           });
       });
     </script>
