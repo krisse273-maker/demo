@@ -12,14 +12,14 @@
       body {
         background-color: #4caf50;
         color: #cfd8dc;
-        font-family: 'Poppins', sans-serif; /* global font */
+        font-family: 'Poppins', sans-serif;
       }
 
       header {
         background-color: #262d37;
         text-align: center;
         padding: 1rem;
-        position: relative; /* för att kunna positionera Log Out-knappen separat */
+        position: relative;
       }
 
       header h1 {
@@ -51,13 +51,13 @@
         background-color: #e53935;
       }
 
-      /* My Food List knapp centrerad med ny font och färg */
+      /* My Food List knapp centrerad */
       #myFoodBtn {
         margin-top: 1rem;
         padding: 0.5rem 1rem;
         border-radius: 6px;
         border: none;
-        background-color: #4caf50; /* grön */
+        background-color: #4caf50;
         color: white;
         cursor: pointer;
         transition: all 0.2s ease;
@@ -66,7 +66,7 @@
       }
 
       #myFoodBtn:hover {
-        background-color: #388e3c; /* mörkare grön vid hover */
+        background-color: #388e3c;
       }
 
       /* Filters */
@@ -112,28 +112,46 @@
         background-color: #45a045;
       }
 
-      /* Food List */
-      section.food-list {
-        background: none;
+      /* Food List Grid */
+      .global-food-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
         padding: 1rem;
       }
 
-      section.food-list h2 {
-        color: #4caf50;
-        text-align: center;
-      }
-
+      /* Food Items */
       .food-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
         background-color: #2b3340;
         color: #cfd8dc;
+        border-radius: 10px;
         border: 2px solid #1c222b;
-        border-radius: 6px;
-        margin-bottom: 1rem;
         padding: 1rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
 
-      .food-item h3 {
+      .food-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 12px rgba(0,0,0,0.4);
+      }
+
+      .food-item span {
+        font-size: 2rem;
+      }
+
+      .food-item div h3 {
         color: #4caf50;
+        margin: 0;
+      }
+
+      .food-item div p {
+        font-size: 0.9rem;
+        color: #b0bec5;
+        margin: 0.2rem 0;
       }
 
       footer {
@@ -149,9 +167,7 @@
     <header>
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
-      <!-- Log Out knapp höger -->
       <button id="logoutBtn">Log Out</button>
-      <!-- My Food List knapp centrerad -->
       <div>
         <button id="myFoodBtn">My Food List</button>
       </div>
@@ -277,9 +293,11 @@
           div.className="food-item";
           div.innerHTML=`
             <span>${item.emoji||"🍽️"}</span>
-            <h3>${item.title||""}</h3>
-            <p>Location: ${item.city||""}, ${item.country||""}</p>
-            <p>Shared by: ${item.user||"Anonymous"}</p>
+            <div>
+              <h3>${item.title||""}</h3>
+              <p>Location: ${item.city||""}, ${item.country||""}</p>
+              <p>Shared by: ${item.user||"Anonymous"}</p>
+            </div>
           `;
           foodList.appendChild(div);
         });
