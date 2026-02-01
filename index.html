@@ -152,6 +152,8 @@
       }
 
       .food-item div p {
+        display: flex;
+        align-items: center;
         font-size: 1rem;
         color: #b0bec5;
         margin: 0.2rem 0;
@@ -159,6 +161,8 @@
       }
 
       .food-item div p span.icon {
+        width: 1.2rem; /* fast bredd */
+        display: inline-block;
         margin-right: 0.3rem;
       }
 
@@ -308,7 +312,6 @@
           const div=document.createElement("div");
           div.className="food-item";
 
-          // Konvertera Firebase timestamp till läsbart datum
           let dateStr = "";
           if(item.createdAt){
             const date = item.createdAt.toDate ? item.createdAt.toDate() : new Date(item.createdAt);
