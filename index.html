@@ -62,12 +62,21 @@
 
       #myFoodBtn:hover { background-color: #388e3c; }
 
+      /* FILTER-SEKTION */
       section.filters {
         background-color: #262d37;
         border: 2px solid #1c222b;
-        border-radius: 6px;
-        padding: 1rem;
+        border-radius: 12px;
+        padding: 1.5rem;
         text-align: center;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+        transition: all 0.2s ease;
+        margin: 1rem auto;
+        max-width: 500px;
+      }
+
+      section.filters:hover {
+        box-shadow: 0 12px 24px rgba(0,0,0,0.5);
       }
 
       section.filters h2 { color: #4caf50; }
@@ -97,15 +106,6 @@
       }
 
       #filterBtn:hover { background-color: #45a045; }
-
-      .food-list h2 {
-        text-align: center;
-        color: #ffffff;
-        font-size: 1.8rem;
-        font-weight: 700;
-        text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-        margin: 1rem 0;
-      }
 
       .global-food-list {
         display: grid;
@@ -146,12 +146,13 @@
         flex-shrink: 0;
       }
 
+      /* MAT TITEL FÄRG */
       .food-header h3 {
         color: #ffffff;
         margin: 0;
         font-weight: 600;
         font-size: 1.25rem;
-        text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+        text-shadow: 1px 1px 2px #000;
       }
 
       .food-details {
@@ -179,7 +180,7 @@
       }
 
       .food-details p span.icon-small {
-        font-size: 1.2rem; /* mindre än mat-emoji */
+        font-size: 1.2rem;
         flex-shrink: 0;
       }
 
@@ -187,6 +188,14 @@
         font-size: 0.9rem;
         color: #90a4ae;
         font-style: italic;
+      }
+
+      /* SECTION TITEL */
+      .food-list h2 {
+        text-align: center;
+        color: #fff;
+        text-shadow: 2px 2px 4px #000;
+        margin-top: 1rem;
       }
 
       footer {
@@ -264,6 +273,21 @@
       let countriesData = [];
       let allFoods = [];
 
+      // FLAGGOR
+      const countryFlags = {
+        "Sweden": "🇸🇪",
+        "United States": "🇺🇸",
+        "United Kingdom": "🇬🇧",
+        "Germany": "🇩🇪",
+        "France": "🇫🇷",
+        "Italy": "🇮🇹",
+        "Spain": "🇪🇸",
+        "Mexico": "🇲🇽",
+        "Japan": "🇯🇵",
+        "China": "🇨🇳",
+        "India": "🇮🇳"
+      };
+
       auth.onAuthStateChanged(async user => {
         if (!user) return window.location.href="login.html";
         document.getElementById("welcomeMsg").textContent =
@@ -281,9 +305,10 @@
         countriesData = data.data;
         countrySelect.innerHTML = '<option value="">Select country</option>';
         countriesData.forEach(c=>{
-          const opt=document.createElement("option");
-          opt.value=c.country;
-          opt.textContent=c.country;
+          const opt = document.createElement("option");
+          const flag = countryFlags[c.country] || "";
+          opt.value = c.country;
+          opt.textContent = `${flag} ${c.country}`;
           countrySelect.appendChild(opt);
         });
       }
