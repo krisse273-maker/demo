@@ -29,7 +29,7 @@
       header h1 {
         font-size: 2.8rem;
         margin-bottom: 0.3rem;
-        color: #cfd8dc; /* ljus text, ingen grön här */
+        color: #cfd8dc; /* ljus text */
         text-shadow: 0 2px 4px rgba(0,0,0,0.4);
       }
 
@@ -43,6 +43,7 @@
       .login-form {
         background-color: #39414a; /* lite ljusare än bakgrund */
         border-radius: 16px;
+        border: 2px solid #4caf50; /* sexig grön border */
         max-width: 400px;
         margin: 3rem auto;
         padding: 2.5rem;
@@ -90,9 +91,9 @@
       .login-form button {
         width: 100%;
         padding: 0.9rem;
-        background-color: #4caf50; /* ljusgrön */
-        color: #2b3340; /* mörk text */
-        border: none;
+        background-color: #2b3340; /* matchar bakgrunden */
+        color: #4caf50; /* grön text */
+        border: 2px solid #4caf50;
         border-radius: 12px;
         font-size: 1.1rem;
         cursor: pointer;
@@ -104,7 +105,8 @@
       }
 
       .login-form button:hover {
-        background-color: #66bb6a;
+        background-color: #4caf50;
+        color: #2b3340;
         box-shadow: 0 6px 15px rgba(0,0,0,0.4);
       }
 
@@ -113,23 +115,6 @@
         font-size: 0.85rem;
         margin-top: 1rem;
         text-align: center;
-      }
-
-      #goRegisterBtn {
-        background-color: #2b3340; /* matchar bakgrund */
-        color: #4caf50;
-        border: 2px solid #4caf50;
-        border-radius: 12px;
-        margin-top: 0.8rem;
-        padding: 0.9rem;
-        cursor: pointer;
-        transition: 0.3s;
-        font-weight: 600;
-      }
-
-      #goRegisterBtn:hover {
-        background-color: #4caf50;
-        color: #2b3340;
       }
 
       footer {
@@ -157,7 +142,6 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
-
     </style>
   </head>
   <body>
