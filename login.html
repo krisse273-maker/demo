@@ -23,14 +23,14 @@
       header {
         text-align: center;
         padding: 2rem 1rem;
-        background-color: #4caf50; /* matchar bakgrunden */
+        background-color: #4caf50; /* matchar bakgrund */
       }
 
       header h1 {
         font-size: 2.8rem;
         margin-bottom: 0.3rem;
         color: #2b3340; /* mörk text */
-        text-shadow: 0 3px 6px rgba(255,255,255,0.3); /* ljusare skugga */
+        text-shadow: none; /* ingen glow */
       }
 
       header p {
@@ -46,11 +46,10 @@
         max-width: 380px;
         margin: 3rem auto;
         padding: 2rem;
-        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.45);
+        border: 2px solid #1f242c; /* mörkare border för djup */
         color: #cfd8dc;
         position: relative;
-        border: 2px solid #1f242c; /* mörkare border för djup */
-        box-shadow: 0 8px 20px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,255,255,0.05); /* subtil inre glow */
+        box-shadow: 0 8px 20px rgba(0,0,0,0.5);
       }
 
       .login-form h2 {
@@ -84,7 +83,7 @@
 
       .login-form input:focus {
         border-color: #81c784;
-        box-shadow: 0 0 8px rgba(129, 199, 132, 0.5);
+        box-shadow: 0 0 12px 2px rgba(129, 199, 132, 0.6); /* ljusare grön glow */
         outline: none;
       }
 
