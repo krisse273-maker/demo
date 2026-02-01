@@ -6,11 +6,6 @@
     <title>Global Food Share - Login</title>
     <link rel="stylesheet" href="style.css" />
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
     <!-- Länka till login.js som en modul -->
     <script src="login.js" type="module" defer></script>
 
@@ -73,7 +68,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        position: relative; /* Lägger till relativ positionering */
+        position: relative;
         z-index: 2;
       }
 
@@ -96,32 +91,22 @@
       }
 
       /* Spinner-stil */
-/* Spinner-stil */
-.spinner {
-  border: 3px solid #f3f3f3; /* Ljusgrå bakgrund för spinnern */
-  border-top: 3px solid #2196F3; /* Blå färg för toppen på spinnern */
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  animation: spin 1s linear infinite;
-  margin-right: 10px; /* Avstånd mellan spinner och text */
-  display: none; /* Spinnern är initialt osynlig */
-  z-index: 100; /* Se till att spinnern är över knappen */
-}
+      .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #2196F3;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+        display: none;
+        z-index: 100;
+      }
 
-/* Spinner animation */
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-
-/* Spinner animation */
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
     </style>
   </head>
   <body>
@@ -166,10 +151,3 @@
     </footer>
   </body>
 </html>
-
-
-
-
-
-
-
