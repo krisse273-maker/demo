@@ -4,138 +4,78 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Global Food Share</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
     <style>
+      /* Uppdaterade färger och borders för att matcha login/register */
       body {
-        margin: 0;
-        font-family: 'Poppins', sans-serif;
-        background-color: #4caf50;
-        color: #cfd8dc;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
+        background-color: #4caf50; /* samma gröna bakgrund som login/register */
+        color: #cfd8dc; /* ljus text */
       }
 
-      header {
-        text-align: center;
-        padding: 2rem 1rem;
-        background-color: #4caf50;
+      header, section.filters, section.food-list {
+        background-color: #262d37; /* mörk bakgrund som fälten */
+        border: 2px solid #1c222b; /* samma mörka border */
+        border-radius: 6px;
       }
 
-      header h1 {
-        font-size: 2.8rem;
-        margin-bottom: 0.3rem;
-        color: #1c222b;
+      header h1, section.filters h2, section.food-list h2 {
+        color: #4caf50; /* accentfärg som knappar */
       }
 
       header p#welcomeMsg {
-        font-size: 1.2rem;
-        opacity: 0.85;
-        color: #1c222b;
-        margin-bottom: 1rem;
-      }
-
-      header button#logoutBtn {
-        padding: 0.5rem 1rem;
-        border-radius: 10px;
-        border: 2px solid #1c222b;
-        background-color: #262d37;
-        color: #4caf50;
-        cursor: pointer;
-        font-weight: 600;
-      }
-
-      header button#logoutBtn:hover {
-        background-color: #4caf50;
-        color: #1c222b;
-        border-color: #1c222b;
-      }
-
-      section.filters, section.food-list {
-        max-width: 900px;
-        margin: 2rem auto;
-        padding: 1rem;
-        background: linear-gradient(145deg, #262d37, #39414a);
-        border-radius: 12px;
-        border: 2px solid #000000;
-        box-shadow: 0 12px 25px rgba(0,0,0,0.45);
-      }
-
-      section.filters h2, section.food-list h2 {
-        color: #4caf50;
-        margin-bottom: 1rem;
-      }
-
-      .filter-group {
-        margin-bottom: 1rem;
-      }
-
-      .filter-group label {
-        display: block;
-        margin-bottom: 0.3rem;
-        font-weight: 600;
-      }
-
-      .filter-group select {
-        width: 100%;
-        padding: 0.5rem;
-        border-radius: 10px;
-        border: 2px solid #1c222b;
-        background-color: #2b3340;
         color: #cfd8dc;
       }
 
-      .filters button {
-        padding: 0.5rem 1rem;
-        border-radius: 10px;
-        border: 2px solid #1c222b;
+      header button#logoutBtn {
         background-color: #262d37;
         color: #4caf50;
-        cursor: pointer;
-        font-weight: 600;
+        border: 2px solid #1c222b;
       }
 
-      .filters button#filterBtn {
-        margin-right: 0.5rem;
+      #country, #city {
+        background-color: #2b3340;
+        color: #cfd8dc;
+        border: 2px solid #1c222b;
+        border-radius: 6px;
       }
 
-      .filters button:hover {
-        background-color: #4caf50;
+      #filterBtn {
+        background-color: #262d37;
+        color: #4caf50;
+        border: 2px solid #1c222b;
+        border-radius: 6px;
+      }
+
+      #myFoodBtn {
+        background-color: #ff9800;
         color: #1c222b;
+        border: 2px solid #1c222b;
+        border-radius: 6px;
       }
 
       .global-food-list .food-item {
         background-color: #2b3340;
+        color: #cfd8dc;
         border: 2px solid #1c222b;
-        border-radius: 12px;
-        padding: 1rem;
-        margin-bottom: 1rem;
+        border-radius: 6px;
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
       }
 
       .food-item h3 {
-        margin: 0 0 0.3rem 0;
         color: #4caf50;
       }
 
-      .food-item p {
-        margin: 0.2rem 0;
-      }
-
       footer {
-        text-align: center;
-        padding: 1rem;
-        margin-top: auto;
-        color: #b0bec5;
-        font-size: 0.9rem;
+        color: #cfd8dc;
       }
     </style>
   </head>
   <body>
-
     <header>
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
-      <button id="logoutBtn">Log Out</button>
+      <button id="logoutBtn" style="margin-top:1rem;padding:0.5rem 1rem;cursor:pointer;">Log Out</button>
     </header>
 
     <section class="filters">
@@ -154,7 +94,7 @@
       </div>
       <div style="margin-top:1rem">
         <button id="filterBtn">Search</button>
-        <button id="myFoodBtn">My Food List</button>
+        <button id="myFoodBtn" style="margin-left:0.5rem;">My Food List</button>
       </div>
     </section>
 
@@ -296,6 +236,5 @@
         });
       }
     </script>
-
   </body>
 </html>
