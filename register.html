@@ -9,7 +9,7 @@
 
   <style>
     body {
-      background-color: #4caf50;
+      background-color: #4caf50; /* ljusgrön bakgrund */
       font-family: 'Poppins', sans-serif;
       display: flex;
       flex-direction: column;
@@ -28,6 +28,7 @@
       font-size: 2.8rem;
       margin-bottom: 0.3rem;
       color: #1c222b;
+      text-shadow: none;
     }
 
     header p {
@@ -37,7 +38,7 @@
     }
 
     .register-form {
-      background: linear-gradient(145deg, #262d37, #39414a);
+      background: linear-gradient(145deg, #262d37, #39414a); /* mörk gradient */
       border-radius: 12px;
       max-width: 400px;
       margin: 3rem auto;
@@ -78,11 +79,12 @@
     }
 
     .register-form input:focus {
-      border-color: #4caf50;
+      border-color: #4caf50; /* matchar bakgrund */
       box-shadow: 0 0 12px 2px rgba(76,175,80,0.8);
       outline: none;
     }
 
+    /* Password wrapper */
     .password-wrapper {
       position: relative;
       width: 100%;
@@ -96,7 +98,7 @@
 
     .password-wrapper button {
       position: absolute;
-      top: 25%; /* flytta upp knappen lite */
+      top: 5px; /* flyttat lite upp */
       right: 5px;
       background-color: #4caf50;
       border: 1px solid #388e3c;
@@ -120,6 +122,7 @@
       color: #cfd8dc;
     }
 
+    /* Buttons */
     .register-form button#registerBtn {
       width: 100%;
       padding: 0.85rem;
@@ -167,6 +170,7 @@
       text-align: center;
     }
 
+    /* Felmeddelanden */
     .password-error {
       color: red;
       font-size: 0.85rem;
@@ -182,6 +186,7 @@
       font-size: 0.9rem;
     }
 
+    /* Spinner */
     .spinner {
       border: 3px solid #cfd8dc;
       border-top: 3px solid #4caf50;
@@ -222,6 +227,52 @@
   <div class="register-form">
     <h2>Register / Demo Account</h2>
 
+    <!-- Name -->
     <label for="name">Name:</label>
     <input type="text" id="name" placeholder="Your name" />
-    <p class="password-error" id="name
+    <p class="password-error" id="nameError"></p>
+
+    <!-- Email -->
+    <label for="email">Email:</label>
+    <input type="text" id="email" placeholder="demo@example.com" />
+    <p class="password-error" id="emailError"></p>
+
+    <!-- Password -->
+    <div class="password-label-container">
+      <label for="password">Password:</label>
+      <span class="password-error" id="passwordLengthError">
+        Password must be at least 6 characters.
+      </span>
+    </div>
+    <div class="password-wrapper">
+      <input type="password" id="password" placeholder="Demo password" />
+      <button type="button" id="togglePassword">OFF</button>
+    </div>
+    <p class="password-error" id="uppercaseNumberError">
+      Password must contain at least 1 uppercase letter and 1 number
+    </p>
+
+    <!-- Confirm password -->
+    <label for="confirmPassword">Confirm Password:</label>
+    <input type="password" id="confirmPassword" placeholder="Confirm password" />
+
+    <div class="loader-row">
+      <button id="registerBtn">
+        <span class="spinner"></span>
+        <span id="btnText">Register</span>
+      </button>
+    </div>
+
+    <button id="goLoginBtn">
+      Login
+    </button>
+
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Global Food Share</p>
+  </footer>
+
+  <script type="module" src="register.js"></script>
+</body>
+</html>
