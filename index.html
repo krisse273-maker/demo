@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Global Food Share</title>
     <link rel="stylesheet" href="style.css" />
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
       body {
         background-color: #4caf50;
         color: #cfd8dc;
+        font-family: 'Poppins', sans-serif; /* global font */
       }
 
       header {
@@ -30,7 +33,7 @@
       /* Log Out knapp höger */
       #logoutBtn {
         position: absolute;
-        right: 1rem; /* ändrat från left: 1rem; till right: 1rem; */
+        right: 1rem;
         top: 50%;
         transform: translateY(-50%);
         padding: 0.5rem 1rem;
@@ -40,26 +43,30 @@
         color: #fff;
         cursor: pointer;
         transition: all 0.2s ease;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
       }
 
       #logoutBtn:hover {
         background-color: #e53935;
       }
 
-      /* My Food List knapp centrerad */
+      /* My Food List knapp centrerad med ny font och färg */
       #myFoodBtn {
         margin-top: 1rem;
         padding: 0.5rem 1rem;
         border-radius: 6px;
         border: none;
-        background-color: #ffb74d;
-        color: #1c222b;
+        background-color: #4caf50; /* grön */
+        color: white;
         cursor: pointer;
         transition: all 0.2s ease;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
       }
 
       #myFoodBtn:hover {
-        background-color: #ffa733;
+        background-color: #388e3c; /* mörkare grön vid hover */
       }
 
       /* Filters */
@@ -97,6 +104,8 @@
         color: white;
         cursor: pointer;
         transition: all 0.2s ease;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
       }
 
       #filterBtn:hover {
