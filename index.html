@@ -25,7 +25,9 @@
         color: #4caf50;
       }
 
-      #welcomeMsg { color: #cfd8dc; }
+      #welcomeMsg {
+        color: #cfd8dc;
+      }
 
       #logoutBtn {
         position: absolute;
@@ -106,8 +108,7 @@
       .food-item {
         display: flex;
         flex-direction: column;
-        align-items: center; /* Centrera allt */
-        gap: 1rem;
+        align-items: center;
         background-color: #2b3340;
         color: #cfd8dc;
         border-radius: 10px;
@@ -115,7 +116,7 @@
         padding: 1rem;
         box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
-        text-align: center; /* Centrera text */
+        text-align: center;
       }
 
       .food-item:hover {
@@ -126,8 +127,9 @@
       .food-header {
         display: flex;
         align-items: center;
-        justify-content: center; /* Centrera emoji + titel */
+        justify-content: center;
         gap: 0.5rem;
+        margin-bottom: 0.5rem;
       }
 
       .food-header span {
@@ -146,21 +148,30 @@
       .food-details {
         display: flex;
         flex-direction: column;
-        align-items: center; /* Centrera alla p-rader */
-        gap: 0.2rem;
+        align-items: center;
+        gap: 0.3rem;
+        text-align: left;
       }
 
       .food-details p {
         font-size: 1rem;
         color: #b0bec5;
-        margin: 0;
+        margin: 0.2rem 0;
         line-height: 1.4;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
         word-break: break-word;
       }
 
       .food-details p strong {
         color: #cfd8dc;
         font-weight: 600;
+      }
+
+      .food-details p span.icon-small {
+        font-size: 1.2rem; /* mindre än mat-emoji */
+        flex-shrink: 0;
       }
 
       .food-details .date {
@@ -319,9 +330,9 @@
               <h3>${item.title||""}</h3>
             </div>
             <div class="food-details">
-              <p><strong>Location:</strong> ${item.city||""}, ${item.country||""}</p>
-              <p><strong>Published By:</strong> ${item.user||"Anonymous"}</p>
-              <p><strong>Posted On:</strong> <span class="date">${dateStr}</span></p>
+              <p><span class="icon-small">📍</span><strong>Location:</strong> ${item.city||""}, ${item.country||""}</p>
+              <p><span class="icon-small">👤</span><strong>Published By:</strong> ${item.user||"Anonymous"}</p>
+              <p><span class="icon-small">📅</span><strong>Posted On:</strong> <span class="date">${dateStr}</span></p>
             </div>
           `;
           foodList.appendChild(div);
