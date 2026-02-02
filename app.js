@@ -21,7 +21,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   const foodList = document.querySelector(".global-food-list");
   const myFoodBtn = document.getElementById("myFoodBtn");
   const logoutBtn = document.getElementById("logoutBtn");
-  const homeBtn = document.getElementById("homeBtn");
+  const profileIcon = document.getElementById("profileIcon");
+  const welcomeMsg = document.getElementById("welcomeMsg");
 
   // --- Länder/städer ---
   let countriesData = [];
@@ -68,18 +69,42 @@ window.addEventListener("DOMContentLoaded", async () => {
     await firebase.auth().signOut();
     window.location.href = "login.html";
   });
-  if (homeBtn) homeBtn.addEventListener("click", () => window.location.href = "index.html");
 
   // --- Vänta tills användaren är inloggad innan Firestore ---
-  firebase.auth().onAuthStateChanged(user => {
+  firebase.auth().onAuthStateChanged(async user => {
     if (!user) {
       window.location.href = "login.html";
       return;
     }
 
+    // --- Hämta kön från Firestore ---
+    const docRef = db.collection("publicUsers").doc(user.uid);
+    const docSnap = await docRef.get();
+    const gender = docSnap.exists ? docSnap.data().gender : "male";
+
+    // --- Sätt välkomsttext ---
+    welcomeMsg.textContent = `Welcome, ${user.displayName || user.email}!`;
+
+    // --- Sätt profilikon baserat på kön ---
+    if(gender === "male") {
+      // Klassisk manikon (silhuett)
+      profileIcon.innerHTML = `
+        <svg viewBox="0 0 24 24">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+      `;
+    } else {
+      // Kvinnlig ikon med hår (Facebook-stil)
+      profileIcon.innerHTML = `
+        <svg viewBox="0 0 24 24">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-6 1.34-6 4v2h12v-2c0-2.66-3.33-4-6-4z"/>
+          <path d="M8 6c0-1.1.9-2 2-2s2 .9 2 2H8z" fill="#262d37"/>
+        </svg>
+      `;
+    }
+
     // --- Global real-time food list ---
     let allFoods = [];
-
     db.collection("publicFoods")
       .orderBy("createdAt", "desc")
       .onSnapshot(snapshot => {
@@ -90,7 +115,7 @@ window.addEventListener("DOMContentLoaded", async () => {
             city: data.city || "",
             country: data.country || "",
             emoji: data.emoji || "🍽️",
-            user: data.userName || "Anonymous", // ✅ använd displayName istället för email
+            user: data.userName || "Anonymous",
             timestamp: data.createdAt || null
           };
         });
@@ -113,22 +138,26 @@ window.addEventListener("DOMContentLoaded", async () => {
 
       items.forEach(item => {
         let dateStr = "";
-        if (item.timestamp) {
+        if (item.timestamp && item.timestamp.toDate) {
           const date = item.timestamp.toDate();
           const day = date.getDate();
           const month = monthNames[date.getMonth()];
           const year = date.getFullYear();
-          dateStr = `${day} ${month} ${year}`; // t.ex. 29 Jan 2026
+          dateStr = `${day} ${month} ${year}`;
         }
 
         const div = document.createElement("div");
         div.classList.add("food-item");
         div.innerHTML = `
-          <span class="icon">${item.emoji}</span>
-          <h3>${item.title}</h3>
-          <p>Location: ${item.city}, ${item.country}</p>
-          <p>Shared by: ${item.user}</p> <!-- använder displayName -->
-          ${dateStr ? `<p>Posted: ${dateStr}</p>` : ""}
+          <div class="food-header">
+            <span>${item.emoji}</span>
+            <h3>${item.title}</h3>
+          </div>
+          <div class="food-details">
+            <p><span class="icon-small">📍</span><strong>Location:</strong> ${item.city}, ${item.country}</p>
+            <p><span class="icon-small">👤</span><strong>Published By:</strong> ${item.user}</p>
+            ${dateStr ? `<p><span class="icon-small">📅</span><strong>Posted On:</strong> ${dateStr}</p>` : ""}
+          </div>
         `;
         foodList.appendChild(div);
       });
@@ -147,7 +176,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       renderFoodItems(filtered);
     });
 
-    // --- Lägg till matpost ---
+    // --- Lägg till matpost (om framtida funktion behövs) ---
     async function addFoodItem(foodData) {
       await db.collection("publicFoods").add({
         title: foodData.title,
@@ -155,7 +184,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         country: foodData.country || "",
         city: foodData.city || "",
         emoji: foodData.emoji || "🍽️",
-        userName: user.displayName || "Anonymous", // ✅ här skickas användarnamn
+        userName: user.displayName || "Anonymous",
         ownerId: user.uid,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
