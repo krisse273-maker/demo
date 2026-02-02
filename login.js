@@ -20,10 +20,9 @@ const db = getFirestore(app);
 
 // ===== UI =====
 const loginBtn = document.getElementById("loginBtn");
+const goRegisterBtn = document.getElementById("goRegisterBtn"); // ✅ NY
 const spinner = document.getElementById("spinner");
-const btnText = document.getElementById("btnText");
 
-// Skapa meddelande-element för fel
 let msgElem = document.createElement("p");
 msgElem.style.color = "red";
 msgElem.style.textAlign = "center";
@@ -36,16 +35,16 @@ loginBtn.addEventListener("click", async () => {
   const password = document.getElementById("password").value;
   msgElem.textContent = "";
 
-  // Fältvalidering
   if (!email || !password) {
     msgElem.textContent = "Please fill in all fields!";
     return;
   }
 
-  // Visa spinner och ändra knapptext
+  console.log("Login button clicked");
+
   loginBtn.disabled = true;
-  spinner.style.display = "inline-block";
-  btnText.textContent = "Logging in...";
+  spinner.style.display = "block";
+  loginBtn.textContent = "Logging in...";
 
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -62,26 +61,23 @@ loginBtn.addEventListener("click", async () => {
       });
     }
 
-    // Redirect efter lyckad inloggning
     window.location.href = "index.html";
 
   } catch (err) {
     console.error(err);
-
-    // Användarvänligt felmeddelande
-    if (
-      err.code === "auth/user-not-found" ||
-      err.code === "auth/wrong-password" ||
-      err.code === "auth/invalid-email"
-    ) {
-      msgElem.textContent = "Wrong email or password.";
-    } else {
-      msgElem.textContent = "Login failed. Please try again.";
-    }
+    if (err.code === "auth/user-not-found") msgElem.textContent = "No user found with this email.";
+    else if (err.code === "auth/wrong-password") msgElem.textContent = "Incorrect password.";
+    else msgElem.textContent = "Login failed: " + err.message;
   } finally {
-    // Dölj spinner och återställ knapptext
     loginBtn.disabled = false;
     spinner.style.display = "none";
-    btnText.textContent = "Login";
+    loginBtn.textContent = "Login";
   }
 });
+
+// ===== REGISTER / ENTER APP =====
+if (goRegisterBtn) {
+  goRegisterBtn.addEventListener("click", () => {
+    window.location.href = "register.html";
+  });
+}
