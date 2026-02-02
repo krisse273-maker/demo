@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Global Food Share - Login</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="login.js" type="module" defer></script> <!-- Type="module" här -->
-    
+    <script src="login.js" type="module" defer></script>
+
     <style>
       /* --- Body & bakgrund --- */
       body {
@@ -117,6 +117,7 @@
         text-align: center;
       }
 
+      /* --- Register Button (Ta bort understrykning) --- */
       #goRegisterBtn {
         background-color: #2b3340; /* mörk knapp */
         color: #4caf50;
@@ -127,11 +128,14 @@
         cursor: pointer;
         transition: 0.25s;
         font-weight: 600;
+        text-decoration: none; /* Ta bort understrykning */
+        outline: none; /* Ta bort eventuellt fokusram */
       }
 
       #goRegisterBtn:hover {
         background-color: #4caf50;
         color: #1c222b;
+        text-decoration: none; /* Se till att det inte finns någon understrykning vid hover */
       }
 
       footer {
@@ -181,15 +185,13 @@
       </button>
 
       <p class="info">Don't have an account?</p>
-      <!-- Ändrat till vanlig länk -->
-      <a href="register.html" id="goRegisterBtn">
+      <button id="goRegisterBtn">
         Register / Enter App
-      </a>
+      </button>
     </div>
 
     <footer>
       <p>&copy; 2026 Global Food Share</p>
     </footer>
-
   </body>
 </html>
