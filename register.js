@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ===== Gender validation =====
     if (!gender) {
-      genderError.textContent = "Please select a gender";
+      genderError.textContent = "You need to choose Gender"; // <-- tydligt felmeddelande
       genderError.style.display = "block";
       genderSelect.style.borderColor = "red";
       hasError = true;
