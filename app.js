@@ -92,18 +92,26 @@ window.addEventListener("DOMContentLoaded", async () => {
     let allFoods = [];
     db.collection("publicFoods")
       .orderBy("createdAt", "desc")
-      .onSnapshot(snapshot => {
-        allFoods = snapshot.docs.map(doc => {
+      .onSnapshot(async snapshot => {  // <-- ändrat till async
+        allFoods = await Promise.all(snapshot.docs.map(async doc => {
           const data = doc.data();
+          let userName = "Anonymous";
+
+          // Om vi har UID sparat i matposten
+          if (data.userId) {
+            const userDoc = await db.collection("publicUsers").doc(data.userId).get();
+            if (userDoc.exists) userName = userDoc.data().publicName || "Anonymous";
+          }
+
           return {
             title: data.title || "",
             city: data.city || "",
             country: data.country || "",
             emoji: data.emoji || "🍽️",
-            user: data.userName || "Anonymous",
+            user: userName,
             timestamp: data.createdAt || null
           };
-        });
+        }));
 
         renderFoodItems(allFoods);
       }, err => {
@@ -115,7 +123,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       foodList.innerHTML = "";
       if (!items.length) {
         foodList.innerHTML = "<p>No food found.</p>";
-        stopLoadingDots(); // <-- Stoppar loading-dots även om inga matobjekt finns
+        stopLoadingDots();
         return;
       }
 
@@ -148,7 +156,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         foodList.appendChild(div);
       });
 
-      stopLoadingDots(); // <-- Stoppar loading-dots när all mat har renderats
+      stopLoadingDots();
     }
 
     // --- Filterknapp ---
