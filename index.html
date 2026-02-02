@@ -274,7 +274,22 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
+    <!-- Loading dots -->
+    <script>
+      const foodTitle = document.getElementById("foodTitle");
+      let dots = 0;
+      let loadingInterval = setInterval(() => {
+        dots = (dots + 1) % 4;
+        foodTitle.textContent = `Shared Meals${'.'.repeat(dots)}`;
+      }, 500);
+
+      // Gör funktionen tillgänglig globalt så app.js kan stoppa den
+      function stopLoadingDots() {
+        clearInterval(loadingInterval);
+        foodTitle.textContent = "Shared Meals";
+      }
+    </script>
+
     <script src="app.js"></script>
   </body>
 </html>
-
