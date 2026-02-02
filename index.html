@@ -25,21 +25,34 @@
         color: #4caf50;
       }
 
-      #welcomeMsg {
-        color: #cfd8dc;
-        font-size: 1.1rem;
+      #welcomeWrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
       }
 
       #profileIcon {
-        display: inline-block;
-        width: 32px;
-        height: 32px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
-        border: 3px solid #4caf50; /* Grön kant */
-        background-color: #555;      /* default mörk färg */
-        vertical-align: middle;
-        margin-right: 0.5rem;
-        transition: background-color 0.3s;
+        background-color: #4caf50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      #profileIcon svg {
+        width: 60%;
+        height: 60%;
+        fill: #262d37; /* Silhuett mörk för kontrast */
+      }
+
+      #welcomeMsg {
+        color: #cfd8dc;
+        font-weight: 600;
       }
 
       #logoutBtn {
@@ -159,7 +172,6 @@
         flex-shrink: 0;
       }
 
-      /* MAT TITEL FÄRG */
       .food-header h3 {
         color: #ffffff;
         margin: 0;
@@ -203,7 +215,6 @@
         font-style: italic;
       }
 
-      /* SECTION TITEL */
       .food-list h2 {
         text-align: center;
         color: #fff;
@@ -223,10 +234,12 @@
   <body>
     <header>
       <h1>🌍 Global Food Share</h1>
-      <p id="welcomeMsg">
-        <span id="profileIcon"></span>
-        Welcome, <span id="userName"></span>!
-      </p>
+      <div id="welcomeWrapper">
+        <div id="profileIcon">
+          <!-- SVG icon sätts via JS -->
+        </div>
+        <p id="welcomeMsg">Welcome! Find and share food near you!</p>
+      </div>
       <button id="logoutBtn">Log Out</button>
       <div>
         <button id="myFoodBtn">My Food List</button>
@@ -285,8 +298,8 @@
       const citySelect = document.getElementById("city");
       const filterBtn = document.getElementById("filterBtn");
       const foodList = document.querySelector(".global-food-list");
+      const welcomeMsg = document.getElementById("welcomeMsg");
       const profileIcon = document.getElementById("profileIcon");
-      const userName = document.getElementById("userName");
 
       let countriesData = [];
       let allFoods = [];
@@ -307,18 +320,21 @@
 
       auth.onAuthStateChanged(async user => {
         if (!user) return window.location.href="login.html";
-        userName.textContent = user.displayName || user.email;
 
-        // Hämta gender från Firestore och sätt profilfärg
+        // Hämta kön från Firestore
         const docRef = db.collection("publicUsers").doc(user.uid);
         const docSnap = await docRef.get();
-        let color = "#777"; // default okänt
-        if (docSnap.exists) {
-          const gender = docSnap.data().gender.toLowerCase();
-          if (gender === "male") color = "#1a237e";       // mörkblå
-          else if (gender === "female") color = "#880e4f"; // mörkrosa
+        const gender = docSnap.exists ? docSnap.data().gender : "male";
+
+        // Sätt välkomsttext
+        welcomeMsg.textContent = `Welcome, ${user.displayName || user.email}!`;
+
+        // Sätt profilikon baserat på kön
+        if(gender === "male") {
+          profileIcon.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+        } else {
+          profileIcon.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
         }
-        profileIcon.style.backgroundColor = color;
 
         await loadCountries();
         loadGlobalFood();
@@ -367,7 +383,7 @@
       let dots = 0;
       foodTitle.textContent = "Shared Meals";
       const loadingInterval = setInterval(() => {
-        dots = (dots + 1) % 4; // 0,1,2,3
+        dots = (dots + 1) % 4;
         let dotStr = ".".repeat(dots);
         foodTitle.textContent = `Shared Meals${dotStr}`;
       }, 500);
