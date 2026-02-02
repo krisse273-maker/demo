@@ -8,29 +8,209 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
-      /* All CSS som du hade kvar, inklusive profileIcon-styling */
-      body { background-color: #4caf50; color: #cfd8dc; font-family: 'Poppins', sans-serif; }
-      header { background-color: #262d37; text-align: center; padding: 1rem; position: relative; }
-      header h1 { color: #4caf50; }
-      #welcomeWrapper { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 0.5rem; }
-      #profileIcon { width: 60px; height: 60px; border-radius: 50%; background-color: #4caf50; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: transform 0.2s ease; }
-      #profileIcon:hover { transform: scale(1.1); }
-      #welcomeMsg { color: #cfd8dc; font-weight: 600; }
-      #logoutBtn { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); padding: 0.5rem 1rem; border-radius: 6px; border: none; background-color: #f44336; color: #fff; cursor: pointer; transition: all 0.2s ease; font-family: 'Poppins', sans-serif; font-weight: 600; }
+      body {
+        background-color: #4caf50;
+        color: #cfd8dc;
+        font-family: 'Poppins', sans-serif;
+      }
+
+      header {
+        background-color: #262d37;
+        text-align: center;
+        padding: 1rem;
+        position: relative;
+      }
+
+      header h1 {
+        color: #4caf50;
+      }
+
+      #welcomeMsg {
+        color: #cfd8dc;
+      }
+
+      #logoutBtn {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: none;
+        background-color: #f44336;
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+      }
+
       #logoutBtn:hover { background-color: #e53935; }
-      #myFoodBtn { margin-top: 1rem; padding: 0.5rem 1rem; border-radius: 6px; border: none; background-color: #4caf50; color: white; cursor: pointer; transition: all 0.2s ease; font-family: 'Poppins', sans-serif; font-weight: 600; }
+
+      #myFoodBtn {
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: none;
+        background-color: #4caf50;
+        color: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+      }
+
       #myFoodBtn:hover { background-color: #388e3c; }
-      /* ... resten av din CSS ... */
+
+      /* FILTER-SEKTION */
+      section.filters {
+        background-color: #262d37;
+        border: 2px solid #1c222b;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+        transition: all 0.2s ease;
+        margin: 1rem auto;
+        max-width: 500px;
+      }
+
+      section.filters:hover {
+        box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+      }
+
+      section.filters h2 { color: #4caf50; }
+
+      label { color: #cfd8dc; }
+
+      select {
+        background-color: #2b3340;
+        color: #cfd8dc;
+        border: 2px solid #1c222b;
+        width: 100%;
+        padding: 0.5rem;
+        margin: 0.5rem 0;
+        border-radius: 6px;
+      }
+
+      #filterBtn {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: none;
+        background-color: #4caf50;
+        color: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+      }
+
+      #filterBtn:hover { background-color: #45a045; }
+
+      .global-food-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      .food-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #2b3340;
+        color: #cfd8dc;
+        border-radius: 10px;
+        border: 2px solid #1c222b;
+        padding: 1rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-align: center;
+      }
+
+      .food-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 12px rgba(0,0,0,0.4);
+      }
+
+      .food-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .food-header span {
+        font-size: 2rem;
+        flex-shrink: 0;
+      }
+
+      /* MAT TITEL FÄRG */
+      .food-header h3 {
+        color: #ffffff;
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.25rem;
+        text-shadow: 1px 1px 2px #000;
+      }
+
+      .food-details {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+        text-align: left;
+      }
+
+      .food-details p {
+        font-size: 1rem;
+        color: #b0bec5;
+        margin: 0.2rem 0;
+        line-height: 1.4;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        word-break: break-word;
+      }
+
+      .food-details p strong {
+        color: #cfd8dc;
+        font-weight: 600;
+      }
+
+      .food-details p span.icon-small {
+        font-size: 1.2rem;
+        flex-shrink: 0;
+      }
+
+      .food-details .date {
+        font-size: 0.9rem;
+        color: #90a4ae;
+        font-style: italic;
+      }
+
+      /* SECTION TITEL */
+      .food-list h2 {
+        text-align: center;
+        color: #fff;
+        text-shadow: 2px 2px 4px #000;
+        margin-top: 1rem;
+      }
+
+      footer {
+        color: #cfd8dc;
+        text-align: center;
+        padding: 1rem;
+        background-color: #262d37;
+      }
     </style>
   </head>
 
   <body>
     <header>
       <h1>🌍 Global Food Share</h1>
-      <div id="welcomeWrapper">
-        <div id="profileIcon"><!-- Ingen SVG längre --></div>
-        <p id="welcomeMsg">Welcome! Find and share food near you!</p>
-      </div>
+      <p id="welcomeMsg">Welcome! Find and share food near you!</p>
       <button id="logoutBtn">Log Out</button>
       <div>
         <button id="myFoodBtn">My Food List</button>
@@ -65,12 +245,10 @@
       <p>&copy; 2026 Global Food Share</p>
     </footer>
 
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-    <!-- Huvud JS -->
     <script>
       const firebaseConfig = {
         apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
@@ -78,128 +256,136 @@
         projectId: "global-food-share",
         storageBucket: "global-food-share.appspot.com",
         messagingSenderId: "902107453892",
-        appId: "1:902107453892:web:dd9625974cc94ac91"
+        appId: "1:902107453892:web:dd9625974b8744cc94ac91"
       };
-      if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+      firebase.initializeApp(firebaseConfig);
+
       const auth = firebase.auth();
       const db = firebase.firestore();
 
+      const logoutBtn = document.getElementById("logoutBtn");
+      const myFoodBtn = document.getElementById("myFoodBtn");
       const countrySelect = document.getElementById("country");
       const citySelect = document.getElementById("city");
       const filterBtn = document.getElementById("filterBtn");
       const foodList = document.querySelector(".global-food-list");
-      const myFoodBtn = document.getElementById("myFoodBtn");
-      const logoutBtn = document.getElementById("logoutBtn");
-      const welcomeMsg = document.getElementById("welcomeMsg");
-      const foodTitle = document.getElementById("foodTitle");
 
       let countriesData = [];
       let allFoods = [];
 
-      // --- Ladda länder ---
-      async function loadCountries() {
-        try {
-          const res = await fetch("https://countriesnow.space/api/v0.1/countries");
-          const data = await res.json();
-          countriesData = data.data;
-          countrySelect.innerHTML = '<option value="">Select country</option>';
-          countriesData.forEach(c => {
-            const opt = document.createElement("option");
-            opt.value = c.country;
-            opt.textContent = c.country;
-            countrySelect.appendChild(opt);
-          });
-          countrySelect.disabled = false;
-        } catch (err) {
-          console.error("Could not fetch countries:", err);
-          alert("Failed to load countries. Try refreshing.");
-        }
-      }
+      // FLAGGOR
+      const countryFlags = {
+        "Sweden": "🇸🇪",
+        "United States": "🇺🇸",
+        "United Kingdom": "🇬🇧",
+        "Germany": "🇩🇪",
+        "France": "🇫🇷",
+        "Italy": "🇮🇹",
+        "Spain": "🇪🇸",
+        "Mexico": "🇲🇽",
+        "Japan": "🇯🇵",
+        "China": "🇨🇳",
+        "India": "🇮🇳"
+      };
 
-      countrySelect.addEventListener("change", () => {
-        citySelect.innerHTML = '<option value="">Select city</option>';
-        citySelect.disabled = true;
-        const countryObj = countriesData.find(c => c.country === countrySelect.value);
-        if (!countryObj) return;
-        countryObj.cities.forEach(city => {
-          const opt = document.createElement("option");
-          opt.value = city;
-          opt.textContent = city;
-          citySelect.appendChild(opt);
-        });
-        citySelect.disabled = false;
-      });
-
-      // --- Navigering ---
-      myFoodBtn.addEventListener("click", () => window.location.href = "myfood.html");
-      logoutBtn.addEventListener("click", async () => {
-        await auth.signOut();
-        window.location.href = "login.html";
-      });
-
-      // --- Auth ---
       auth.onAuthStateChanged(async user => {
-        if (!user) return window.location.href = "login.html";
-        welcomeMsg.textContent = `Welcome, ${user.displayName || user.email}!`;
+        if (!user) return window.location.href="login.html";
+        document.getElementById("welcomeMsg").textContent =
+          `Welcome, ${user.displayName || user.email}!`;
         await loadCountries();
         loadGlobalFood();
       });
 
-      // --- Load global food ---
-      function loadGlobalFood() {
-        const loadingInterval = setInterval(() => {
-          foodTitle.textContent = `Shared Meals${'.'.repeat((new Date().getSeconds() % 4))}`;
-        }, 500);
+      logoutBtn.addEventListener("click",()=>auth.signOut().then(()=>window.location.href="login.html"));
+      myFoodBtn.addEventListener("click",()=>window.location.href="myfood.html");
 
+      async function loadCountries(){
+        const res = await fetch("https://countriesnow.space/api/v0.1/countries");
+        const data = await res.json();
+        countriesData = data.data;
+        countrySelect.innerHTML = '<option value="">Select country</option>';
+        countriesData.forEach(c=>{
+          const opt = document.createElement("option");
+          const flag = countryFlags[c.country] || "";
+          opt.value = c.country;
+          opt.textContent = `${flag} ${c.country}`;
+          countrySelect.appendChild(opt);
+        });
+      }
+
+      countrySelect.addEventListener("change",()=>{ 
+        citySelect.innerHTML='<option value="">Select city</option>';
+        citySelect.disabled=true;
+        const countryObj = countriesData.find(c=>c.country===countrySelect.value);
+        if(!countryObj) return;
+        countryObj.cities.forEach(city=>{
+          const opt=document.createElement("option");
+          opt.value=city;
+          opt.textContent=city;
+          citySelect.appendChild(opt);
+        });
+        citySelect.disabled=false;
+      });
+
+      filterBtn.addEventListener("click",()=>{ 
+        const filtered=allFoods.filter(f=>
+          (!countrySelect.value||f.country===countrySelect.value)&&
+          (!citySelect.value||f.city===citySelect.value)
+        );
+        renderFoodItems(filtered);
+      });
+
+      // --- LOADING TITLE ANIMATION ---
+      const foodTitle = document.getElementById("foodTitle");
+      let dots = 0;
+      foodTitle.textContent = "Shared Meals";
+      const loadingInterval = setInterval(() => {
+        dots = (dots + 1) % 4; // 0,1,2,3
+        let dotStr = ".".repeat(dots);
+        foodTitle.textContent = `Shared Meals${dotStr}`;
+      }, 500);
+
+      function loadGlobalFood(){
         db.collection("publicFoods").orderBy("createdAt","desc")
-          .onSnapshot(snap => {
-            allFoods = snap.docs.map(d => d.data());
+          .onSnapshot(snap=>{
+            allFoods = snap.docs.map(d=>d.data());
             renderFoodItems(allFoods);
+
+            // Stoppa animationen och sätt riktig titel
             clearInterval(loadingInterval);
             foodTitle.textContent = "Shared Meals";
-          }, err => {
-            console.error("Error fetching global foods:", err);
           });
       }
 
-      // --- Render ---
-      function renderFoodItems(items) {
-        foodList.innerHTML = "";
-        if (!items.length) { foodList.innerHTML = "<p>No food found.</p>"; return; }
+      function renderFoodItems(items){
+        foodList.innerHTML="";
+        if(!items.length){foodList.innerHTML="<p>No food found.</p>";return;}
+        
+        items.forEach(item=>{
+          const div=document.createElement("div");
+          div.className="food-item";
 
-        const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-        items.forEach(item => {
           let dateStr = "";
-          if(item.createdAt) {
+          if(item.createdAt){
             const date = item.createdAt.toDate ? item.createdAt.toDate() : new Date(item.createdAt);
-            dateStr = `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            dateStr = date.toLocaleDateString('en-US', options);
           }
 
-          const div = document.createElement("div");
-          div.classList.add("food-item");
-          div.innerHTML = `
+          div.innerHTML=`
             <div class="food-header">
-              <span>${item.emoji || "🍽️"}</span>
-              <h3>${item.title || ""}</h3>
+              <span>${item.emoji||"🍽️"}</span>
+              <h3>${item.title||""}</h3>
             </div>
             <div class="food-details">
-              <p><span class="icon-small">📍</span><strong>Location:</strong> ${item.city || ""}, ${item.country || ""}</p>
-              <p><span class="icon-small">👤</span><strong>Published By:</strong> ${item.user || "Anonymous"}</p>
-              ${dateStr ? `<p><span class="icon-small">📅</span><strong>Posted On:</strong> ${dateStr}</p>` : ""}
+              <p><span class="icon-small">📍</span><strong>Location:</strong> ${item.city||""}, ${item.country||""}</p>
+              <p><span class="icon-small">👤</span><strong>Published By:</strong> ${item.user||"Anonymous"}</p>
+              <p><span class="icon-small">📅</span><strong>Posted On:</strong> <span class="date">${dateStr}</span></p>
             </div>
           `;
           foodList.appendChild(div);
         });
       }
-
-      // --- Filter ---
-      filterBtn.addEventListener("click", () => {
-        const filtered = allFoods.filter(f =>
-          (!countrySelect.value || f.country === countrySelect.value) &&
-          (!citySelect.value || f.city === citySelect.value)
-        );
-        renderFoodItems(filtered);
-      });
     </script>
   </body>
 </html>
