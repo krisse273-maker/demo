@@ -97,9 +97,9 @@ window.addEventListener("DOMContentLoaded", async () => {
           const data = doc.data();
           let userName = "Anonymous";
 
-          // Om vi har UID sparat i matposten
+          // Hämta publicName från "users"-samlingen
           if (data.userId) {
-            const userDoc = await db.collection("publicUsers").doc(data.userId).get();
+            const userDoc = await db.collection("users").doc(data.userId).get();
             if (userDoc.exists) userName = userDoc.data().publicName || "Anonymous";
           }
 
