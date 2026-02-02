@@ -1,225 +1,173 @@
+// ===== Firebase setup =====
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
+  authDomain: "global-food-share.firebaseapp.com",
+  projectId: "global-food-share",
+  storageBucket: "global-food-share.firebasestorage.app",
+  messagingSenderId: "902107453892",
+  appId: "1:902107453892:web:dd9625974b8744cc94ac91",
+  measurementId: "G-S1G7JY0TH5",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ===== DOMContentLoaded =====
 document.addEventListener("DOMContentLoaded", () => {
+  const registerBtn = document.getElementById("registerBtn");
+  const togglePasswordBtn = document.getElementById("togglePassword");
+  const goLoginBtn = document.getElementById("goLoginBtn"); // ✅ Login-knapp
+  const nameInput = document.getElementById("name");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const confirmPasswordInput = document.getElementById("confirmPassword");
 
-  // =====================================
-  // Hämta element
-  // =====================================
-  const headerP = document.getElementById("welcomeMsg");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const homeBtn = document.getElementById("homeBtn");
-  const myFoodList = document.querySelector(".my-food-list");
-  const addFoodForm = document.getElementById("addFoodForm");
-  const emojiPickerBtn = document.getElementById("emojiPickerBtn");
-  const emojiPicker = document.getElementById("emojiPicker");
-  const foodTitleInput = document.getElementById("foodTitle");
-  const foodCountrySelect = document.getElementById("foodCountry");
-  const foodCitySelect = document.getElementById("foodCity");
+  const nameError = document.getElementById("nameError");
+  const emailError = document.getElementById("emailError");
+  const passwordLengthError = document.getElementById("passwordLengthError");
+  const uppercaseNumberError = document.getElementById("uppercaseNumberError");
 
-  if (!addFoodForm || !foodTitleInput) {
-    console.error("Form or foodTitle input not found in DOM!");
-    return;
-  }
+  // ===== Spinner & Button Text =====
+  const spinner = document.createElement("span");
+  spinner.className = "spinner";
+  spinner.style.display = "none";
+  spinner.style.marginRight = "10px";
+  registerBtn.prepend(spinner);
 
-  // =====================================
-  // Firebase init
-  // =====================================
-  const firebaseConfig = {
-    apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
-    authDomain: "global-food-share.firebaseapp.com",
-    projectId: "global-food-share",
-    storageBucket: "global-food-share.appspot.com",
-    messagingSenderId: "902107453892",
-    appId: "1:902107453892:web:dd9625974b8744cc94ac91"
-  };
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-  const db = firebase.firestore();
+  const btnText = document.createElement("span");
+  btnText.textContent = "Register";
+  registerBtn.appendChild(btnText);
 
-  let firebaseUser = null;
-  let selectedEmoji = "";
-  let myFoods = [];
-  let countriesData = [];
+  // ===== Validation helpers =====
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidName = (name) => /^[a-zA-Z0-9]{1,15}$/.test(name);
+  const hasUppercaseAndNumber = (pw) => /[A-Z]/.test(pw) && /[0-9]/.test(pw);
 
-  // =====================================
-  // Auth state
-  // =====================================
-  firebase.auth().onAuthStateChanged(async (user) => {
-    if (!user) {
-      window.location.href = "login.html";
-      return;
-    }
-    firebaseUser = user;
-
-    try {
-      // Hämta användarens namn från Firestore
-      const userDoc = await db.collection("users").doc(firebaseUser.uid).get();
-      let userName = user.email; // fallback
-      if (userDoc.exists && userDoc.data().name) {
-        userName = userDoc.data().name;
-      }
-      headerP.textContent = `Welcome, ${userName}! Here’s your food list.`;
-      
-      // Spara userName globalt så vi kan använda det när vi lägger upp mat
-      firebaseUser.userName = userName;
-    } catch (err) {
-      console.error("Failed to get user name from Firestore:", err);
-      headerP.textContent = `Welcome, ${firebaseUser.email}! Here’s your food list.`;
-      firebaseUser.userName = firebaseUser.email; // fallback
-    }
-
-    await loadUserFoods();
+  // ===== Toggle password visibility =====
+  togglePasswordBtn.addEventListener("click", () => {
+    const isVisible = passwordInput.type === "text";
+    passwordInput.type = isVisible ? "password" : "text";
+    confirmPasswordInput.type = isVisible ? "password" : "text";
+    togglePasswordBtn.textContent = isVisible ? "OFF" : "ON";
   });
 
-  logoutBtn?.addEventListener("click", () => {
-    firebase.auth().signOut();
-    window.location.href = "login.html";
-  });
-
-  homeBtn?.addEventListener("click", () => {
-    window.location.href = "index.html";
-  });
-
-  // =====================================
-  // Ladda länder
-  // =====================================
-  async function loadCountries() {
-    try {
-      const res = await fetch("https://countriesnow.space/api/v0.1/countries");
-      const data = await res.json();
-      countriesData = data.data;
-
-      foodCountrySelect.innerHTML = '<option value="">Select Country</option>';
-      countriesData.forEach(c => {
-        const option = document.createElement("option");
-        option.value = c.country;
-        option.textContent = c.country;
-        foodCountrySelect.appendChild(option);
-      });
-      foodCountrySelect.disabled = false;
-    } catch (e) {
-      console.error("Failed to load countries:", e);
-    }
-  }
-  loadCountries();
-
-  // =====================================
-  // Välj City baserat på Country
-  // =====================================
-  foodCountrySelect.addEventListener("change", () => {
-    const selectedCountry = foodCountrySelect.value;
-    foodCitySelect.innerHTML = '<option value="">Select City</option>';
-    foodCitySelect.disabled = true;
-    if (!selectedCountry) return;
-
-    const countryObj = countriesData.find(c => c.country === selectedCountry);
-    if (countryObj && countryObj.cities.length) {
-      countryObj.cities.forEach(city => {
-        const opt = document.createElement("option");
-        opt.value = city;
-        opt.textContent = city;
-        foodCitySelect.appendChild(opt);
-      });
-      foodCitySelect.disabled = false;
-    }
-  });
-
-  // =====================================
-  // Emoji picker
-  // =====================================
-  emojiPickerBtn.addEventListener("click", () => {
-    emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
-  });
-
-  emojiPicker.addEventListener("click", (e) => {
-    if (e.target.tagName.toLowerCase() === "span") {
-      selectedEmoji = e.target.textContent;
-      emojiPicker.style.display = "none";
-      // ✅ Endast uppdatera knappen, INTE foodTitleInput
-      emojiPickerBtn.textContent = `Selected: ${selectedEmoji}`;
-    }
-  });
-
-  // =====================================
-  // Lägg till ny mat
-  // =====================================
-  addFoodForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    if (!selectedEmoji) return alert("Please select an emoji!");
-    if (!firebaseUser) return alert("User not logged in");
-
-    const foodValue = foodTitleInput.value.trim();
-    if (!foodValue) return alert("Please enter a food name!");
-    if (foodValue.length > 50) return alert("Food name cannot exceed 50 characters!");
-
-    const newFood = {
-      title: foodValue,
-      type: foodValue,
-      country: foodCountrySelect.value,
-      city: foodCitySelect.value,
-      emoji: selectedEmoji,
-      user: firebaseUser.userName, // använd användarens namn från Firestore
-      ownerId: firebaseUser.uid,
-      createdAt: firebase.firestore.Timestamp.now()
-    };
-
-    try {
-      const userDocRef = db.collection("foods").doc(firebaseUser.uid).collection("items").doc();
-      await userDocRef.set(newFood);
-
-      const publicDocRef = db.collection("publicFoods").doc(userDocRef.id);
-      await publicDocRef.set(newFood);
-
-      addFoodForm.reset();
-      selectedEmoji = "";
-      emojiPickerBtn.textContent = "Select your food Emoji";
-      foodCitySelect.disabled = true;
-
-      await loadUserFoods();
-      alert("Food item added successfully!");
-    } catch (err) {
-      console.error("Failed to add food:", err);
-      alert("Failed to add food!");
-    }
-  });
-
-  // =====================================
-  // Ladda användarens mat
-  // =====================================
-  async function loadUserFoods() {
-    if (!firebaseUser) return;
-    try {
-      const snapshot = await db.collection("foods")
-                               .doc(firebaseUser.uid)
-                               .collection("items")
-                               .orderBy("createdAt", "desc")
-                               .get();
-      myFoods = snapshot.docs.map(doc => doc.data());
-      renderMyFoods();
-    } catch (err) {
-      console.error("Failed to load user foods:", err);
-    }
-  }
-
-  // =====================================
-  // Rendera matlistan
-  // =====================================
-  function renderMyFoods() {
-    myFoodList.innerHTML = "";
-    if (!myFoods.length) {
-      myFoodList.innerHTML = `<p class="no-food">You don't have any food listed yet.</p>`;
-      return;
-    }
-    myFoods.forEach(food => {
-      const div = document.createElement("div");
-      div.classList.add("food-item");
-      div.innerHTML = `
-        <span class="icon">${food.emoji}</span>
-        <h3>${food.title}</h3>
-        <p>${food.city}, ${food.country}</p>
-      `;
-      myFoodList.appendChild(div);
+  // ===== Clear errors on input =====
+  [nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(input => {
+    input.addEventListener("input", () => {
+      input.style.borderColor = "";
+      nameError.style.display = "none";
+      emailError.style.display = "none";
+      passwordLengthError.style.display = "none";
+      uppercaseNumberError.style.display = "none";
     });
-  }
+  });
 
+  // ===== Show password error =====
+  const showPasswordError = (type) => {
+    passwordLengthError.style.display = "none";
+    uppercaseNumberError.style.display = "none";
+    if (type === "length") passwordLengthError.style.display = "block";
+    if (type === "uppercaseNumber") uppercaseNumberError.style.display = "block";
+    passwordInput.style.borderColor = "red";
+    confirmPasswordInput.style.borderColor = "red";
+  };
+
+  // ===== Register button click =====
+  registerBtn.addEventListener("click", async () => {
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+    let hasError = false;
+
+    [nameError, emailError].forEach(el => el.style.display = "none");
+    passwordLengthError.style.display = "none";
+    uppercaseNumberError.style.display = "none";
+    [nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(el => el.style.borderColor = "");
+
+    // ===== Name validation =====
+    if (!name) {
+      nameError.textContent = "Name is required";
+      nameError.style.display = "block";
+      nameInput.style.borderColor = "red";
+      hasError = true;
+    } else if (!isValidName(name)) {
+      nameError.textContent = "Name must be 1-15 letters or numbers";
+      nameError.style.display = "block";
+      nameInput.style.borderColor = "red";
+      hasError = true;
+    }
+
+    // ===== Email validation =====
+    if (!email) {
+      emailError.textContent = "Email is required";
+      emailError.style.display = "block";
+      emailInput.style.borderColor = "red";
+      hasError = true;
+    } else if (!isValidEmail(email) || email.length > 100) {
+      emailError.textContent = "Please enter a valid email";
+      emailError.style.display = "block";
+      emailInput.style.borderColor = "red";
+      hasError = true;
+    }
+
+    // ===== Password validation =====
+    if (!password || !confirmPassword) {
+      if (!password) passwordInput.style.borderColor = "red";
+      if (!confirmPassword) confirmPasswordInput.style.borderColor = "red";
+      hasError = true;
+    }
+
+    if (password !== confirmPassword) {
+      passwordInput.style.borderColor = "red";
+      confirmPasswordInput.style.borderColor = "red";
+      hasError = true;
+    }
+
+    if (!hasUppercaseAndNumber(password)) showPasswordError("uppercaseNumber"), hasError = true;
+    else if (password.length < 6) showPasswordError("length"), hasError = true;
+
+    if (hasError) return;
+
+    // ===== Firebase registration =====
+    registerBtn.disabled = true;
+    spinner.style.display = "inline-block";
+    btnText.textContent = "Registering...";
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      await updateProfile(user, { displayName: name });
+
+      await setDoc(doc(db, "users", user.uid), {
+        name: name,
+        publicName: name.toLowerCase(),
+        email: email,
+        createdAt: serverTimestamp()
+      });
+
+      window.location.href = "index.html";
+    } catch (error) {
+      console.error("Registration error:", error);
+      emailInput.style.borderColor = "red";
+      emailError.textContent = "Registration failed. Check email or password";
+      emailError.style.display = "block";
+    } finally {
+      registerBtn.disabled = false;
+      spinner.style.display = "none";
+      btnText.textContent = "Register";
+    }
+  });
+
+  // ===== Login button click =====
+  goLoginBtn.addEventListener("click", () => {
+    window.location.href = "login.html"; // ✅ Navigerar till login.html
+  });
 });
+
