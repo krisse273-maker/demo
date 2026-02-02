@@ -226,19 +226,25 @@
 </footer>
 
 <script type="module">
-  // EN knapp styr båda fälten
-  const passwordInput = document.getElementById('password');
-  const confirmInput = document.getElementById('confirmPassword');
-  const toggleBtn = document.getElementById('togglePassword');
+  // Firebase setup
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-  toggleBtn.addEventListener('click', () => {
-    const type = passwordInput.type === 'password' ? 'text' : 'password';
-    passwordInput.type = type;
-    confirmInput.type = type;
-    toggleBtn.textContent = type === 'password' ? '👁️' : '🙈';
-  });
+  const firebaseConfig = {
+    apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
+    authDomain: "global-food-share.firebaseapp.com",
+    projectId: "global-food-share",
+    storageBucket: "global-food-share.firebasestorage.app",
+    messagingSenderId: "902107453892",
+    appId: "1:902107453892:web:dd9625974b8744cc94ac91",
+    measurementId: "G-S1G7JY0TH5",
+  };
 
-  // ===== JavaScript for Validation =====
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
   document.addEventListener("DOMContentLoaded", () => {
     const registerBtn = document.getElementById("registerBtn");
     const togglePasswordBtn = document.getElementById("togglePassword");
@@ -255,16 +261,14 @@
     const passwordLengthError = document.getElementById("passwordLengthError");
     const uppercaseNumberError = document.getElementById("uppercaseNumberError");
 
-    // ===== Spinner & Button Text =====
     const spinner = registerBtn.querySelector(".spinner");
     const btnText = registerBtn.querySelector("#btnText");
 
-    // ===== Validation helpers =====
     const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const isValidName = (name) => /^[a-zA-Z0-9]{1,15}$/.test(name);
     const hasUppercaseAndNumber = (pw) => /[A-Z]/.test(pw) && /[0-9]/.test(pw);
 
-    // ===== Clear errors on input =====
+    // Clear errors on input change
     [nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(input => {
       input.addEventListener("input", () => {
         input.style.borderColor = "";
@@ -280,7 +284,6 @@
       genderSelect.style.borderColor = "";
     });
 
-    // ===== Show password error =====
     const showPasswordError = (type) => {
       passwordLengthError.classList.remove('show');
       uppercaseNumberError.classList.remove('show');
@@ -292,7 +295,14 @@
       confirmPasswordInput.style.borderColor = "red";
     };
 
-    // ===== Register button click =====
+    // Toggle password visibility
+    togglePasswordBtn.addEventListener("click", () => {
+      const type = passwordInput.type === "password" ? "text" : "password";
+      passwordInput.type = type;
+      confirmPasswordInput.type = type;
+      togglePasswordBtn.textContent = type === "password" ? "👁️" : "🙈";
+    });
+
     registerBtn.addEventListener("click", async () => {
       const name = nameInput.value.trim();
       const email = emailInput.value.trim();
@@ -307,7 +317,7 @@
       uppercaseNumberError.classList.remove('show');
       [nameInput, emailInput, passwordInput, confirmPasswordInput, genderSelect].forEach(el => el.style.borderColor = "");
 
-      // ===== Name validation =====
+      // Validation
       if (!name) {
         nameError.textContent = "Name is required";
         nameError.classList.add('show');
@@ -320,7 +330,6 @@
         hasError = true;
       }
 
-      // ===== Email validation =====
       if (!email) {
         emailError.textContent = "Email is required";
         emailError.classList.add('show');
@@ -333,7 +342,6 @@
         hasError = true;
       }
 
-      // ===== Gender validation =====
       if (!gender) {
         genderError.textContent = "You need to choose Gender";
         genderError.classList.add('show');
@@ -341,7 +349,6 @@
         hasError = true;
       }
 
-      // ===== Password validation =====
       if (!password || !confirmPassword) {
         if (!password) passwordInput.style.borderColor = "red";
         if (!confirmPassword) confirmPasswordInput.style.borderColor = "red";
@@ -366,11 +373,12 @@
 
       if (hasError) return;
 
-      // ===== Firebase registration =====
+      // Spinner & Button Text
       registerBtn.disabled = true;
       spinner.style.display = "inline-block";
       btnText.textContent = "Registering...";
 
+      // Firebase registration
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
@@ -402,7 +410,7 @@
       }
     });
 
-    // ===== Login button click =====
+    // Redirect to login page
     goLoginBtn.addEventListener("click", () => {
       window.location.href = "login.html";
     });
