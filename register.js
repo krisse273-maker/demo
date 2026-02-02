@@ -160,12 +160,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
       await updateProfile(user, { displayName: name });
 
+      // ===== Save private info =====
       await setDoc(doc(db, "users", user.uid), {
         name: name,
         publicName: name.toLowerCase(),
         email: email,
-        gender: gender,
         createdAt: serverTimestamp()
+      });
+
+      // ===== Save public info =====
+      await setDoc(doc(db, "publicUsers", user.uid), {
+        name: name,
+        gender: gender
       });
 
       window.location.href = "index.html";
