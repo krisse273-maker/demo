@@ -195,12 +195,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===== Get and display user info =====
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      const publicUserRef = doc(db, "publicUsers", user.uid);
-      const publicUserSnap = await getDoc(publicUserRef);
+      const userRef = doc(db, "users", user.uid); // Här hämtar vi från 'users' istället för 'publicUsers'
+      const userSnap = await getDoc(userRef);
 
-      if (publicUserSnap.exists()) {
-        const publicData = publicUserSnap.data();
-        const displayName = publicData.name;
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        const displayName = userData.publicName; // Vi hämtar 'publicName' här
 
         // Update welcome text with user name
         const welcomeText = document.getElementById("welcomeText");
@@ -226,9 +226,9 @@ document.addEventListener("DOMContentLoaded", () => {
     for (const docSnap of postsSnap.docs) {
       const post = docSnap.data();
 
-      const userRef = doc(db, "publicUsers", post.userId);
+      const userRef = doc(db, "users", post.userId); // Här hämtar vi från 'users' istället för 'publicUsers'
       const userSnap = await getDoc(userRef);
-      const userName = userSnap.exists() ? userSnap.data().name : "Anonymous";
+      const userName = userSnap.exists() ? userSnap.data().publicName : "Anonymous"; // Vi hämtar 'publicName' här
 
       const postEl = document.createElement("div");
       postEl.className = "food-post";
