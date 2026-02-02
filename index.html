@@ -27,6 +27,19 @@
 
       #welcomeMsg {
         color: #cfd8dc;
+        font-size: 1.1rem;
+      }
+
+      #profileIcon {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 3px solid #4caf50; /* Grön kant */
+        background-color: #555;      /* default mörk färg */
+        vertical-align: middle;
+        margin-right: 0.5rem;
+        transition: background-color 0.3s;
       }
 
       #logoutBtn {
@@ -210,7 +223,10 @@
   <body>
     <header>
       <h1>🌍 Global Food Share</h1>
-      <p id="welcomeMsg">Welcome! Find and share food near you!</p>
+      <p id="welcomeMsg">
+        <span id="profileIcon"></span>
+        Welcome, <span id="userName"></span>!
+      </p>
       <button id="logoutBtn">Log Out</button>
       <div>
         <button id="myFoodBtn">My Food List</button>
@@ -269,11 +285,12 @@
       const citySelect = document.getElementById("city");
       const filterBtn = document.getElementById("filterBtn");
       const foodList = document.querySelector(".global-food-list");
+      const profileIcon = document.getElementById("profileIcon");
+      const userName = document.getElementById("userName");
 
       let countriesData = [];
       let allFoods = [];
 
-      // FLAGGOR
       const countryFlags = {
         "Sweden": "🇸🇪",
         "United States": "🇺🇸",
@@ -290,8 +307,19 @@
 
       auth.onAuthStateChanged(async user => {
         if (!user) return window.location.href="login.html";
-        document.getElementById("welcomeMsg").textContent =
-          `Welcome, ${user.displayName || user.email}!`;
+        userName.textContent = user.displayName || user.email;
+
+        // Hämta gender från Firestore och sätt profilfärg
+        const docRef = db.collection("publicUsers").doc(user.uid);
+        const docSnap = await docRef.get();
+        let color = "#777"; // default okänt
+        if (docSnap.exists) {
+          const gender = docSnap.data().gender.toLowerCase();
+          if (gender === "male") color = "#1a237e";       // mörkblå
+          else if (gender === "female") color = "#880e4f"; // mörkrosa
+        }
+        profileIcon.style.backgroundColor = color;
+
         await loadCountries();
         loadGlobalFood();
       });
@@ -335,7 +363,6 @@
         renderFoodItems(filtered);
       });
 
-      // --- LOADING TITLE ANIMATION ---
       const foodTitle = document.getElementById("foodTitle");
       let dots = 0;
       foodTitle.textContent = "Shared Meals";
@@ -350,8 +377,6 @@
           .onSnapshot(snap=>{
             allFoods = snap.docs.map(d=>d.data());
             renderFoodItems(allFoods);
-
-            // Stoppa animationen och sätt riktig titel
             clearInterval(loadingInterval);
             foodTitle.textContent = "Shared Meals";
           });
