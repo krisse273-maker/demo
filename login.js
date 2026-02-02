@@ -20,7 +20,6 @@ const db = getFirestore(app);
 
 // ===== UI =====
 const loginBtn = document.getElementById("loginBtn");
-const goRegisterBtn = document.getElementById("goRegisterBtn");
 const spinner = document.getElementById("spinner");
 const btnText = document.getElementById("btnText");
 
@@ -86,11 +85,3 @@ loginBtn.addEventListener("click", async () => {
     btnText.textContent = "Login";
   }
 });
-
-// ===== REGISTER / ENTER APP =====
-if (goRegisterBtn) {
-  goRegisterBtn.addEventListener("click", () => {
-    console.log("Navigating to register.html");
-    window.location.href = "register.html";
-  });
-}
