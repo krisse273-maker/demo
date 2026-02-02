@@ -115,6 +115,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       foodList.innerHTML = "";
       if (!items.length) {
         foodList.innerHTML = "<p>No food found.</p>";
+        stopLoadingDots(); // <-- Stoppar loading-dots även om inga matobjekt finns
         return;
       }
 
@@ -146,6 +147,8 @@ window.addEventListener("DOMContentLoaded", async () => {
         `;
         foodList.appendChild(div);
       });
+
+      stopLoadingDots(); // <-- Stoppar loading-dots när all mat har renderats
     }
 
     // --- Filterknapp ---
