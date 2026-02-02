@@ -1,7 +1,7 @@
 // ===== Firebase setup =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
@@ -43,12 +43,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const isValidName = (name) => /^[a-zA-Z0-9]{1,15}$/.test(name);
   const hasUppercaseAndNumber = (pw) => /[A-Z]/.test(pw) && /[0-9]/.test(pw);
 
-  // ===== Toggle password visibility =====
+  // ===== Toggle password visibility (👁️ / 🙈) =====
   togglePasswordBtn.addEventListener("click", () => {
     const isVisible = passwordInput.type === "text";
+
     passwordInput.type = isVisible ? "password" : "text";
     confirmPasswordInput.type = isVisible ? "password" : "text";
-    togglePasswordBtn.textContent = isVisible ? "OFF" : "ON";
+
+    togglePasswordBtn.textContent = isVisible ? "👁️" : "🙈";
   });
 
   // ===== Clear errors on input =====
@@ -71,8 +73,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const showPasswordError = (type) => {
     passwordLengthError.style.display = "none";
     uppercaseNumberError.style.display = "none";
+
     if (type === "length") passwordLengthError.style.display = "block";
     if (type === "uppercaseNumber") uppercaseNumberError.style.display = "block";
+
     passwordInput.style.borderColor = "red";
     confirmPasswordInput.style.borderColor = "red";
   };
@@ -84,11 +88,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = passwordInput.value;
     const confirmPassword = confirmPasswordInput.value;
     const gender = genderSelect.value;
+
     let hasError = false;
 
     [nameError, emailError, genderError].forEach(el => el.style.display = "none");
     passwordLengthError.style.display = "none";
     uppercaseNumberError.style.display = "none";
+
     [nameInput, emailInput, passwordInput, confirmPasswordInput, genderSelect]
       .forEach(el => el.style.borderColor = "");
 
@@ -160,7 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       await updateProfile(user, { displayName: name });
 
-      // ===== Save private info =====
       await setDoc(doc(db, "users", user.uid), {
         name: name,
         publicName: name.toLowerCase(),
@@ -168,7 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
         createdAt: serverTimestamp()
       });
 
-      // ===== Save public info =====
       await setDoc(doc(db, "publicUsers", user.uid), {
         name: name,
         gender: gender
@@ -191,53 +195,4 @@ document.addEventListener("DOMContentLoaded", () => {
   goLoginBtn.addEventListener("click", () => {
     window.location.href = "login.html";
   });
-
-  // ===== Get and display user info =====
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      const userRef = doc(db, "users", user.uid); // Här hämtar vi från 'users' istället för 'publicUsers'
-      const userSnap = await getDoc(userRef);
-
-      if (userSnap.exists()) {
-        const userData = userSnap.data();
-        const displayName = userData.publicName; // Vi hämtar 'publicName' här
-
-        // Update welcome text with user name
-        const welcomeText = document.getElementById("welcomeText");
-        if (welcomeText) {
-          welcomeText.textContent = `Welcome, ${displayName}!`;
-        }
-
-        // Load food posts with correct user name
-        loadFoodPosts(displayName);
-      }
-    } else {
-      window.location.href = "login.html";
-    }
-  });
-
-  // ===== Load food posts with correct user name =====
-  async function loadFoodPosts() {
-    const postsCol = collection(db, "foodPosts");
-    const postsSnap = await getDocs(postsCol);
-    const postsContainer = document.getElementById("postsContainer");
-    postsContainer.innerHTML = "";
-
-    for (const docSnap of postsSnap.docs) {
-      const post = docSnap.data();
-
-      const userRef = doc(db, "users", post.userId); // Här hämtar vi från 'users' istället för 'publicUsers'
-      const userSnap = await getDoc(userRef);
-      const userName = userSnap.exists() ? userSnap.data().publicName : "Anonymous"; // Vi hämtar 'publicName' här
-
-      const postEl = document.createElement("div");
-      postEl.className = "food-post";
-      postEl.innerHTML = `
-        <h3>${post.title}</h3>
-        <p>Posted by: ${userName}</p>
-        <p>${post.description}</p>
-      `;
-      postsContainer.appendChild(postEl);
-    }
-  }
 });
