@@ -274,18 +274,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-    <!-- Loading dots animation -->
-    <script>
-      const foodTitle = document.getElementById("foodTitle");
-      let dots = 0;
-      foodTitle.textContent = "Shared Meals";
-      const loadingInterval = setInterval(() => {
-        dots = (dots + 1) % 4;
-        let dotStr = ".".repeat(dots);
-        foodTitle.textContent = `Shared Meals${dotStr}`;
-      }, 500);
-    </script>
-
     <script src="app.js"></script>
   </body>
 </html>
+
