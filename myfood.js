@@ -1,8 +1,4 @@
 // ===== Firebase setup =====
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-// Din Firebase-konfiguration
 const firebaseConfig = {
   apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
   authDomain: "global-food-share.firebaseapp.com",
@@ -13,8 +9,9 @@ const firebaseConfig = {
   measurementId: "G-S1G7JY0TH5",
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Init Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 // ===== DOM elements =====
 const emojiPickerBtn = document.getElementById("emojiPickerBtn");
@@ -76,12 +73,12 @@ addFoodForm.addEventListener("submit", async (e) => {
   if (!title || !country || !city) return alert("Fill in all fields!");
 
   try {
-    await addDoc(collection(db, "foods"), {
+    await db.collection("foods").add({
       title,
       emoji: selectedEmoji || "🍽️",
       country,
       city,
-      createdAt: new Date()
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
     // Reset form
@@ -103,8 +100,9 @@ addFoodForm.addEventListener("submit", async (e) => {
 async function loadFoodList() {
   foodListContainer.innerHTML = "";
 
-  const q = query(collection(db, "foods"), orderBy("createdAt", "desc"));
-  const snapshot = await getDocs(q);
+  const snapshot = await db.collection("foods")
+    .orderBy("createdAt", "desc")
+    .get();
 
   if (snapshot.empty) {
     const p = document.createElement("p");
