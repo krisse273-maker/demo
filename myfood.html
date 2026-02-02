@@ -9,162 +9,32 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="myfood.js" defer></script>
-
   <style>
-    /* ---------- BODY & HEADER ---------- */
-    body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #4caf50; /* matcha index bakgrund */
-      color: #cfd8dc;
-    }
-
-    header {
-      background-color: #262d37; /* mörk header */
-      color: #cfd8dc;
-      padding: 1.5rem 1rem;
-      text-align: center;
-      position: relative;
-      border-bottom: 4px solid #1c222b;
-    }
-
-    header h1 { margin: 0; font-size: 2rem; color: #4caf50; }
-    header p { margin-top: 0.5rem; font-size: 1rem; color: #cfd8dc; }
-
-    /* ---------- KNAPPAR ---------- */
-    #logoutBtn, #homeBtn {
-      padding: 0.6rem 1.2rem;
-      border-radius: 6px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    #logoutBtn {
-      position: absolute;
-      top: 1.5rem;
-      right: 1rem;
-      background-color: #f44336;
-      color: #fff;
-    }
-    #logoutBtn:hover { background-color: #e53935; }
-
-    #homeBtn {
-      margin-top: 0.5rem;
-      background-color: #4caf50;
-      color: #fff;
-    }
-    #homeBtn:hover { background-color: #388e3c; }
-
-    /* ---------- CONTAINER ---------- */
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      padding: 2rem;
-      gap: 2rem;
-      justify-content: center;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    /* ---------- FOOD LIST & FORM ---------- */
-    .my-food-list, form {
-      flex: 1 1 300px;
-      background-color: #262d37; /* mörkt kort */
-      color: #cfd8dc;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      max-height: 80vh;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .food-item {
-      border: 2px solid #1c222b;
-      padding: 0.75rem 1rem;
-      margin-bottom: 0.75rem;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      background-color: #2b3340; /* matcha index item färg */
-      transition: 0.2s;
-    }
-    .food-item:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 12px rgba(0,0,0,0.5);
-    }
-    .food-item .icon { font-size: 1.8rem; }
-
-    /* ---------- INPUT & SELECT ---------- */
-    input, select, button {
-      padding: 0.6rem 1rem;
-      border-radius: 6px;
-      border: 2px solid #1c222b;
-      font-size: 1rem;
-      transition: 0.2s;
-      background-color: #2b3340;
-      color: #cfd8dc;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    input:focus, select:focus {
-      outline: none;
-      border-color: #4caf50;
-      box-shadow: 0 0 5px rgba(76,175,80,0.5);
-    }
-
-    /* ---------- BUTTONS IN FORM ---------- */
-    button {
-      background-color: #4caf50;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    button:hover { background-color: #388e3c; }
-
-    #emojiPickerBtn {
-      background-color: #2b3340;
-      color: #cfd8dc;
-      border: 2px solid #1c222b;
-    }
-    #emojiPickerBtn:hover { background-color: #388e3c; color: #fff; }
-
-    #emojiPicker {
-      display: none;
-      border: 2px solid #1c222b;
-      padding: 0.5rem;
-      border-radius: 12px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      background-color: #2b3340;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      margin-bottom: 0.5rem;
-    }
-
-    #emojiPicker span {
-      cursor: pointer;
-      font-size: 1.8rem;
-      transition: transform 0.1s;
-    }
-    #emojiPicker span:hover { transform: scale(1.4); }
-
-    .no-food {
-      color: #90a4ae;
-      font-style: italic;
-      text-align: center;
-    }
+    body { font-family: "Segoe UI", sans-serif; margin:0; padding:0; background:#f9f9f9; color:#333; }
+    header { background:#4caf50; color:white; padding:1.5rem 1rem; text-align:center; border-bottom:4px solid #388e3c; position:relative; }
+    header h1 { margin:0; font-size:2rem; }
+    header p { margin-top:0.5rem; font-size:1rem; }
+    #logoutBtn, #homeBtn { padding:0.6rem 1.2rem; border-radius:25px; border:none; background:white; color:#4caf50; font-weight:bold; cursor:pointer; transition:0.2s; }
+    #logoutBtn { position:absolute; top:1.5rem; right:1rem; }
+    #logoutBtn:hover, #homeBtn:hover { background:#f0f0f0; }
+    #homeBtn { margin-top:0.5rem; }
+    .container { display:flex; flex-wrap:wrap; padding:2rem; gap:2rem; justify-content:center; }
+    .my-food-list, form { flex:1 1 300px; background:white; padding:1.5rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); max-height:80vh; overflow-y:auto; display:flex; flex-direction:column; gap:1rem; }
+    .food-item { border:1px solid #ddd; padding:0.75rem 1rem; margin-bottom:0.75rem; border-radius:12px; display:flex; align-items:center; gap:0.75rem; background:#fafafa; transition:0.2s; }
+    .food-item:hover { background:#f0fff0; border-color:#4caf50; }
+    .food-item .icon { font-size:1.8rem; }
+    input, select, button { padding:0.6rem 1rem; border-radius:25px; border:1px solid #ccc; font-size:1rem; transition:0.2s; }
+    input:focus, select:focus { outline:none; border-color:#4caf50; box-shadow:0 0 5px rgba(76,175,80,0.5); }
+    button { background-color:#4caf50; color:white; border:none; cursor:pointer; font-weight:bold; }
+    button:hover { background-color:#45a049; }
+    #emojiPickerBtn { background-color:#fff; color:#333; border:1px solid #ccc; font-weight:normal; }
+    #emojiPickerBtn:hover { background-color:#f0f0f0; }
+    #emojiPicker { display:none; border:1px solid #ccc; padding:0.5rem; border-radius:12px; display:flex; flex-wrap:wrap; gap:0.5rem; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-bottom:0.5rem; }
+    #emojiPicker span { cursor:pointer; font-size:1.8rem; transition:transform 0.1s; }
+    #emojiPicker span:hover { transform:scale(1.4); }
+    .no-food { color:#777; font-style:italic; text-align:center; }
   </style>
 </head>
-
 <body>
 <header>
   <h1>🌍 Global Food Share</h1>
@@ -180,6 +50,7 @@
     <!-- Food Name -->
     <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="50" required />
     
+
     <!-- Emoji -->
     <button type="button" id="emojiPickerBtn">Select your food Emoji</button>
     <div id="emojiPicker">
