@@ -91,10 +91,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let hasError = false;
 
+    // Clear previous errors
     [nameError, emailError, genderError].forEach(el => el.style.display = "none");
     passwordLengthError.style.display = "none";
     uppercaseNumberError.style.display = "none";
-
     [nameInput, emailInput, passwordInput, confirmPasswordInput, genderSelect]
       .forEach(el => el.style.borderColor = "");
 
