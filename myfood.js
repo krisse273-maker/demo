@@ -2,6 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
+// Din Firebase-konfiguration
 const firebaseConfig = {
   apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
   authDomain: "global-food-share.firebaseapp.com",
@@ -26,7 +27,7 @@ const foodListContainer = document.querySelector(".my-food-list");
 
 let selectedEmoji = "";
 
-// ===== Emoji picker toggle =====
+// ===== Emoji picker =====
 emojiPickerBtn.addEventListener("click", () => {
   emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
 });
@@ -39,18 +40,18 @@ emojiPicker.querySelectorAll("span").forEach(span => {
   });
 });
 
-// ===== Country & city handling =====
+// ===== Country & City =====
 const countries = {
   Sweden: ["Stockholm", "Gothenburg", "Malmö"],
   USA: ["New York", "Los Angeles", "Chicago"],
   Japan: ["Tokyo", "Osaka", "Kyoto"]
 };
 
-for (let country in countries) {
-  const option = document.createElement("option");
-  option.value = country;
-  option.textContent = country;
-  foodCountry.appendChild(option);
+for (const country in countries) {
+  const opt = document.createElement("option");
+  opt.value = country;
+  opt.textContent = country;
+  foodCountry.appendChild(opt);
 }
 
 foodCountry.addEventListener("change", () => {
@@ -58,27 +59,26 @@ foodCountry.addEventListener("change", () => {
   foodCity.innerHTML = '<option value="">Select City</option>';
   foodCity.disabled = cities.length === 0;
   cities.forEach(city => {
-    const option = document.createElement("option");
-    option.value = city;
-    option.textContent = city;
-    foodCity.appendChild(option);
+    const opt = document.createElement("option");
+    opt.value = city;
+    opt.textContent = city;
+    foodCity.appendChild(opt);
   });
 });
 
 // ===== Add food to Firestore =====
 addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-
   const title = foodTitle.value.trim();
   const country = foodCountry.value;
   const city = foodCity.value;
 
-  if (!title || !country || !city) return alert("Please fill in all fields!");
+  if (!title || !country || !city) return alert("Fill in all fields!");
 
   try {
     await addDoc(collection(db, "foods"), {
       title,
-      emoji: selectedEmoji,
+      emoji: selectedEmoji || "🍽️",
       country,
       city,
       createdAt: new Date()
@@ -99,7 +99,7 @@ addFoodForm.addEventListener("submit", async (e) => {
   }
 });
 
-// ===== Load food list from Firestore =====
+// ===== Load food list =====
 async function loadFoodList() {
   foodListContainer.innerHTML = "";
 
@@ -107,10 +107,10 @@ async function loadFoodList() {
   const snapshot = await getDocs(q);
 
   if (snapshot.empty) {
-    const noFood = document.createElement("p");
-    noFood.className = "no-food";
-    noFood.textContent = "No foods added yet!";
-    foodListContainer.appendChild(noFood);
+    const p = document.createElement("p");
+    p.className = "no-food";
+    p.textContent = "No foods added yet!";
+    foodListContainer.appendChild(p);
     return;
   }
 
