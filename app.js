@@ -5,7 +5,7 @@ const firebaseConfig = {
   projectId: "global-food-share",
   storageBucket: "global-food-share.appspot.com",
   messagingSenderId: "902107453892",
-  appId: "1:902107453892:web:dd9625974b8744cc94ac91"
+  appId: "1:902107453892:web:dd9625974cc94ac91"
 };
 
 // Initiera Firebase
@@ -86,26 +86,22 @@ window.addEventListener("DOMContentLoaded", async () => {
     welcomeMsg.textContent = `Welcome, ${user.displayName || user.email}!`;
 
     // --- Sätt profilikon baserat på kön ---
-    if(gender === "male") {
-      // Male ikon (standard silhuett)
+    if (gender === "male") {
+      // Male: större silhuett, rund huvud och axlar
       profileIcon.innerHTML = `
-        <svg viewBox="0 0 64 64">
-          <!-- Huvud -->
-          <circle cx="32" cy="20" r="12" fill="#262d37"/>
-          <!-- Hals/Kropp -->
-          <path d="M20 36c0 8 24 8 24 0v12H20V36z" fill="#262d37"/>
+        <svg viewBox="0 0 64 64" width="40" height="40">
+          <circle cx="32" cy="20" r="12" fill="#4caf50"/>
+          <rect x="22" y="32" width="20" height="20" fill="#4caf50"/>
         </svg>
       `;
     } else {
-      // Female ikon med tydlig hästsvans
+      // Female: större silhuett med hästsvans åt sidan
       profileIcon.innerHTML = `
-        <svg viewBox="0 0 64 64">
-          <!-- Huvud -->
-          <circle cx="32" cy="20" r="12" fill="#262d37"/>
-          <!-- Hästsvans bakifrån -->
-          <path d="M44 16c4 0 10 8 6 20s-10 4-10-2 4-18 4-18z" fill="#262d37"/>
-          <!-- Hals/Kropp -->
-          <path d="M20 36c0 8 24 8 24 0v12H20V36z" fill="#262d37"/>
+        <svg viewBox="0 0 64 64" width="40" height="40">
+          <circle cx="32" cy="20" r="12" fill="#4caf50"/>
+          <rect x="22" y="32" width="20" height="20" fill="#4caf50"/>
+          <!-- Hästsvans åt sidan -->
+          <path d="M44,16 C50,14 50,24 44,28" stroke="#4caf50" stroke-width="4" fill="none" stroke-linecap="round"/>
         </svg>
       `;
     }
@@ -182,20 +178,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 
       renderFoodItems(filtered);
     });
-
-    // --- Lägg till matpost (om framtida funktion behövs) ---
-    async function addFoodItem(foodData) {
-      await db.collection("publicFoods").add({
-        title: foodData.title,
-        type: foodData.type,
-        country: foodData.country || "",
-        city: foodData.city || "",
-        emoji: foodData.emoji || "🍽️",
-        userName: user.displayName || "Anonymous",
-        ownerId: user.uid,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    }
 
   });
 });
