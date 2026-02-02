@@ -70,7 +70,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "login.html";
   });
 
-  // --- Vänta tills användaren är inloggad innan Firestore ---
+  // --- Vänta tills användaren är inloggad ---
   firebase.auth().onAuthStateChanged(async user => {
     if (!user) {
       window.location.href = "login.html";
@@ -86,38 +86,27 @@ window.addEventListener("DOMContentLoaded", async () => {
     welcomeMsg.textContent = `Welcome, ${user.displayName || user.email}!`;
 
     // --- Sätt profilikon baserat på kön ---
-    // --- Sätt profilikon baserat på kön ---
-if (gender === "male") {
-  // Male: huvud + rundad torso som FB-profil
-  profileIcon.innerHTML = `
-    <svg viewBox="0 0 64 64" width="100%" height="100%">
-      <!-- Huvud -->
-      <circle cx="32" cy="20" r="12" fill="#262d37"/>
-      <!-- Kropp: Facebook-liknande torso -->
-      <path d="M22,52 
-               C22,38 42,38 42,52 
-               L42,46 
-               C42,44 22,44 22,46 
-               Z" fill="#262d37"/>
-    </svg>
-  `;
-} else {
-  // Female: huvud + rundad torso + hästsvans
-  profileIcon.innerHTML = `
-    <svg viewBox="0 0 64 64" width="100%" height="100%">
-      <!-- Huvud -->
-      <circle cx="32" cy="20" r="12" fill="#262d37"/>
-      <!-- Kropp: Facebook-liknande torso -->
-      <path d="M22,52 
-               C22,38 42,38 42,52 
-               L42,46 
-               C42,44 22,44 22,46 
-               Z" fill="#262d37"/>
-      <!-- Hästsvans åt sidan -->
-      <path d="M44,16 C52,14 52,24 44,28" stroke="#262d37" stroke-width="4" fill="none" stroke-linecap="round"/>
-    </svg>
-  `;
-}
+    if (gender === "male") {
+      profileIcon.innerHTML = `
+        <svg viewBox="0 0 64 64" width="100%" height="100%">
+          <!-- Huvud -->
+          <circle cx="32" cy="20" r="12" fill="#ffffff" stroke="#262d37" stroke-width="2"/>
+          <!-- Kropp -->
+          <path d="M22,52 C22,38 42,38 42,52 L42,46 C42,44 22,44 22,46 Z" fill="#ffffff" stroke="#262d37" stroke-width="2"/>
+        </svg>
+      `;
+    } else {
+      profileIcon.innerHTML = `
+        <svg viewBox="0 0 64 64" width="100%" height="100%">
+          <!-- Huvud -->
+          <circle cx="32" cy="20" r="12" fill="#ffffff" stroke="#262d37" stroke-width="2"/>
+          <!-- Kropp -->
+          <path d="M22,52 C22,38 42,38 42,52 L42,46 C42,44 22,44 22,46 Z" fill="#ffffff" stroke="#262d37" stroke-width="2"/>
+          <!-- Hästsvans -->
+          <path d="M44,16 C52,14 52,24 44,28" stroke="#ffffff" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </svg>
+      `;
+    }
 
     // --- Global real-time food list ---
     let allFoods = [];
@@ -194,5 +183,3 @@ if (gender === "male") {
 
   });
 });
-
-
