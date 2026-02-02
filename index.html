@@ -29,6 +29,27 @@
         color: #cfd8dc;
       }
 
+      #profileContainer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+
+      #profileIcon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #1c222b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #4caf50;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+
       #logoutBtn {
         position: absolute;
         right: 1rem;
@@ -210,7 +231,15 @@
   <body>
     <header>
       <h1>🌍 Global Food Share</h1>
-      <p id="welcomeMsg">Welcome! Find and share food near you!</p>
+
+      <!-- Profilikon + välkomsttext -->
+      <div id="profileContainer">
+        <div id="profileIcon">
+          <!-- SVG för avatar läggs här via JavaScript -->
+        </div>
+        <p id="welcomeMsg">Welcome! Find and share food near you!</p>
+      </div>
+
       <button id="logoutBtn">Log Out</button>
       <div>
         <button id="myFoodBtn">My Food List</button>
@@ -290,8 +319,33 @@
 
       auth.onAuthStateChanged(async user => {
         if (!user) return window.location.href="login.html";
+
+        // Hämta användarinfo från Firestore (inklusive kön)
+        const userDoc = await db.collection("users").doc(user.uid).get();
+        const userData = userDoc.exists ? userDoc.data() : {};
+        const gender = userData.gender || "male"; // default till male
+
         document.getElementById("welcomeMsg").textContent =
           `Welcome, ${user.displayName || user.email}!`;
+
+        // Ladda profilikon med gender
+        const profileIcon = document.getElementById("profileIcon");
+        const avatarSVG = gender === "female" ? `
+          <svg viewBox="0 0 64 64" width="24" height="24">
+            <circle cx="32" cy="16" r="12" fill="#ffffff"/>
+            <path d="M32 28 L32 48" stroke="#ffffff" stroke-width="4"/>
+            <path d="M24 48 L40 48" stroke="#ffffff" stroke-width="4"/>
+            <circle cx="32" cy="16" r="12" fill="none" stroke="#4caf50" stroke-width="2"/>
+          </svg>
+        ` : `
+          <svg viewBox="0 0 64 64" width="24" height="24">
+            <circle cx="32" cy="16" r="12" fill="#ffffff"/>
+            <rect x="28" y="28" width="8" height="20" fill="#ffffff"/>
+            <circle cx="32" cy="16" r="12" fill="none" stroke="#4caf50" stroke-width="2"/>
+          </svg>
+        `;
+        profileIcon.innerHTML = avatarSVG;
+
         await loadCountries();
         loadGlobalFood();
       });
@@ -340,7 +394,7 @@
       let dots = 0;
       foodTitle.textContent = "Shared Meals";
       const loadingInterval = setInterval(() => {
-        dots = (dots + 1) % 4; // 0,1,2,3
+        dots = (dots + 1) % 4;
         let dotStr = ".".repeat(dots);
         foodTitle.textContent = `Shared Meals${dotStr}`;
       }, 500);
@@ -351,7 +405,6 @@
             allFoods = snap.docs.map(d=>d.data());
             renderFoodItems(allFoods);
 
-            // Stoppa animationen och sätt riktig titel
             clearInterval(loadingInterval);
             foodTitle.textContent = "Shared Meals";
           });
