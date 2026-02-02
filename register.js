@@ -26,15 +26,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
   const confirmPasswordInput = document.getElementById("confirmPassword");
+  const genderSelect = document.getElementById("gender");
 
   const nameError = document.getElementById("nameError");
   const emailError = document.getElementById("emailError");
+  const genderError = document.getElementById("genderError");
   const passwordLengthError = document.getElementById("passwordLengthError");
   const uppercaseNumberError = document.getElementById("uppercaseNumberError");
 
   // ===== Spinner & Button Text =====
-  const spinner = registerBtn.querySelector(".spinner"); // använder redan existerande span
-  const btnText = registerBtn.querySelector("#btnText"); // använder redan existerande span
+  const spinner = registerBtn.querySelector(".spinner");
+  const btnText = registerBtn.querySelector("#btnText");
 
   // ===== Validation helpers =====
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -60,6 +62,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  genderSelect.addEventListener("change", () => {
+    genderError.style.display = "none";
+    genderSelect.style.borderColor = "";
+  });
+
   // ===== Show password error =====
   const showPasswordError = (type) => {
     passwordLengthError.style.display = "none";
@@ -76,12 +83,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = emailInput.value.trim();
     const password = passwordInput.value;
     const confirmPassword = confirmPasswordInput.value;
+    const gender = genderSelect.value;
     let hasError = false;
 
-    [nameError, emailError].forEach(el => el.style.display = "none");
+    [nameError, emailError, genderError].forEach(el => el.style.display = "none");
     passwordLengthError.style.display = "none";
     uppercaseNumberError.style.display = "none";
-    [nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(el => el.style.borderColor = "");
+    [nameInput, emailInput, passwordInput, confirmPasswordInput, genderSelect]
+      .forEach(el => el.style.borderColor = "");
 
     // ===== Name validation =====
     if (!name) {
@@ -109,6 +118,14 @@ document.addEventListener("DOMContentLoaded", () => {
       hasError = true;
     }
 
+    // ===== Gender validation =====
+    if (!gender) {
+      genderError.textContent = "Please select a gender";
+      genderError.style.display = "block";
+      genderSelect.style.borderColor = "red";
+      hasError = true;
+    }
+
     // ===== Password validation =====
     if (!password || !confirmPassword) {
       if (!password) passwordInput.style.borderColor = "red";
@@ -122,8 +139,13 @@ document.addEventListener("DOMContentLoaded", () => {
       hasError = true;
     }
 
-    if (!hasUppercaseAndNumber(password)) showPasswordError("uppercaseNumber"), hasError = true;
-    else if (password.length < 6) showPasswordError("length"), hasError = true;
+    if (!hasUppercaseAndNumber(password)) {
+      showPasswordError("uppercaseNumber");
+      hasError = true;
+    } else if (password.length < 6) {
+      showPasswordError("length");
+      hasError = true;
+    }
 
     if (hasError) return;
 
@@ -142,6 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
         name: name,
         publicName: name.toLowerCase(),
         email: email,
+        gender: gender,
         createdAt: serverTimestamp()
       });
 
