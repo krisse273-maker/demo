@@ -1,173 +1,86 @@
-// ===== Firebase setup =====
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Food List - Global Food Share</title>
+  <link rel="stylesheet" href="style.css" />
+  
+  <!-- ✅ Ta bort compat-skript, använder ES-moduler istället -->
+  <!-- <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script> -->
+  
+  <!-- ✅ Kör myfood.js som modul -->
+  <script type="module" src="myfood.js"></script>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
-  authDomain: "global-food-share.firebaseapp.com",
-  projectId: "global-food-share",
-  storageBucket: "global-food-share.firebasestorage.app",
-  messagingSenderId: "902107453892",
-  appId: "1:902107453892:web:dd9625974b8744cc94ac91",
-  measurementId: "G-S1G7JY0TH5",
-};
+  <style>
+    body { font-family: "Segoe UI", sans-serif; margin:0; padding:0; background:#f9f9f9; color:#333; }
+    header { background:#4caf50; color:white; padding:1.5rem 1rem; text-align:center; border-bottom:4px solid #388e3c; position:relative; }
+    header h1 { margin:0; font-size:2rem; }
+    header p { margin-top:0.5rem; font-size:1rem; }
+    #logoutBtn, #homeBtn { padding:0.6rem 1.2rem; border-radius:25px; border:none; background:white; color:#4caf50; font-weight:bold; cursor:pointer; transition:0.2s; }
+    #logoutBtn { position:absolute; top:1.5rem; right:1rem; }
+    #logoutBtn:hover, #homeBtn:hover { background:#f0f0f0; }
+    #homeBtn { margin-top:0.5rem; }
+    .container { display:flex; flex-wrap:wrap; padding:2rem; gap:2rem; justify-content:center; }
+    .my-food-list, form { flex:1 1 300px; background:white; padding:1.5rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); max-height:80vh; overflow-y:auto; display:flex; flex-direction:column; gap:1rem; }
+    .food-item { border:1px solid #ddd; padding:0.75rem 1rem; margin-bottom:0.75rem; border-radius:12px; display:flex; align-items:center; gap:0.75rem; background:#fafafa; transition:0.2s; }
+    .food-item:hover { background:#f0fff0; border-color:#4caf50; }
+    .food-item .icon { font-size:1.8rem; }
+    input, select, button { padding:0.6rem 1rem; border-radius:25px; border:1px solid #ccc; font-size:1rem; transition:0.2s; }
+    input:focus, select:focus { outline:none; border-color:#4caf50; box-shadow:0 0 5px rgba(76,175,80,0.5); }
+    button { background-color:#4caf50; color:white; border:none; cursor:pointer; font-weight:bold; }
+    button:hover { background-color:#45a049; }
+    #emojiPickerBtn { background-color:#fff; color:#333; border:1px solid #ccc; font-weight:normal; }
+    #emojiPickerBtn:hover { background-color:#f0f0f0; }
+    #emojiPicker { display:none; border:1px solid #ccc; padding:0.5rem; border-radius:12px; display:flex; flex-wrap:wrap; gap:0.5rem; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-bottom:0.5rem; }
+    #emojiPicker span { cursor:pointer; font-size:1.8rem; transition:transform 0.1s; }
+    #emojiPicker span:hover { transform:scale(1.4); }
+    .no-food { color:#777; font-style:italic; text-align:center; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>🌍 Global Food Share</h1>
+  <p id="welcomeMsg">Welcome! Here’s your food list.</p>
+  <button id="homeBtn">Home</button>
+  <button id="logoutBtn">Log Out</button>
+</header>
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+<div class="container">
+  <div class="my-food-list"></div>
 
-// ===== DOMContentLoaded =====
-document.addEventListener("DOMContentLoaded", () => {
-  const registerBtn = document.getElementById("registerBtn");
-  const togglePasswordBtn = document.getElementById("togglePassword");
-  const goLoginBtn = document.getElementById("goLoginBtn"); // ✅ Login-knapp
-  const nameInput = document.getElementById("name");
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
-  const confirmPasswordInput = document.getElementById("confirmPassword");
+  <form id="addFoodForm">
+    <!-- Food Name -->
+    <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="50" required />
+    
+    <!-- Emoji -->
+    <button type="button" id="emojiPickerBtn">Select your food Emoji</button>
+    <div id="emojiPicker">
+      <span>🍔</span><span>🍟</span><span>🌭</span><span>🥪</span>
+      <span>🥗</span><span>🍣</span><span>🍤</span><span>🍜</span>
+      <span>🍝</span><span>🍲</span><span>🍛</span><span>🥩</span>
+      <span>🍗</span><span>🍳</span><span>🥚</span><span>🍰</span>
+      <span>🧁</span><span>🍦</span><span>🍩</span><span>🍪</span>
+      <span>🍫</span><span>🍿</span><span>🥯</span><span>🥖</span>
+      <span>🥙</span><span>🥬</span><span>🥒</span><span>🥕</span>
+      <span>🌽</span><span>🍅</span><span>🧂</span><span>🍹</span>
+      <span>🍺</span><span>🍷</span><span>🥤</span><span>🐟</span>
+      <span>🦪</span><span>🦐</span><span>🦑</span>
+    </div>
 
-  const nameError = document.getElementById("nameError");
-  const emailError = document.getElementById("emailError");
-  const passwordLengthError = document.getElementById("passwordLengthError");
-  const uppercaseNumberError = document.getElementById("uppercaseNumberError");
+    <!-- Country & City -->
+    <select id="foodCountry" required>
+      <option value="">Select Country</option>
+    </select>
 
-  // ===== Spinner & Button Text =====
-  const spinner = document.createElement("span");
-  spinner.className = "spinner";
-  spinner.style.display = "none";
-  spinner.style.marginRight = "10px";
-  registerBtn.prepend(spinner);
+    <select id="foodCity" disabled required>
+      <option value="">Select City</option>
+    </select>
 
-  const btnText = document.createElement("span");
-  btnText.textContent = "Register";
-  registerBtn.appendChild(btnText);
-
-  // ===== Validation helpers =====
-  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const isValidName = (name) => /^[a-zA-Z0-9]{1,15}$/.test(name);
-  const hasUppercaseAndNumber = (pw) => /[A-Z]/.test(pw) && /[0-9]/.test(pw);
-
-  // ===== Toggle password visibility =====
-  togglePasswordBtn.addEventListener("click", () => {
-    const isVisible = passwordInput.type === "text";
-    passwordInput.type = isVisible ? "password" : "text";
-    confirmPasswordInput.type = isVisible ? "password" : "text";
-    togglePasswordBtn.textContent = isVisible ? "OFF" : "ON";
-  });
-
-  // ===== Clear errors on input =====
-  [nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(input => {
-    input.addEventListener("input", () => {
-      input.style.borderColor = "";
-      nameError.style.display = "none";
-      emailError.style.display = "none";
-      passwordLengthError.style.display = "none";
-      uppercaseNumberError.style.display = "none";
-    });
-  });
-
-  // ===== Show password error =====
-  const showPasswordError = (type) => {
-    passwordLengthError.style.display = "none";
-    uppercaseNumberError.style.display = "none";
-    if (type === "length") passwordLengthError.style.display = "block";
-    if (type === "uppercaseNumber") uppercaseNumberError.style.display = "block";
-    passwordInput.style.borderColor = "red";
-    confirmPasswordInput.style.borderColor = "red";
-  };
-
-  // ===== Register button click =====
-  registerBtn.addEventListener("click", async () => {
-    const name = nameInput.value.trim();
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-    const confirmPassword = confirmPasswordInput.value;
-    let hasError = false;
-
-    [nameError, emailError].forEach(el => el.style.display = "none");
-    passwordLengthError.style.display = "none";
-    uppercaseNumberError.style.display = "none";
-    [nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(el => el.style.borderColor = "");
-
-    // ===== Name validation =====
-    if (!name) {
-      nameError.textContent = "Name is required";
-      nameError.style.display = "block";
-      nameInput.style.borderColor = "red";
-      hasError = true;
-    } else if (!isValidName(name)) {
-      nameError.textContent = "Name must be 1-15 letters or numbers";
-      nameError.style.display = "block";
-      nameInput.style.borderColor = "red";
-      hasError = true;
-    }
-
-    // ===== Email validation =====
-    if (!email) {
-      emailError.textContent = "Email is required";
-      emailError.style.display = "block";
-      emailInput.style.borderColor = "red";
-      hasError = true;
-    } else if (!isValidEmail(email) || email.length > 100) {
-      emailError.textContent = "Please enter a valid email";
-      emailError.style.display = "block";
-      emailInput.style.borderColor = "red";
-      hasError = true;
-    }
-
-    // ===== Password validation =====
-    if (!password || !confirmPassword) {
-      if (!password) passwordInput.style.borderColor = "red";
-      if (!confirmPassword) confirmPasswordInput.style.borderColor = "red";
-      hasError = true;
-    }
-
-    if (password !== confirmPassword) {
-      passwordInput.style.borderColor = "red";
-      confirmPasswordInput.style.borderColor = "red";
-      hasError = true;
-    }
-
-    if (!hasUppercaseAndNumber(password)) showPasswordError("uppercaseNumber"), hasError = true;
-    else if (password.length < 6) showPasswordError("length"), hasError = true;
-
-    if (hasError) return;
-
-    // ===== Firebase registration =====
-    registerBtn.disabled = true;
-    spinner.style.display = "inline-block";
-    btnText.textContent = "Registering...";
-
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      await updateProfile(user, { displayName: name });
-
-      await setDoc(doc(db, "users", user.uid), {
-        name: name,
-        publicName: name.toLowerCase(),
-        email: email,
-        createdAt: serverTimestamp()
-      });
-
-      window.location.href = "index.html";
-    } catch (error) {
-      console.error("Registration error:", error);
-      emailInput.style.borderColor = "red";
-      emailError.textContent = "Registration failed. Check email or password";
-      emailError.style.display = "block";
-    } finally {
-      registerBtn.disabled = false;
-      spinner.style.display = "none";
-      btnText.textContent = "Register";
-    }
-  });
-
-  // ===== Login button click =====
-  goLoginBtn.addEventListener("click", () => {
-    window.location.href = "login.html"; // ✅ Navigerar till login.html
-  });
-});
-
+    <button type="submit">Add Food</button>
+  </form>
+</div>
+</body>
+</html>
