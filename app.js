@@ -85,17 +85,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     // --- Sätt välkomsttext ---
     welcomeMsg.textContent = `Welcome, ${user.displayName || user.email}!`;
 
-    // --- Sätt profilikon baserat på kön ---
-    const avatarSVG = `
-      <svg viewBox="0 0 64 64" width="100%" height="100%">
-        <!-- Huvud -->
-        <circle cx="32" cy="16" r="12" fill="#262d37" stroke="#1c222b" stroke-width="2"/>
-        <!-- Kropp (Facebook-style) -->
-        <path d="M16,48 C16,36 48,36 48,48 L48,52 C48,54 16,54 16,52 Z" fill="#262d37" stroke="#1c222b" stroke-width="2"/>
-        ${gender === "female" ? '<path d="M44,12 C52,10 52,24 44,28" stroke="#1c222b" stroke-width="4" fill="none" stroke-linecap="round"/>' : ''}
-      </svg>
-    `;
-    profileIcon.innerHTML = avatarSVG;
+    // --- Sätt emoji i cirkeln baserat på kön ---
+    profileIcon.textContent = gender === "female" ? "👩" : "👨";
 
     // --- Global real-time food list ---
     let allFoods = [];
