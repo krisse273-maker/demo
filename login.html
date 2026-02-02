@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Global Food Share - Login</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="login.js" type="module" defer></script>
-
+    <script src="login.js" type="module" defer></script> <!-- Type="module" här -->
+    
     <style>
       /* --- Body & bakgrund --- */
       body {
@@ -191,16 +191,5 @@
       <p>&copy; 2026 Global Food Share</p>
     </footer>
 
-    <script>
-      // Kolla om användaren redan är inloggad, om så är fallet redirecta till index.html
-      import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-
-      const auth = getAuth();
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          window.location.href = "index.html"; // Omdirigera till index.html om användaren är inloggad
-        }
-      });
-    </script>
   </body>
 </html>
