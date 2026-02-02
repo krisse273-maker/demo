@@ -82,8 +82,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     const docSnap = await docRef.get();
     const gender = docSnap.exists ? docSnap.data().gender : "male";
 
+    // --- Hämta publicName från "users" för välkomsttext ---
+    const userDoc = await db.collection("users").doc(user.uid).get();
+    const loggedInUserName = userDoc.exists ? userDoc.data().publicName || user.email : user.email;
+
     // --- Sätt välkomsttext ---
-    const loggedInUserName = user.displayName || user.email;
     welcomeMsg.textContent = `Welcome, ${loggedInUserName}!`;
 
     // --- Sätt emoji i cirkeln baserat på kön ---
@@ -93,12 +96,16 @@ window.addEventListener("DOMContentLoaded", async () => {
     let allFoods = [];
     db.collection("publicFoods")
       .orderBy("createdAt", "desc")
-      .onSnapshot(async snapshot => {  // <-- async
-        allFoods = snapshot.docs.map(doc => {
+      .onSnapshot(async snapshot => {
+        allFoods = await Promise.all(snapshot.docs.map(async doc => {
           const data = doc.data();
+          let posterName = "Anonymous";
 
-          // --- Använd samma namn som i välkomsttexten för den inloggade användarens poster ---
-          let posterName = (data.userId === user.uid) ? loggedInUserName : (data.userName || "Anonymous");
+          // --- Hämta publicName från "users"-samlingen för varje poster ---
+          if (data.userId) {
+            const posterDoc = await db.collection("users").doc(data.userId).get();
+            if (posterDoc.exists) posterName = posterDoc.data().publicName || "Anonymous";
+          }
 
           return {
             title: data.title || "",
@@ -108,7 +115,7 @@ window.addEventListener("DOMContentLoaded", async () => {
             user: posterName,
             timestamp: data.createdAt || null
           };
-        });
+        }));
 
         renderFoodItems(allFoods);
       }, err => {
