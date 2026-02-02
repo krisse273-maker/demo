@@ -89,19 +89,23 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (gender === "male") {
       // Male: större silhuett, rund huvud och axlar
       profileIcon.innerHTML = `
-        <svg viewBox="0 0 64 64" width="40" height="40">
-          <circle cx="32" cy="20" r="12" fill="#4caf50"/>
-          <rect x="22" y="32" width="20" height="20" fill="#4caf50"/>
+        <svg viewBox="0 0 64 64" width="100%" height="100%">
+          <!-- Huvud -->
+          <circle cx="32" cy="20" r="12" fill="#262d37"/>
+          <!-- Kropp/axlar -->
+          <rect x="20" y="32" width="24" height="20" fill="#262d37"/>
         </svg>
       `;
     } else {
       // Female: större silhuett med hästsvans åt sidan
       profileIcon.innerHTML = `
-        <svg viewBox="0 0 64 64" width="40" height="40">
-          <circle cx="32" cy="20" r="12" fill="#4caf50"/>
-          <rect x="22" y="32" width="20" height="20" fill="#4caf50"/>
+        <svg viewBox="0 0 64 64" width="100%" height="100%">
+          <!-- Huvud -->
+          <circle cx="32" cy="20" r="12" fill="#262d37"/>
+          <!-- Kropp/axlar -->
+          <rect x="20" y="32" width="24" height="20" fill="#262d37"/>
           <!-- Hästsvans åt sidan -->
-          <path d="M44,16 C50,14 50,24 44,28" stroke="#4caf50" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M44,16 C52,14 52,24 44,28" stroke="#262d37" stroke-width="4" fill="none" stroke-linecap="round"/>
         </svg>
       `;
     }
