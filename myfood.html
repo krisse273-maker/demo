@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Food List - Global Food Share</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="myfood.js" defer></script>
+  
+  <!-- ✅ Kör myfood.js som modul -->
+  <script type="module" src="myfood.js"></script>
+
   <style>
     body { font-family: "Segoe UI", sans-serif; margin:0; padding:0; background:#f9f9f9; color:#333; }
     header { background:#4caf50; color:white; padding:1.5rem 1rem; text-align:center; border-bottom:4px solid #388e3c; position:relative; }
@@ -50,7 +50,6 @@
     <!-- Food Name -->
     <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="50" required />
     
-
     <!-- Emoji -->
     <button type="button" id="emojiPickerBtn">Select your food Emoji</button>
     <div id="emojiPicker">
