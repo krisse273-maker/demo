@@ -78,15 +78,12 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     // --- Hämta kön från Firestore ---
-    const docRefGender = db.collection("publicUsers").doc(user.uid);
-    const docSnapGender = await docRefGender.get();
-    const gender = docSnapGender.exists ? docSnapGender.data().gender : "male";
-
-    // --- Hämta publicName från "users"-samlingen ---
-    const userDoc = await db.collection("users").doc(user.uid).get();
-    const loggedInUserName = userDoc.exists ? userDoc.data().publicName : "Anonymous";
+    const docRef = db.collection("publicUsers").doc(user.uid);
+    const docSnap = await docRef.get();
+    const gender = docSnap.exists ? docSnap.data().gender : "male";
 
     // --- Sätt välkomsttext ---
+    const loggedInUserName = user.displayName || user.email;
     welcomeMsg.textContent = `Welcome, ${loggedInUserName}!`;
 
     // --- Sätt emoji i cirkeln baserat på kön ---
@@ -96,11 +93,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     let allFoods = [];
     db.collection("publicFoods")
       .orderBy("createdAt", "desc")
-      .onSnapshot(async snapshot => {
+      .onSnapshot(async snapshot => {  // <-- async
         allFoods = snapshot.docs.map(doc => {
           const data = doc.data();
 
-          // --- Använd samma namn som i välkomsttexten om det är den inloggade användaren ---
+          // --- Använd samma namn som i välkomsttexten för den inloggade användarens poster ---
           let posterName = (data.userId === user.uid) ? loggedInUserName : (data.userName || "Anonymous");
 
           return {
