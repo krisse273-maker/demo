@@ -87,18 +87,23 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     // --- Sätt profilikon baserat på kön ---
     if(gender === "male") {
-      // Klassisk manikon (silhuett)
+      // Klassisk manikon
       profileIcon.innerHTML = `
-        <svg viewBox="0 0 24 24">
-          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        <svg viewBox="0 0 64 64" width="40" height="40">
+          <circle cx="32" cy="20" r="12" fill="#4caf50"/>
+          <path d="M16 52c0-8 16-8 16-8s16 0 16 8v4H16v-4z" fill="#4caf50"/>
         </svg>
       `;
     } else {
-      // Kvinnlig ikon med hår (Facebook-stil)
+      // Kvinnlig ikon med hästsvans (sedd från sidan)
       profileIcon.innerHTML = `
-        <svg viewBox="0 0 24 24">
-          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-6 1.34-6 4v2h12v-2c0-2.66-3.33-4-6-4z"/>
-          <path d="M8 6c0-1.1.9-2 2-2s2 .9 2 2H8z" fill="#262d37"/>
+        <svg viewBox="0 0 64 64" width="40" height="40">
+          <!-- Ansikte -->
+          <circle cx="32" cy="20" r="12" fill="#4caf50"/>
+          <!-- Kropp -->
+          <path d="M16 52c0-8 32-8 32 0v4H16v-4z" fill="#4caf50"/>
+          <!-- Hästsvans som sticker ut -->
+          <path d="M44 16c4-2 12-4 12 4c0 4-2 8-4 10c-2 2-4 0-4 0s0-8-4-14z" fill="#388e3c"/>
         </svg>
       `;
     }
