@@ -81,10 +81,9 @@
         color: #81c784; /* ljusgrön placeholder */
       }
 
-      /* --- Focus på input --- */
       .login-form input:focus {
-        border-color: #4caf50; /* matchar bakgrunden */
-        box-shadow: 0 0 12px 2px rgba(76, 175, 80, 0.8); /* mer synlig grön glow */
+        border-color: #69f0ae; /* starkare grön */
+        box-shadow: 0 0 12px 2px rgba(105, 240, 174, 0.6);
         outline: none;
       }
 
@@ -105,8 +104,9 @@
         align-items: center;
       }
 
+      /* ändrad hover för Login-knappen */
       .login-form button:hover {
-        background-color: #388e3c; /* mörkare grön hover */
+        background-color: #388e3c; /* mörkare grön, mer sofistikerad */
         box-shadow: 0 5px 12px rgba(0,0,0,0.35);
       }
 
@@ -117,7 +117,6 @@
         text-align: center;
       }
 
-      /* --- Register Button (Ta bort understrykning) --- */
       #goRegisterBtn {
         background-color: #2b3340; /* mörk knapp */
         color: #4caf50;
@@ -128,18 +127,11 @@
         cursor: pointer;
         transition: 0.25s;
         font-weight: 600;
-        text-decoration: none; /* Ta bort understrykning */
-        outline: none; /* Ta bort eventuellt fokusram */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
       }
 
       #goRegisterBtn:hover {
         background-color: #4caf50;
         color: #1c222b;
-        text-decoration: none; /* Se till att det inte finns någon understrykning vid hover */
       }
 
       footer {
@@ -189,10 +181,9 @@
       </button>
 
       <p class="info">Don't have an account?</p>
-      <!-- Här ändras knappen till en länk -->
-      <a href="register.html" id="goRegisterBtn">
+      <button id="goRegisterBtn">
         Register / Enter App
-      </a>
+      </button>
     </div>
 
     <footer>
@@ -200,3 +191,4 @@
     </footer>
   </body>
 </html>
+
