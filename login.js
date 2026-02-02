@@ -90,6 +90,7 @@ loginBtn.addEventListener("click", async () => {
 // ===== REGISTER / ENTER APP =====
 if (goRegisterBtn) {
   goRegisterBtn.addEventListener("click", () => {
+    console.log("Navigating to register.html");
     window.location.href = "register.html";
   });
 }
