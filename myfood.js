@@ -1,173 +1,133 @@
 // ===== Firebase setup =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
   authDomain: "global-food-share.firebaseapp.com",
   projectId: "global-food-share",
-  storageBucket: "global-food-share.firebasestorage.app",
+  storageBucket: "global-food-share.appspot.com",
   messagingSenderId: "902107453892",
   appId: "1:902107453892:web:dd9625974b8744cc94ac91",
   measurementId: "G-S1G7JY0TH5",
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ===== DOMContentLoaded =====
-document.addEventListener("DOMContentLoaded", () => {
-  const registerBtn = document.getElementById("registerBtn");
-  const togglePasswordBtn = document.getElementById("togglePassword");
-  const goLoginBtn = document.getElementById("goLoginBtn"); // ✅ Login-knapp
-  const nameInput = document.getElementById("name");
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
-  const confirmPasswordInput = document.getElementById("confirmPassword");
+// ===== DOM elements =====
+const emojiPickerBtn = document.getElementById("emojiPickerBtn");
+const emojiPicker = document.getElementById("emojiPicker");
+const foodTitle = document.getElementById("foodTitle");
+const foodCountry = document.getElementById("foodCountry");
+const foodCity = document.getElementById("foodCity");
+const addFoodForm = document.getElementById("addFoodForm");
+const foodListContainer = document.querySelector(".my-food-list");
 
-  const nameError = document.getElementById("nameError");
-  const emailError = document.getElementById("emailError");
-  const passwordLengthError = document.getElementById("passwordLengthError");
-  const uppercaseNumberError = document.getElementById("uppercaseNumberError");
+let selectedEmoji = "";
 
-  // ===== Spinner & Button Text =====
-  const spinner = document.createElement("span");
-  spinner.className = "spinner";
-  spinner.style.display = "none";
-  spinner.style.marginRight = "10px";
-  registerBtn.prepend(spinner);
+// ===== Emoji picker toggle =====
+emojiPickerBtn.addEventListener("click", () => {
+  emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
+});
 
-  const btnText = document.createElement("span");
-  btnText.textContent = "Register";
-  registerBtn.appendChild(btnText);
-
-  // ===== Validation helpers =====
-  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const isValidName = (name) => /^[a-zA-Z0-9]{1,15}$/.test(name);
-  const hasUppercaseAndNumber = (pw) => /[A-Z]/.test(pw) && /[0-9]/.test(pw);
-
-  // ===== Toggle password visibility =====
-  togglePasswordBtn.addEventListener("click", () => {
-    const isVisible = passwordInput.type === "text";
-    passwordInput.type = isVisible ? "password" : "text";
-    confirmPasswordInput.type = isVisible ? "password" : "text";
-    togglePasswordBtn.textContent = isVisible ? "OFF" : "ON";
-  });
-
-  // ===== Clear errors on input =====
-  [nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(input => {
-    input.addEventListener("input", () => {
-      input.style.borderColor = "";
-      nameError.style.display = "none";
-      emailError.style.display = "none";
-      passwordLengthError.style.display = "none";
-      uppercaseNumberError.style.display = "none";
-    });
-  });
-
-  // ===== Show password error =====
-  const showPasswordError = (type) => {
-    passwordLengthError.style.display = "none";
-    uppercaseNumberError.style.display = "none";
-    if (type === "length") passwordLengthError.style.display = "block";
-    if (type === "uppercaseNumber") uppercaseNumberError.style.display = "block";
-    passwordInput.style.borderColor = "red";
-    confirmPasswordInput.style.borderColor = "red";
-  };
-
-  // ===== Register button click =====
-  registerBtn.addEventListener("click", async () => {
-    const name = nameInput.value.trim();
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-    const confirmPassword = confirmPasswordInput.value;
-    let hasError = false;
-
-    [nameError, emailError].forEach(el => el.style.display = "none");
-    passwordLengthError.style.display = "none";
-    uppercaseNumberError.style.display = "none";
-    [nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(el => el.style.borderColor = "");
-
-    // ===== Name validation =====
-    if (!name) {
-      nameError.textContent = "Name is required";
-      nameError.style.display = "block";
-      nameInput.style.borderColor = "red";
-      hasError = true;
-    } else if (!isValidName(name)) {
-      nameError.textContent = "Name must be 1-15 letters or numbers";
-      nameError.style.display = "block";
-      nameInput.style.borderColor = "red";
-      hasError = true;
-    }
-
-    // ===== Email validation =====
-    if (!email) {
-      emailError.textContent = "Email is required";
-      emailError.style.display = "block";
-      emailInput.style.borderColor = "red";
-      hasError = true;
-    } else if (!isValidEmail(email) || email.length > 100) {
-      emailError.textContent = "Please enter a valid email";
-      emailError.style.display = "block";
-      emailInput.style.borderColor = "red";
-      hasError = true;
-    }
-
-    // ===== Password validation =====
-    if (!password || !confirmPassword) {
-      if (!password) passwordInput.style.borderColor = "red";
-      if (!confirmPassword) confirmPasswordInput.style.borderColor = "red";
-      hasError = true;
-    }
-
-    if (password !== confirmPassword) {
-      passwordInput.style.borderColor = "red";
-      confirmPasswordInput.style.borderColor = "red";
-      hasError = true;
-    }
-
-    if (!hasUppercaseAndNumber(password)) showPasswordError("uppercaseNumber"), hasError = true;
-    else if (password.length < 6) showPasswordError("length"), hasError = true;
-
-    if (hasError) return;
-
-    // ===== Firebase registration =====
-    registerBtn.disabled = true;
-    spinner.style.display = "inline-block";
-    btnText.textContent = "Registering...";
-
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      await updateProfile(user, { displayName: name });
-
-      await setDoc(doc(db, "users", user.uid), {
-        name: name,
-        publicName: name.toLowerCase(),
-        email: email,
-        createdAt: serverTimestamp()
-      });
-
-      window.location.href = "index.html";
-    } catch (error) {
-      console.error("Registration error:", error);
-      emailInput.style.borderColor = "red";
-      emailError.textContent = "Registration failed. Check email or password";
-      emailError.style.display = "block";
-    } finally {
-      registerBtn.disabled = false;
-      spinner.style.display = "none";
-      btnText.textContent = "Register";
-    }
-  });
-
-  // ===== Login button click =====
-  goLoginBtn.addEventListener("click", () => {
-    window.location.href = "login.html"; // ✅ Navigerar till login.html
+emojiPicker.querySelectorAll("span").forEach(span => {
+  span.addEventListener("click", () => {
+    selectedEmoji = span.textContent;
+    emojiPickerBtn.textContent = selectedEmoji;
+    emojiPicker.style.display = "none";
   });
 });
 
+// ===== Country & city handling =====
+const countries = {
+  Sweden: ["Stockholm", "Gothenburg", "Malmö"],
+  USA: ["New York", "Los Angeles", "Chicago"],
+  Japan: ["Tokyo", "Osaka", "Kyoto"]
+};
+
+for (let country in countries) {
+  const option = document.createElement("option");
+  option.value = country;
+  option.textContent = country;
+  foodCountry.appendChild(option);
+}
+
+foodCountry.addEventListener("change", () => {
+  const cities = countries[foodCountry.value] || [];
+  foodCity.innerHTML = '<option value="">Select City</option>';
+  foodCity.disabled = cities.length === 0;
+  cities.forEach(city => {
+    const option = document.createElement("option");
+    option.value = city;
+    option.textContent = city;
+    foodCity.appendChild(option);
+  });
+});
+
+// ===== Add food to Firestore =====
+addFoodForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const title = foodTitle.value.trim();
+  const country = foodCountry.value;
+  const city = foodCity.value;
+
+  if (!title || !country || !city) return alert("Please fill in all fields!");
+
+  try {
+    await addDoc(collection(db, "foods"), {
+      title,
+      emoji: selectedEmoji,
+      country,
+      city,
+      createdAt: new Date()
+    });
+
+    // Reset form
+    foodTitle.value = "";
+    foodCountry.value = "";
+    foodCity.innerHTML = '<option value="">Select City</option>';
+    foodCity.disabled = true;
+    emojiPickerBtn.textContent = "Select your food Emoji";
+    selectedEmoji = "";
+
+    loadFoodList();
+  } catch (err) {
+    console.error(err);
+    alert("Error adding food.");
+  }
+});
+
+// ===== Load food list from Firestore =====
+async function loadFoodList() {
+  foodListContainer.innerHTML = "";
+
+  const q = query(collection(db, "foods"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+
+  if (snapshot.empty) {
+    const noFood = document.createElement("p");
+    noFood.className = "no-food";
+    noFood.textContent = "No foods added yet!";
+    foodListContainer.appendChild(noFood);
+    return;
+  }
+
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const div = document.createElement("div");
+    div.className = "food-item";
+    div.innerHTML = `
+      <span class="icon">${data.emoji || "🍽️"}</span>
+      <div>
+        <strong>${data.title}</strong><br/>
+        <small>${data.city}, ${data.country}</small>
+      </div>
+    `;
+    foodListContainer.appendChild(div);
+  });
+}
+
+// ===== Initial load =====
+document.addEventListener("DOMContentLoaded", loadFoodList);
