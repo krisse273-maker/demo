@@ -93,8 +93,12 @@ if (gender === "male") {
     <svg viewBox="0 0 64 64" width="100%" height="100%">
       <!-- Huvud -->
       <circle cx="32" cy="20" r="12" fill="#262d37"/>
-      <!-- Kropp: rundad torso -->
-      <path d="M20,52 C20,40 44,40 44,52 Z" fill="#262d37"/>
+      <!-- Kropp: Facebook-liknande torso -->
+      <path d="M22,52 
+               C22,38 42,38 42,52 
+               L42,46 
+               C42,44 22,44 22,46 
+               Z" fill="#262d37"/>
     </svg>
   `;
 } else {
@@ -103,8 +107,12 @@ if (gender === "male") {
     <svg viewBox="0 0 64 64" width="100%" height="100%">
       <!-- Huvud -->
       <circle cx="32" cy="20" r="12" fill="#262d37"/>
-      <!-- Kropp: rundad torso -->
-      <path d="M20,52 C20,40 44,40 44,52 Z" fill="#262d37"/>
+      <!-- Kropp: Facebook-liknande torso -->
+      <path d="M22,52 
+               C22,38 42,38 42,52 
+               L42,46 
+               C42,44 22,44 22,46 
+               Z" fill="#262d37"/>
       <!-- Hästsvans åt sidan -->
       <path d="M44,16 C52,14 52,24 44,28" stroke="#262d37" stroke-width="4" fill="none" stroke-linecap="round"/>
     </svg>
@@ -186,4 +194,5 @@ if (gender === "male") {
 
   });
 });
+
 
