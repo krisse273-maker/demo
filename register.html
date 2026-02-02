@@ -4,10 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Global Food Share - Register</title>
-  <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
+    * { box-sizing: border-box; }
+
     body {
       background-color: #4caf50;
       font-family: 'Poppins', sans-serif;
@@ -32,7 +33,6 @@
 
     header p {
       font-size: 1.2rem;
-      opacity: 0.85;
       color: #1c222b;
     }
 
@@ -42,10 +42,9 @@
       max-width: 400px;
       margin: 3rem auto;
       padding: 2rem;
-      border: 2px solid #000000;
+      border: 2px solid #000;
       box-shadow: 0 12px 25px rgba(0,0,0,0.45);
       color: #cfd8dc;
-      position: relative;
     }
 
     .register-form h2 {
@@ -58,7 +57,6 @@
       display: block;
       margin-bottom: 0.4rem;
       font-weight: 600;
-      color: #cfd8dc;
     }
 
     .register-form input,
@@ -71,7 +69,6 @@
       background-color: #2b3340;
       color: #cfd8dc;
       font-size: 1rem;
-      transition: 0.25s;
     }
 
     .register-form input::placeholder {
@@ -85,101 +82,77 @@
       outline: none;
     }
 
-    .password-wrapper {
-      position: relative;
+    /* ===== PASSWORD WRAPPER ===== */
+  .password-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.password-wrapper input {
+  flex: 1;
+  height: 45px;             /* exakt höjd på input */
+  padding: 0 10px;          /* padding inuti input */
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 1px solid #1c222b;
+  background-color: #2b3340;
+  color: #cfd8dc;
+}
+
+.password-wrapper button {
+  width: 45px;              /* samma som input höjd */
+  height: 45px;             /* samma som input höjd */
+  margin-left: 5px;
+  border: none;
+  border-radius: 10px;
+  background-color: #4caf50;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1c222b;
+  transition: background-color 0.2s;
+}
+
+.password-wrapper button:hover {
+  background-color: #388e3c;
+}
+
+
+
+    .password-error {
+      color: red;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+      display: none;
+    }
+
+    #registerBtn {
       width: 100%;
-    }
-
-    .password-wrapper input {
-      padding-right: 60px;
-      height: 40px;
-    }
-
-    .password-wrapper button {
-      position: absolute;
-      top: 5px;
-      right: 5px;
+      padding: 0.75rem;
       background-color: #4caf50;
-      border: 1px solid #388e3c;
-      border-radius: 4px;
-      cursor: pointer;
-      height: 25px;
-      width: 40px;
-      font-size: 0.75rem;
-      font-weight: bold;
-      color: #1c222b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      transition: 0.25s;
-    }
-
-    .password-wrapper button:hover {
-      background-color: #388e3c;
-      color: #cfd8dc;
-    }
-
-    .register-form button#registerBtn {
-      width: 100%;
-      padding: 0.85rem;
-      background-color: #4caf50;
-      color: #1c222b;
       border: none;
       border-radius: 10px;
       font-size: 1.05rem;
-      cursor: pointer;
-      transition: 0.25s;
       font-weight: 600;
+      cursor: pointer;
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 10px;
     }
 
-    .register-form button#registerBtn:hover {
-      background-color: #388e3c;
-      box-shadow: 0 5px 12px rgba(0,0,0,0.35);
-    }
-
     #goLoginBtn {
       margin-top: 1rem;
+      width: 100%;
+      padding: 0.75rem;
       background-color: #2b3340;
       color: #4caf50;
       border: 2px solid #4caf50;
       border-radius: 10px;
-      padding: 0.85rem;
       font-weight: 600;
       cursor: pointer;
-      transition: 0.25s;
-      width: 100%;
-    }
-
-    #goLoginBtn:hover {
-      background-color: #4caf50;
-      color: #1c222b;
-    }
-
-    .register-form p.info {
-      color: #cfd8dc;
-      font-size: 0.85rem;
-      margin-top: 1rem;
-      text-align: center;
-    }
-
-    .password-error {
-      color: red;
-      font-size: 0.85rem;
-      margin: 0 0 0.5rem 0;
-      display: none;
-    }
-
-    footer {
-      text-align: center;
-      padding: 1rem;
-      margin-top: auto;
-      color: #b0bec5;
-      font-size: 0.9rem;
     }
 
     .spinner {
@@ -196,82 +169,70 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-
-    .loader-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 1rem;
-    }
-
-    .password-label-container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.3rem;
-    }
   </style>
 </head>
 
 <body>
-  <header>
-    <h1>🌍 Global Food Share</h1>
-    <p>Register a new account</p>
-  </header>
+<header>
+  <h1>🌍 Global Food Share</h1>
+  <p>Register a new account</p>
+</header>
 
-  <div class="register-form">
-    <h2>Register Your Acoount</h2>
+<div class="register-form">
+  <h2>Register Your Account</h2>
 
-    <label for="name">Name:</label>
-    <input type="text" id="name" placeholder="Your name" />
-    <p class="password-error" id="nameError"></p>
+  <label for="name">Name:</label>
+  <input type="text" id="name" placeholder="Your name">
+  <p class="password-error" id="nameError"></p>
 
-    <label for="email">Email:</label>
-    <input type="text" id="email" placeholder="demo@example.com" />
-    <p class="password-error" id="emailError"></p>
+  <label for="email">Email:</label>
+  <input type="text" id="email" placeholder="demo@example.com">
+  <p class="password-error" id="emailError"></p>
 
-    <!-- Gender (NEW) -->
-    <label for="gender">Gender:</label>
-    <select id="gender">
-      <option value="">Select gender</option>
-      <option value="male">Male</option>
-      <option value="female">Female</option>
-    </select>
-    <p class="password-error" id="genderError"></p>
+  <label for="gender">Gender:</label>
+  <select id="gender">
+    <option value="">Choose gender</option>
+    <option value="male">Male</option>
+    <option value="female">Female</option>
+    <option value="other">Other</option>
+  </select>
+  <p class="password-error" id="genderError"></p>
 
-    <div class="password-label-container">
-      <label for="password">Password:</label>
-      <span class="password-error" id="passwordLengthError">
-        Password must be at least 6 characters.
-      </span>
-    </div>
-
-    <div class="password-wrapper">
-      <input type="password" id="password" placeholder="password" />
-      <button type="button" id="togglePassword">OFF</button>
-    </div>
-
-    <p class="password-error" id="uppercaseNumberError">
-      Password must contain at least 1 uppercase letter and 1 number
-    </p>
-
-    <label for="confirmPassword">Confirm Password:</label>
-    <input type="password" id="confirmPassword" placeholder="Confirm password" />
-
-    <div class="loader-row">
-      <button id="registerBtn">
-        <span class="spinner"></span>
-        <span id="btnText">Register</span>
-      </button>
-    </div>
-
-    <button id="goLoginBtn">Login</button>
+  <label for="password">Password:</label>
+  <div class="password-wrapper">
+    <input type="password" id="password" placeholder="Password">
+    <button type="button" id="togglePassword">👁️</button>
   </div>
+  <p class="password-error" id="passwordLengthError">Password must be at least 6 characters.</p>
+  <p class="password-error" id="uppercaseNumberError">Must contain uppercase & number</p>
 
-  <footer>
-    <p>&copy; 2026 Global Food Share</p>
-  </footer>
+  <label for="confirmPassword">Confirm Password:</label>
+  <input type="password" id="confirmPassword" placeholder="Confirm password">
 
-  <script type="module" src="register.js"></script>
+  <button id="registerBtn">
+    <span class="spinner"></span>
+    <span id="btnText">Register</span>
+  </button>
+
+  <button id="goLoginBtn">Login</button>
+</div>
+
+<footer>
+  <p>&copy; 2026 Global Food Share</p>
+</footer>
+
+<script type="module">
+  // EN knapp styr båda fälten
+  const passwordInput = document.getElementById('password');
+  const confirmInput = document.getElementById('confirmPassword');
+  const toggleBtn = document.getElementById('togglePassword');
+
+  toggleBtn.addEventListener('click', () => {
+    const type = passwordInput.type === 'password' ? 'text' : 'password';
+    passwordInput.type = type;
+    confirmInput.type = type;
+    toggleBtn.textContent = type === 'password' ? '👁️' : '🙈';
+  });
+</script>
 </body>
 </html>
