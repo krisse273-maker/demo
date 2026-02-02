@@ -1,7 +1,7 @@
 // ===== Firebase setup =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ===== Gender validation =====
     if (!gender) {
-      genderError.textContent = "You need to choose Gender"; // <-- tydligt felmeddelande
+      genderError.textContent = "You need to choose Gender";
       genderError.style.display = "block";
       genderSelect.style.borderColor = "red";
       hasError = true;
@@ -191,4 +191,53 @@ document.addEventListener("DOMContentLoaded", () => {
   goLoginBtn.addEventListener("click", () => {
     window.location.href = "login.html";
   });
+
+  // ===== Get and display user info =====
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const publicUserRef = doc(db, "publicUsers", user.uid);
+      const publicUserSnap = await getDoc(publicUserRef);
+
+      if (publicUserSnap.exists()) {
+        const publicData = publicUserSnap.data();
+        const displayName = publicData.name;
+
+        // Update welcome text with user name
+        const welcomeText = document.getElementById("welcomeText");
+        if (welcomeText) {
+          welcomeText.textContent = `Welcome, ${displayName}!`;
+        }
+
+        // Load food posts with correct user name
+        loadFoodPosts(displayName);
+      }
+    } else {
+      window.location.href = "login.html";
+    }
+  });
+
+  // ===== Load food posts with correct user name =====
+  async function loadFoodPosts() {
+    const postsCol = collection(db, "foodPosts");
+    const postsSnap = await getDocs(postsCol);
+    const postsContainer = document.getElementById("postsContainer");
+    postsContainer.innerHTML = "";
+
+    for (const docSnap of postsSnap.docs) {
+      const post = docSnap.data();
+
+      const userRef = doc(db, "publicUsers", post.userId);
+      const userSnap = await getDoc(userRef);
+      const userName = userSnap.exists() ? userSnap.data().name : "Anonymous";
+
+      const postEl = document.createElement("div");
+      postEl.className = "food-post";
+      postEl.innerHTML = `
+        <h3>${post.title}</h3>
+        <p>Posted by: ${userName}</p>
+        <p>${post.description}</p>
+      `;
+      postsContainer.appendChild(postEl);
+    }
+  }
 });
