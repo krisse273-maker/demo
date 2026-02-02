@@ -78,13 +78,13 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     // --- Hämta kön från Firestore ---
-    const docRef = db.collection("publicUsers").doc(user.uid);
-    const docSnap = await docRef.get();
-    const gender = docSnap.exists ? docSnap.data().gender : "male";
+    const docRefGender = db.collection("publicUsers").doc(user.uid);
+    const docSnapGender = await docRefGender.get();
+    const gender = docSnapGender.exists ? docSnapGender.data().gender : "male";
 
-    // --- Hämta publicName från "users" för välkomsttext ---
+    // --- Hämta publicName från "users"-samlingen ---
     const userDoc = await db.collection("users").doc(user.uid).get();
-    const loggedInUserName = userDoc.exists ? userDoc.data().publicName || user.email : user.email;
+    const loggedInUserName = userDoc.exists ? userDoc.data().publicName : "Anonymous";
 
     // --- Sätt välkomsttext ---
     welcomeMsg.textContent = `Welcome, ${loggedInUserName}!`;
@@ -97,15 +97,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     db.collection("publicFoods")
       .orderBy("createdAt", "desc")
       .onSnapshot(async snapshot => {
-        allFoods = await Promise.all(snapshot.docs.map(async doc => {
+        allFoods = snapshot.docs.map(doc => {
           const data = doc.data();
-          let posterName = "Anonymous";
 
-          // --- Hämta publicName från "users"-samlingen för varje poster ---
-          if (data.userId) {
-            const posterDoc = await db.collection("users").doc(data.userId).get();
-            if (posterDoc.exists) posterName = posterDoc.data().publicName || "Anonymous";
-          }
+          // --- Använd samma namn som i välkomsttexten om det är den inloggade användaren ---
+          let posterName = (data.userId === user.uid) ? loggedInUserName : (data.userName || "Anonymous");
 
           return {
             title: data.title || "",
@@ -115,7 +111,7 @@ window.addEventListener("DOMContentLoaded", async () => {
             user: posterName,
             timestamp: data.createdAt || null
           };
-        }));
+        });
 
         renderFoodItems(allFoods);
       }, err => {
