@@ -6,12 +6,15 @@
     <title>Global Food Share</title>
     <link rel="stylesheet" href="style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="app.js?v=2" defer></script>
 
     <style>
+      /* Håll all färg och styling som innan */
       body {
         background-color: #4caf50;
         color: #cfd8dc;
@@ -27,15 +30,12 @@
 
       header h1 {
         color: #4caf50;
-        margin-bottom: 0.3rem;
       }
 
       #welcomeMsg {
         color: #cfd8dc;
-        margin-bottom: 0.8rem;
       }
 
-      /* Log Out button */
       #logoutBtn {
         position: absolute;
         right: 1rem;
@@ -51,32 +51,26 @@
         font-family: 'Poppins', sans-serif;
         font-weight: 600;
       }
+
       #logoutBtn:hover { background-color: #e53935; }
 
-      /* Icon container */
-      .icon-container {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        margin-bottom: 1rem;
-      }
-
-      /* Icon styles */
-      .icon {
+      /* Icon istället för knapp */
+      .icon-link {
+        display: inline-block;
+        margin-top: 1rem;
         font-size: 2rem;
         cursor: pointer;
         position: relative;
-        color: #fff;
-        transition: transform 0.2s, color 0.2s;
+        color: white;
+        text-decoration: none;
       }
 
-      .icon:hover {
-        transform: scale(1.2);
-        color: #4caf50;
+      .icon-link:hover {
+        transform: scale(1.1);
       }
 
       /* Tooltip */
-      .icon .tooltip-text {
+      .icon-link .tooltip-text {
         visibility: hidden;
         width: max-content;
         background-color: #262d37;
@@ -85,17 +79,17 @@
         border-radius: 6px;
         padding: 0.3rem 0.6rem;
         position: absolute;
-        bottom: 120%; /* ovanför ikonen */
+        bottom: 120%;
         left: 50%;
         transform: translateX(-50%);
         opacity: 0;
         transition: opacity 0.2s;
         white-space: nowrap;
-        font-size: 0.85rem;
         z-index: 10;
+        font-size: 0.85rem;
       }
 
-      .icon:hover .tooltip-text {
+      .icon-link:hover .tooltip-text {
         visibility: visible;
         opacity: 1;
       }
@@ -107,17 +101,14 @@
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
 
-      <!-- Ikoner under välkomsttext -->
-      <div class="icon-container">
-        <div class="icon" id="myFoodIcon" onclick="window.location.href='myfood.html'">
-          🍴📋
-          <span class="tooltip-text">My Food List</span>
-        </div>
-        <!-- Lägg till fler ikoner här om du vill -->
-      </div>
-
-      <!-- Log Out button -->
+      <!-- Log Out knapp -->
       <button id="logoutBtn">Log Out</button>
+
+      <!-- Icon under välkomsttext -->
+      <a href="myfood.html" class="icon-link">
+        🍴📋
+        <span class="tooltip-text">My Food List</span>
+      </a>
     </header>
 
     <section class="filters">
