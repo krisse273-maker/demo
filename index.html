@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Global Food Share</title>
     <link rel="stylesheet" href="style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-    <!-- Font Awesome för ikoner -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
       body {
@@ -49,16 +47,20 @@
 
       #logoutBtn:hover { background-color: #e53935; }
 
-      /* Ändrat: Ikon-länken */
-      #myFoodIcon {
+      #myFoodBtn {
         margin-top: 1rem;
-        display: inline-block;
-        font-size: 2rem;
-        color: #fff;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: none;
+        background-color: #4caf50;
+        color: white;
         cursor: pointer;
-        transition: color 0.2s ease;
+        transition: all 0.2s ease;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
       }
-      #myFoodIcon:hover { color: #ccc; }
+
+      #myFoodBtn:hover { background-color: #388e3c; }
 
       /* FILTER-SEKTION */
       section.filters {
@@ -169,6 +171,7 @@
         display: flex;
         align-items: center;
         gap: 0.4rem;
+        word-break: break-word;
       }
 
       .food-details p strong {
@@ -209,11 +212,8 @@
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
       <button id="logoutBtn">Log Out</button>
-      <!-- Ikon för My Food List -->
-      <div style="margin-top: 1rem;">
-        <a href="myfood.html" id="myFoodIcon" title="Min Matlista">
-          <i class="fas fa-list"></i>
-        </a>
+      <div>
+        <button id="myFoodBtn">My Food List</button>
       </div>
     </header>
 
@@ -264,6 +264,7 @@
       const db = firebase.firestore();
 
       const logoutBtn = document.getElementById("logoutBtn");
+      const myFoodBtn = document.getElementById("myFoodBtn");
       const countrySelect = document.getElementById("country");
       const citySelect = document.getElementById("city");
       const filterBtn = document.getElementById("filterBtn");
@@ -296,8 +297,7 @@
       });
 
       logoutBtn.addEventListener("click",()=>auth.signOut().then(()=>window.location.href="login.html"));
-      // Ingen knapp längre, använder ikon-länk istället
-      // myFoodBtn.addEventListener("click",()=>window.location.href="myfood.html");
+      myFoodBtn.addEventListener("click",()=>window.location.href="myfood.html");
 
       async function loadCountries(){
         const res = await fetch("https://countriesnow.space/api/v0.1/countries");
