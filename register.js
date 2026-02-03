@@ -170,7 +170,6 @@ document.addEventListener("DOMContentLoaded", () => {
         name: name,
         publicName: name.toLowerCase(),
         email: email,
-        isAdmin: false, //ADMIN
         createdAt: serverTimestamp()
       });
 
@@ -197,4 +196,3 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "login.html";
   });
 });
-
