@@ -23,6 +23,7 @@ const foodCountry = document.getElementById("foodCountry");
 const foodCity = document.getElementById("foodCity");
 const addFoodForm = document.getElementById("addFoodForm");
 const foodListContainer = document.querySelector(".my-food-list");
+const publicFoodListContainer = document.querySelector(".public-food-list");
 
 let selectedEmoji = "";
 let countriesData = [];
@@ -100,7 +101,6 @@ addFoodForm.addEventListener("submit", async (e) => {
 
   if (!title || !country || !city) return alert("Fill in all fields!");
 
-  // --- NYTT --- Confirm innan publicering
   if (!confirm(`Are you sure you want to publish this Foodpost: "${title}"?`)) return;
 
   const user = auth.currentUser;
@@ -118,11 +118,18 @@ addFoodForm.addEventListener("submit", async (e) => {
   };
 
   try {
+    // 1️⃣ Lägg till i användarens privata collection
     await db
       .collection("foods")
       .doc(user.uid)
       .collection("items")
       .add(newFoodData);
+
+    // 2️⃣ Lägg till i global publicFoods collection
+    await db.collection("publicFoods").add({
+      ...newFoodData,
+      publishedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
 
     // Reset form
     foodTitle.value = "";
@@ -134,6 +141,7 @@ addFoodForm.addEventListener("submit", async (e) => {
     emojiError.style.display = "none";
 
     loadFoodList();
+    loadPublicFoods();
   } catch (err) {
     console.error("Error adding food: ", err);
     alert("Error adding food. Please try again.");
@@ -198,7 +206,56 @@ async function loadFoodList() {
   });
 }
 
+// ===== Load public foods =====
+async function loadPublicFoods() {
+  if (!publicFoodListContainer) return;
+
+  publicFoodListContainer.innerHTML = "";
+
+  try {
+    const snapshot = await db
+      .collection("publicFoods")
+      .orderBy("publishedAt", "desc")
+      .get();
+
+    if (snapshot.empty) {
+      const p = document.createElement("p");
+      p.textContent = "No public foods yet!";
+      publicFoodListContainer.appendChild(p);
+      return;
+    }
+
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+
+      // Formatera datum: 03 Feb
+      const publishedDate = data.publishedAt?.toDate();
+      const options = { day: "2-digit", month: "short" };
+      const formattedDate = publishedDate
+        ? publishedDate.toLocaleDateString("en-US", options)
+        : "";
+
+      const div = document.createElement("div");
+      div.className = "public-food-item";
+      div.innerHTML = `
+        <span class="icon">${data.emoji || "🍽️"}</span>
+        <div>
+          <strong>${data.title}</strong> by <em>${data.userName}</em><br/>
+          <small>${data.city}, ${data.country} • ${formattedDate}</small>
+        </div>
+      `;
+      publicFoodListContainer.appendChild(div);
+    });
+  } catch (err) {
+    console.error("Error loading public foods:", err);
+    publicFoodListContainer.textContent = "Failed to load public foods.";
+  }
+}
+
 // ===== Initial load =====
 auth.onAuthStateChanged((user) => {
-  if (user) loadFoodList();
+  if (user) {
+    loadFoodList();
+    loadPublicFoods();
+  }
 });
