@@ -68,6 +68,7 @@ foodCountry.addEventListener("change", () => {
 // ===== Add food to Firestore =====
 addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
+
   const title = foodTitle.value.trim();
   const country = foodCountry.value;
   const city = foodCity.value;
@@ -77,20 +78,27 @@ addFoodForm.addEventListener("submit", async (e) => {
   const user = auth.currentUser;
   if (!user) return alert("You must be logged in!");
 
+  const newFoodData = {
+    title,
+    emoji: selectedEmoji || "🍽️",
+    country,
+    city,
+    type: "meal",
+    ownerId: user.uid,
+    userName: user.displayName || user.email,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  };
+
   try {
+    // Lägg till i privat lista (foods)
     await db
       .collection("foods")
       .doc(user.uid)
       .collection("items")
-      .add({
-        title,
-        emoji: selectedEmoji || "🍽️",
-        country,
-        city,
-        type: "meal",              // <-- Viktigt: lägg till type för rules
-        ownerId: user.uid,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      });
+      .add(newFoodData);
+
+    // Lägg till i global lista (publicFoods)
+    await db.collection("publicFoods").add(newFoodData);
 
     // Reset form
     foodTitle.value = "";
@@ -100,10 +108,10 @@ addFoodForm.addEventListener("submit", async (e) => {
     emojiPickerBtn.textContent = "Select your food Emoji";
     selectedEmoji = "";
 
-    loadFoodList();
+    loadFoodList(); // Uppdatera privat lista
   } catch (err) {
-    console.error(err);
-    alert("Error adding food.");
+    console.error("Error adding food: ", err);
+    alert("Error adding food. Please try again.");
   }
 });
 
@@ -170,3 +178,4 @@ async function loadFoodList() {
 auth.onAuthStateChanged((user) => {
   if (user) loadFoodList();
 });
+
