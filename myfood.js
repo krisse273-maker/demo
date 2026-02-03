@@ -100,6 +100,9 @@ addFoodForm.addEventListener("submit", async (e) => {
 
   if (!title || !country || !city) return alert("Fill in all fields!");
 
+  // --- NYTT --- Confirm innan publicering
+  if (!confirm(`Are you sure you want to publish this Foodpost: "${title}"?`)) return;
+
   const user = auth.currentUser;
   if (!user) return alert("You must be logged in!");
 
