@@ -155,55 +155,61 @@ async function loadFoodList() {
 
   foodListContainer.innerHTML = "";
 
-  const snapshot = await db
-    .collection("foods")
-    .doc(user.uid)
-    .collection("items")
-    .orderBy("createdAt", "desc")
-    .get();
+  try {
+    const snapshot = await db
+      .collection("foods")
+      .doc(user.uid)
+      .collection("items")
+      .orderBy("createdAt", "desc")
+      .get();
 
-  if (snapshot.empty) {
-    const p = document.createElement("p");
-    p.className = "no-food";
-    p.textContent = "No foods added yet!";
-    foodListContainer.appendChild(p);
-    return;
-  }
+    if (snapshot.empty) {
+      const p = document.createElement("p");
+      p.className = "no-food";
+      p.textContent = "No foods added yet!";
+      foodListContainer.appendChild(p);
+      return;
+    }
 
-  snapshot.forEach((docSnap) => {
-    const data = docSnap.data();
-    const div = document.createElement("div");
-    div.className = "food-item";
-    div.innerHTML = `
-      <span class="icon">${data.emoji || "🍽️"}</span>
-      <div>
-        <strong>${data.title}</strong><br/>
-        <small>${data.city}, ${data.country}</small>
-      </div>
-      <button class="delete-btn" data-id="${docSnap.id}">Delete</button>
-    `;
-    foodListContainer.appendChild(div);
-  });
-
-  document.querySelectorAll(".delete-btn").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const docId = btn.dataset.id;
-      if (!confirm("Are you sure you want to delete this food?")) return;
-
-      try {
-        await db
-          .collection("foods")
-          .doc(user.uid)
-          .collection("items")
-          .doc(docId)
-          .delete();
-        loadFoodList();
-      } catch (err) {
-        console.error(err);
-        alert("Error deleting food.");
-      }
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      const div = document.createElement("div");
+      div.className = "food-item";
+      div.innerHTML = `
+        <span class="icon">${data.emoji || "🍽️"}</span>
+        <div class="food-info">
+          <strong>${data.title}</strong><br/>
+          <small>${data.city}, ${data.country}</small>
+        </div>
+        <span class="delete-icon" data-id="${docSnap.id}">&times;</span>
+      `;
+      foodListContainer.appendChild(div);
     });
-  });
+
+    // Event-listener på röda X
+    document.querySelectorAll(".delete-icon").forEach((icon) => {
+      icon.addEventListener("click", async () => {
+        const docId = icon.dataset.id;
+        if (!confirm("Are you sure you want to delete this food?")) return;
+
+        try {
+          await db
+            .collection("foods")
+            .doc(user.uid)
+            .collection("items")
+            .doc(docId)
+            .delete();
+          loadFoodList();
+        } catch (err) {
+          console.error(err);
+          alert("Error deleting food.");
+        }
+      });
+    });
+  } catch (err) {
+    console.error("Error loading foods:", err);
+    foodListContainer.textContent = "Failed to load foods.";
+  }
 }
 
 // ===== Load public foods =====
@@ -227,8 +233,6 @@ async function loadPublicFoods() {
 
     snapshot.forEach((doc) => {
       const data = doc.data();
-
-      // Formatera datum: 03 Feb
       const publishedDate = data.publishedAt?.toDate();
       const options = { day: "2-digit", month: "short" };
       const formattedDate = publishedDate
