@@ -112,8 +112,8 @@ addFoodForm.addEventListener("submit", async (e) => {
 
     loadFoodList(); // Uppdatera privat lista
   } catch (err) {
-    console.error(err);
-    alert("Error adding food.");
+    console.error("Error adding food: ", err);
+    alert("Error adding food. Please try again.");
   }
 });
 
@@ -169,8 +169,8 @@ async function loadFoodList() {
           .delete();
         loadFoodList();
       } catch (err) {
-        console.error(err);
-        alert("Error deleting food.");
+        console.error("Error deleting food: ", err);
+        alert("Error deleting food. Please try again.");
       }
     });
   });
