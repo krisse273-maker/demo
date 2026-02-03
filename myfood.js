@@ -17,6 +17,7 @@ const auth = firebase.auth();
 // ===== DOM elements =====
 const emojiPickerBtn = document.getElementById("emojiPickerBtn");
 const emojiPicker = document.getElementById("emojiPicker");
+const emojiError = document.getElementById("emojiError");
 const foodTitle = document.getElementById("foodTitle");
 const foodCountry = document.getElementById("foodCountry");
 const foodCity = document.getElementById("foodCity");
@@ -36,6 +37,7 @@ emojiPicker.querySelectorAll("span").forEach((span) => {
     selectedEmoji = span.textContent;
     emojiPickerBtn.textContent = selectedEmoji;
     emojiPicker.style.display = "none";
+    emojiError.style.display = "none"; // göm felmeddelande direkt
   });
 });
 
@@ -73,6 +75,13 @@ addFoodForm.addEventListener("submit", async (e) => {
   const country = foodCountry.value;
   const city = foodCity.value;
 
+  emojiError.style.display = "none"; // reset
+
+  if (!selectedEmoji) {
+    emojiError.style.display = "block";
+    return; // stoppar formuläret
+  }
+
   if (!title || !country || !city) return alert("Fill in all fields!");
 
   const user = auth.currentUser;
@@ -80,7 +89,7 @@ addFoodForm.addEventListener("submit", async (e) => {
 
   const newFoodData = {
     title,
-    emoji: selectedEmoji || "🍽️",
+    emoji: selectedEmoji,
     country,
     city,
     type: "meal",
@@ -90,22 +99,22 @@ addFoodForm.addEventListener("submit", async (e) => {
   };
 
   try {
-    // --- Lägg till i privat lista ---
     await db
       .collection("foods")
       .doc(user.uid)
       .collection("items")
       .add(newFoodData);
 
-    // --- Reset form ---
+    // Reset form
     foodTitle.value = "";
     foodCountry.value = "";
     foodCity.innerHTML = '<option value="">Select City</option>';
     foodCity.disabled = true;
     emojiPickerBtn.textContent = "Select your food Emoji";
     selectedEmoji = "";
+    emojiError.style.display = "none";
 
-    loadFoodList(); // Uppdatera privat lista
+    loadFoodList();
   } catch (err) {
     console.error("Error adding food: ", err);
     alert("Error adding food. Please try again.");
@@ -149,7 +158,6 @@ async function loadFoodList() {
     foodListContainer.appendChild(div);
   });
 
-  // Add delete event listeners
   document.querySelectorAll(".delete-btn").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const docId = btn.dataset.id;
