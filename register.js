@@ -166,16 +166,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       await updateProfile(user, { displayName: name });
 
-      await setDoc(doc(db, "users", user.uid), {
-        name: name,
+      // ===== Firestore admin collection =====
+      await setDoc(doc(db, "admin", user.uid), {
         publicName: name.toLowerCase(),
-        email: email,
-        createdAt: serverTimestamp()
-      });
-
-      await setDoc(doc(db, "publicUsers", user.uid), {
-        name: name,
-        gender: gender
+        admin: false // ✅ Alla nya användare får admin: false
       });
 
       window.location.href = "index.html";
