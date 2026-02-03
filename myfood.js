@@ -97,8 +97,8 @@ addFoodForm.addEventListener("submit", async (e) => {
       .collection("items")
       .add(newFoodData);
 
-    // Lägg till i global lista (publicFoods)
-    await db.collection("publicFoods").add(newFoodData);
+    // Ta bort inslaget som lägger till i den globala listan
+    // await db.collection("publicFoods").add(newFoodData);  // Ta bort denna rad
 
     // Reset form
     foodTitle.value = "";
@@ -124,7 +124,7 @@ async function loadFoodList() {
 
   const snapshot = await db
     .collection("foods")
-    .doc(user.uid)
+    .doc(user.uid)  // Hämtar bara från den aktuella användarens samling
     .collection("items")
     .orderBy("createdAt", "desc")
     .get();
@@ -178,4 +178,3 @@ async function loadFoodList() {
 auth.onAuthStateChanged((user) => {
   if (user) loadFoodList();
 });
-
