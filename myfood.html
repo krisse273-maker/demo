@@ -234,8 +234,50 @@
       <button type="submit">Add Food</button>
     </form>
   </div>
+
+  <!-- Länder och städer script -->
+  <script>
+    let countriesData = [];
+
+    const foodCountry = document.getElementById("foodCountry");
+    const foodCity = document.getElementById("foodCity");
+
+    async function loadCountries() {
+      try {
+        const res = await fetch("https://countriesnow.space/api/v0.1/countries");
+        const data = await res.json();
+        countriesData = data.data;
+
+        foodCountry.innerHTML = '<option value="">Select Country</option>';
+        countriesData.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c.country;
+          opt.textContent = c.country;
+          foodCountry.appendChild(opt);
+        });
+      } catch (err) {
+        console.error("Error loading countries:", err);
+      }
+    }
+
+    foodCountry.addEventListener("change", () => {
+      foodCity.innerHTML = '<option value="">Select City</option>';
+      foodCity.disabled = true;
+
+      const countryObj = countriesData.find(c => c.country === foodCountry.value);
+      if (!countryObj) return;
+
+      countryObj.cities.forEach(city => {
+        const opt = document.createElement("option");
+        opt.value = city;
+        opt.textContent = city;
+        foodCity.appendChild(opt);
+      });
+
+      foodCity.disabled = false;
+    });
+
+    window.addEventListener("DOMContentLoaded", loadCountries);
+  </script>
 </body>
 </html>
-
-
-
