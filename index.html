@@ -27,10 +27,12 @@
 
       header h1 {
         color: #4caf50;
+        margin-bottom: 0.3rem;
       }
 
       #welcomeMsg {
         color: #cfd8dc;
+        margin-bottom: 0.8rem;
       }
 
       /* Log Out button */
@@ -51,21 +53,30 @@
       }
       #logoutBtn:hover { background-color: #e53935; }
 
-      /* Icon button for My Food List */
-      .icon-btn {
-        position: absolute;
-        right: 6rem; /* adjust distance from right edge */
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        font-size: 1.8rem;
+      /* Icon container */
+      .icon-container {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      /* Icon styles */
+      .icon {
+        font-size: 2rem;
         cursor: pointer;
+        position: relative;
         color: #fff;
+        transition: transform 0.2s, color 0.2s;
+      }
+
+      .icon:hover {
+        transform: scale(1.2);
+        color: #4caf50;
       }
 
       /* Tooltip */
-      .icon-btn .tooltip-text {
+      .icon .tooltip-text {
         visibility: hidden;
         width: max-content;
         background-color: #262d37;
@@ -80,11 +91,11 @@
         opacity: 0;
         transition: opacity 0.2s;
         white-space: nowrap;
-        z-index: 10;
         font-size: 0.85rem;
+        z-index: 10;
       }
 
-      .icon-btn:hover .tooltip-text {
+      .icon:hover .tooltip-text {
         visibility: visible;
         opacity: 1;
       }
@@ -235,14 +246,17 @@
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
 
+      <!-- Icons under welcome message -->
+      <div class="icon-container">
+        <a href="myfood.html" class="icon">
+          🍴📋
+          <span class="tooltip-text">My Food List</span>
+        </a>
+        <!-- Här kan du lägga till fler ikoner senare -->
+      </div>
+
       <!-- Log Out button -->
       <button id="logoutBtn">Log Out</button>
-
-      <!-- My Food Icon -->
-      <button class="icon-btn" id="myFoodBtn">
-        🍴📋
-        <span class="tooltip-text">My Food List</span>
-      </button>
     </header>
 
     <section class="filters">
