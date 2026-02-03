@@ -170,8 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
         name: name,
         publicName: name.toLowerCase(),
         email: email,
-        isAdmin: false, // 👈 ALLA nya användare är inte admin
-        createdAt: serverTimestamp(),
+        createdAt: serverTimestamp()
       });
 
       await setDoc(doc(db, "publicUsers", user.uid), {
