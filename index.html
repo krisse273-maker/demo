@@ -35,38 +35,33 @@
         margin: 0;
       }
 
-      #logoutBtn {
-        position: absolute;
-        right: 1rem;
-        top: 1rem;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        border: none;
-        background-color: #f44336;
-        color: #fff;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-family: 'Poppins', sans-serif;
-        font-weight: 600;
-      }
+      /* Ta bort logga ut-knappen helt */
 
-      #logoutBtn:hover { background-color: #e53935; }
-
-      /* Emoji navigation - brevid Min Lista emoji */
-      .nav-container {
+      /* Navigationsikonen för "Min Lista" och "Logga ut" (emoji) */
+      .nav-icons {
         display: flex;
+        justify-content: center;
         align-items: center;
-        gap: 1rem;
+        gap: 2rem;
         margin-top: 1rem;
       }
 
       #myListEmoji {
-        font-size: 1.5rem; /* mindre storlek */
+        font-size: 1.5rem; /* standardstorlek */
         cursor: pointer;
         transition: transform 0.2s, color 0.2s;
       }
-
       #myListEmoji:hover {
+        transform: scale(1.2);
+        color: #fffacd;
+      }
+
+      #logoutEmoji {
+        font-size: 2rem; /* lite större */
+        cursor: pointer;
+        transition: transform 0.2s, color 0.2s;
+      }
+      #logoutEmoji:hover {
         transform: scale(1.2);
         color: #fffacd;
       }
@@ -219,10 +214,10 @@
     <header>
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
-      <button id="logoutBtn">Log Out</button>
-      <!-- Navigationsikonen -->
-      <div class="nav-container">
-        <div id="myListEmoji" title="Min Matlista">📋</div> <!-- Brevid "Min Lista" emoji -->
+      <!-- Ta bort knapp, lägg till emojis i en flex container -->
+      <div class="nav-icons">
+        <div id="myListEmoji" title="Min Matlista">📋</div>
+        <div id="logoutEmoji" title="Logga ut">🔓</div>
       </div>
     </header>
 
@@ -272,8 +267,9 @@
       const auth = firebase.auth();
       const db = firebase.firestore();
 
-      const logoutBtn = document.getElementById("logoutBtn");
+      const welcomeMsg = document.getElementById("welcomeMsg");
       const myListEmoji = document.getElementById("myListEmoji");
+      const logoutEmoji = document.getElementById("logoutEmoji");
       const countrySelect = document.getElementById("country");
       const citySelect = document.getElementById("city");
       const filterBtn = document.getElementById("filterBtn");
@@ -305,19 +301,24 @@
         loadGlobalFood();
       });
 
-      logoutBtn.addEventListener("click",()=>auth.signOut().then(()=>window.location.href="login.html"));
-      
-      // Navigera till myfood.html när man klickar på emoji
+      // Logga ut via emoji
+      logoutEmoji.addEventListener("click", () => {
+        auth.signOut().then(() => {
+          window.location.href = "login.html";
+        });
+      });
+
+      // Gå till myfood.html via emoji
       myListEmoji.addEventListener("click", () => {
         window.location.href = "myfood.html";
       });
-
-      async function loadCountries(){
+      
+      async function loadCountries() {
         const res = await fetch("https://countriesnow.space/api/v0.1/countries");
         const data = await res.json();
         countriesData = data.data;
         countrySelect.innerHTML = '<option value="">Select country</option>';
-        countriesData.forEach(c=>{
+        countriesData.forEach(c => {
           const opt = document.createElement("option");
           const flag = countryFlags[c.country] || "";
           opt.value = c.country;
@@ -326,29 +327,29 @@
         });
       }
 
-      countrySelect.addEventListener("change",()=>{ 
-        citySelect.innerHTML='<option value="">Select city</option>';
-        citySelect.disabled=true;
-        const countryObj = countriesData.find(c=>c.country===countrySelect.value);
-        if(!countryObj) return;
-        countryObj.cities.forEach(city=>{
-          const opt=document.createElement("option");
-          opt.value=city;
-          opt.textContent=city;
+      countrySelect.addEventListener("change", () => {
+        citySelect.innerHTML = '<option value="">Select city</option>';
+        citySelect.disabled = true;
+        const countryObj = countriesData.find(c => c.country === countrySelect.value);
+        if (!countryObj) return;
+        countryObj.cities.forEach(city => {
+          const opt = document.createElement("option");
+          opt.value = city;
+          opt.textContent = city;
           citySelect.appendChild(opt);
         });
-        citySelect.disabled=false;
+        citySelect.disabled = false;
       });
 
-      filterBtn.addEventListener("click",()=>{ 
-        const filtered=allFoods.filter(f=>
-          (!countrySelect.value||f.country===countrySelect.value)&&
-          (!citySelect.value||f.city===citySelect.value)
+      filterBtn.addEventListener("click", () => {
+        const filtered = allFoods.filter(f =>
+          (!countrySelect.value || f.country === countrySelect.value) &&
+          (!citySelect.value || f.city === citySelect.value)
         );
         renderFoodItems(filtered);
       });
 
-      // --- LOADING TITLE ANIMATION ---
+      // --- LOADING TITEL ---
       const foodTitle = document.getElementById("foodTitle");
       let dots = 0;
       foodTitle.textContent = "Shared Meals";
