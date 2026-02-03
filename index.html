@@ -33,6 +33,7 @@
         color: #cfd8dc;
       }
 
+      /* Log Out button */
       #logoutBtn {
         position: absolute;
         right: 1rem;
@@ -48,23 +49,54 @@
         font-family: 'Poppins', sans-serif;
         font-weight: 600;
       }
-
       #logoutBtn:hover { background-color: #e53935; }
 
-      #myFoodBtn {
-        margin-top: 1rem;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        border: none;
-        background-color: #4caf50;
-        color: white;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-family: 'Poppins', sans-serif;
-        font-weight: 600;
+      /* ICONS */
+      .icon-container {
+        position: absolute;
+        top: 50%;
+        right: 1rem;
+        transform: translateY(-50%);
+        display: flex;
+        gap: 1rem;
       }
 
-      #myFoodBtn:hover { background-color: #388e3c; }
+      .icon-link {
+        position: relative;
+        font-size: 1.8rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+        color: white;
+      }
+
+      .icon-link:hover {
+        transform: scale(1.3);
+      }
+
+      /* Tooltip */
+      .icon-link .tooltip-text {
+        visibility: hidden;
+        opacity: 0;
+        width: max-content;
+        background-color: #262d37;
+        color: #cfd8dc;
+        text-align: center;
+        border-radius: 6px;
+        padding: 0.3rem 0.6rem;
+        position: absolute;
+        bottom: 120%; /* ovanför ikonen */
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        transition: opacity 0.2s;
+        font-size: 0.85rem;
+        z-index: 10;
+      }
+
+      .icon-link:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+      }
 
       /* FILTER-SEKTION */
       section.filters {
@@ -108,7 +140,6 @@
         font-family: 'Poppins', sans-serif;
         font-weight: 600;
       }
-
       #filterBtn:hover { background-color: #45a045; }
 
       .global-food-list {
@@ -157,50 +188,6 @@
         font-size: 1.25rem;
         text-shadow: 1px 1px 2px #000;
       }
-
-      .icon-btn {
-  position: relative;
-  background-color: #4caf50;
-  border: none;
-  border-radius: 6px;
-  padding: 0.5rem 0.8rem;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: white;
-  font-weight: 600;
-  transition: background 0.2s, transform 0.2s;
-}
-
-.icon-btn:hover {
-  background-color: #388e3c;
-  transform: scale(1.1);
-}
-
-/* Tooltip */
-.icon-btn .tooltip-text {
-  visibility: hidden;
-  width: max-content;
-  background-color: #262d37;
-  color: #cfd8dc;
-  text-align: center;
-  border-radius: 6px;
-  padding: 0.3rem 0.6rem;
-  position: absolute;
-  bottom: 120%; /* ovanför knappen */
-  left: 50%;
-  transform: translateX(-50%);
-  opacity: 0;
-  transition: opacity 0.2s;
-  white-space: nowrap;
-  z-index: 10;
-  font-size: 0.85rem;
-}
-
-.icon-btn:hover .tooltip-text {
-  visibility: visible;
-  opacity: 1;
-}
-
 
       .food-details {
         display: flex;
@@ -257,14 +244,20 @@
     <header>
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
-      <button id="logoutBtn">Log Out</button>
-      <div>
-  <button class="icon-btn" id="myFoodBtn">
-    🍴📋
-    <span class="tooltip-text">My Food List</span>
-  </button>
-</div>
 
+      <div class="icon-container">
+        <!-- My Food List ikon -->
+        <span class="icon-link" id="myFoodIcon">
+          🍴📋
+          <span class="tooltip-text">My Food List</span>
+        </span>
+
+        <!-- Log Out ikon -->
+        <span class="icon-link" id="logoutIcon">
+          🔒
+          <span class="tooltip-text">Log Out</span>
+        </span>
+      </div>
     </header>
 
     <section class="filters">
@@ -294,6 +287,16 @@
     <footer>
       <p>&copy; 2026 Global Food Share</p>
     </footer>
+
+    <script>
+      // Event listeners för ikoner
+      document.getElementById("myFoodIcon").addEventListener("click", () => {
+        window.location.href = "myfood.html";
+      });
+
+      document.getElementById("logoutIcon").addEventListener("click", () => {
+        firebase.auth().signOut().then(() => window.location.href = "login.html");
+      });
+    </script>
   </body>
 </html>
-
