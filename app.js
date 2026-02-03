@@ -8,10 +8,11 @@ const firebaseConfig = {
   appId: "1:902107453892:web:dd9625974cc94ac91"
 };
 
-// Initiera Firebase
+// Initiera Firebase om det inte redan är gjort
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+
 const db = firebase.firestore();
 const auth = firebase.auth();
 
@@ -23,37 +24,58 @@ window.addEventListener("DOMContentLoaded", async () => {
   const myFoodBtn = document.getElementById("myFoodBtn");
   const logoutBtn = document.getElementById("logoutBtn");
   const welcomeMsg = document.getElementById("welcomeMsg");
-  const profileIcon = document.getElementById("profileIcon");
+  const foodTitle = document.getElementById("foodTitle");
 
-  // --- Länder/städer ---
   let countriesData = [];
-  try {
-    const res = await fetch("https://countriesnow.space/api/v0.1/countries");
-    const data = await res.json();
-    countriesData = data.data;
+  let allFoods = [];
 
-    countrySelect.innerHTML = '<option value="">Select country</option>';
-    countriesData.forEach(c => {
-      const opt = document.createElement("option");
-      opt.value = c.country;
-      opt.textContent = c.country;
-      countrySelect.appendChild(opt);
-    });
-    countrySelect.disabled = false;
-  } catch (err) {
-    console.error("Could not fetch countries:", err);
-    alert("Failed to load countries. Try refreshing.");
+  // Länder-flaggor (kan lägga till fler)
+  const countryFlags = {
+    "Sweden": "🇸🇪",
+    "United States": "🇺🇸",
+    "United Kingdom": "🇬🇧",
+    "Germany": "🇩🇪",
+    "France": "🇫🇷",
+    "Italy": "🇮🇹",
+    "Spain": "🇪🇸",
+    "Mexico": "🇲🇽",
+    "Japan": "🇯🇵",
+    "China": "🇨🇳",
+    "India": "🇮🇳"
+  };
+
+  // --- Logga ut / navigera ---
+  logoutBtn.addEventListener("click", () => auth.signOut().then(() => window.location.href = "login.html"));
+  myFoodBtn.addEventListener("click", () => window.location.href = "myfood.html");
+
+  // --- Ladda länder ---
+  async function loadCountries() {
+    try {
+      const res = await fetch("https://countriesnow.space/api/v0.1/countries");
+      const data = await res.json();
+      countriesData = data.data;
+
+      countrySelect.innerHTML = '<option value="">Select country</option>';
+      countriesData.forEach(c => {
+        const opt = document.createElement("option");
+        const flag = countryFlags[c.country] || "";
+        opt.value = c.country;
+        opt.textContent = `${flag} ${c.country}`;
+        countrySelect.appendChild(opt);
+      });
+      countrySelect.disabled = false;
+    } catch (err) {
+      console.error("Could not fetch countries:", err);
+      alert("Failed to load countries. Try refreshing.");
+    }
   }
 
   countrySelect.addEventListener("change", () => {
     citySelect.innerHTML = '<option value="">Select city</option>';
     citySelect.disabled = true;
 
-    const selectedCountry = countrySelect.value;
-    if (!selectedCountry) return;
-
-    const countryObj = countriesData.find(c => c.country === selectedCountry);
-    if (!countryObj || !countryObj.cities.length) return;
+    const countryObj = countriesData.find(c => c.country === countrySelect.value);
+    if (!countryObj) return;
 
     countryObj.cities.forEach(city => {
       const opt = document.createElement("option");
@@ -64,98 +86,97 @@ window.addEventListener("DOMContentLoaded", async () => {
     citySelect.disabled = false;
   });
 
-  // --- Navigera ---
-  myFoodBtn.addEventListener("click", () => window.location.href = "myfood.html");
-  logoutBtn.addEventListener("click", async () => {
-    await auth.signOut();
-    window.location.href = "login.html";
+  // --- Filter ---
+  filterBtn.addEventListener("click", () => {
+    const country = countrySelect.value;
+    const city = citySelect.value;
+
+    const filtered = allFoods.filter(f =>
+      (!country || f.country === country) &&
+      (!city || f.city === city)
+    );
+    renderFoodItems(filtered);
   });
 
-  // --- Vänta tills användaren är inloggad ---
-  auth.onAuthStateChanged(user => {
-    if (!user) {
-      window.location.href = "login.html";
-      return;
-    }
+  // --- Loading animation ---
+  let dots = 0;
+  foodTitle.textContent = "Shared Meals";
+  const loadingInterval = setInterval(() => {
+    dots = (dots + 1) % 4;
+    foodTitle.textContent = `Shared Meals${".".repeat(dots)}`;
+  }, 500);
+
+  // --- Vänta på inloggad användare ---
+  auth.onAuthStateChanged(async user => {
+    if (!user) return window.location.href = "login.html";
 
     const loggedInUserName = user.displayName || user.email;
-    welcomeMsg.textContent = `Welcome, ${loggedInUserName}!`;
+    if (welcomeMsg) welcomeMsg.textContent = `Welcome, ${loggedInUserName}!`;
 
-    // Neutral emoji istället för profilikon
-    profileIcon.textContent = "👤";
+    await loadCountries();
+    loadGlobalFood(user);
+  });
 
-    // --- Hämta global publicFoods ---
-    let allFoods = [];
-    db.collection("publicFoods")
-      .orderBy("publishedAt", "desc")
+  // --- Hämta global publicFoods ---
+  function loadGlobalFood(user) {
+    db.collection("publicFoods").orderBy("createdAt", "desc")
       .onSnapshot(snapshot => {
         allFoods = snapshot.docs.map(doc => {
           const data = doc.data();
-
-          // Visa alltid userName som sparades i databasen
           return {
             title: data.title || "",
             city: data.city || "",
             country: data.country || "",
             emoji: data.emoji || "🍽️",
-            user: data.userName || "Anonymous",  // <-- ändrat här
-            timestamp: data.publishedAt || null
+            user: data.ownerId === user.uid ? (user.displayName || user.email) : (data.userName || "Anonymous"),
+            timestamp: data.createdAt || null
           };
         });
 
         renderFoodItems(allFoods);
+        clearInterval(loadingInterval);
+        foodTitle.textContent = "Shared Meals";
       }, err => {
         console.error("Error fetching public foods:", err);
         foodList.innerHTML = "<p>Failed to load public foods.</p>";
+        clearInterval(loadingInterval);
       });
+  }
 
-    // --- Render-funktion ---
-    function renderFoodItems(items) {
-      foodList.innerHTML = "";
-      if (!items.length) {
-        foodList.innerHTML = "<p>No food found.</p>";
-        return;
-      }
-
-      const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-      items.forEach(item => {
-        let dateStr = "";
-        if (item.timestamp && item.timestamp.toDate) {
-          const date = item.timestamp.toDate();
-          const day = date.getDate().toString().padStart(2, "0");
-          const month = monthNames[date.getMonth()];
-          dateStr = `${day} ${month}`;
-        }
-
-        const div = document.createElement("div");
-        div.classList.add("food-item");
-        div.innerHTML = `
-          <div class="food-header">
-            <span>${item.emoji}</span>
-            <h3>${item.title}</h3>
-          </div>
-          <div class="food-details">
-            <p><span class="icon-small">📍</span><strong>Location:</strong> ${item.city}, ${item.country}</p>
-            <p><span class="icon-small">👤</span><strong>Published By:</strong> ${item.user}</p>
-            ${dateStr ? `<p><span class="icon-small">📅</span><strong>Posted On:</strong> ${dateStr}</p>` : ""}
-          </div>
-        `;
-        foodList.appendChild(div);
-      });
+  // --- Renderfunktion ---
+  function renderFoodItems(items) {
+    foodList.innerHTML = "";
+    if (!items.length) {
+      foodList.innerHTML = "<p>No food found.</p>";
+      return;
     }
 
-    // --- Filterknapp ---
-    filterBtn.addEventListener("click", () => {
-      const country = countrySelect.value;
-      const city = citySelect.value;
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-      const filtered = allFoods.filter(f =>
-        (!country || f.country === country) &&
-        (!city || f.city === city)
-      );
+    items.forEach(item => {
+      let dateStr = "";
+      if (item.timestamp && item.timestamp.toDate) {
+        const date = item.timestamp.toDate();
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = monthNames[date.getMonth()];
+        dateStr = `${day} ${month}`;
+      }
 
-      renderFoodItems(filtered);
+      const div = document.createElement("div");
+      div.className = "food-item";
+      div.innerHTML = `
+        <div class="food-header">
+          <span>${item.emoji}</span>
+          <h3>${item.title}</h3>
+        </div>
+        <div class="food-details">
+          <p><span class="icon-small">📍</span><strong>Location:</strong> ${item.city}, ${item.country}</p>
+          <p><span class="icon-small">👤</span><strong>Published By:</strong> ${item.user}</p>
+          ${dateStr ? `<p><span class="icon-small">📅</span><strong>Posted On:</strong> ${dateStr}</p>` : ""}
+        </div>
+      `;
+      foodList.appendChild(div);
     });
-  });
+  }
 });
