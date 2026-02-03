@@ -81,18 +81,18 @@ window.addEventListener("DOMContentLoaded", async () => {
     const loggedInUserName = user.displayName || user.email;
     welcomeMsg.textContent = `Welcome, ${loggedInUserName}!`;
 
-    // Neutral emoji istället för kön
+    // Neutral emoji istället för profilikon
     profileIcon.textContent = "👤";
 
-    // --- Global real-time food list ---
+    // --- Hämta global publicFoods ---
     let allFoods = [];
     db.collection("publicFoods")
-      .orderBy("createdAt", "desc")
+      .orderBy("publishedAt", "desc")
       .onSnapshot(snapshot => {
         allFoods = snapshot.docs.map(doc => {
           const data = doc.data();
 
-          // Använd ownerId istället för userId
+          // Visa korrekt posterName
           let posterName = (data.ownerId === user.uid) ? loggedInUserName : (data.userName || "Anonymous");
 
           return {
@@ -101,13 +101,14 @@ window.addEventListener("DOMContentLoaded", async () => {
             country: data.country || "",
             emoji: data.emoji || "🍽️",
             user: posterName,
-            timestamp: data.createdAt || null
+            timestamp: data.publishedAt || null
           };
         });
 
         renderFoodItems(allFoods);
       }, err => {
-        console.error("Error fetching global foods:", err);
+        console.error("Error fetching public foods:", err);
+        foodList.innerHTML = "<p>Failed to load public foods.</p>";
       });
 
     // --- Render-funktion ---
@@ -118,17 +119,15 @@ window.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
-      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
       items.forEach(item => {
         let dateStr = "";
         if (item.timestamp && item.timestamp.toDate) {
           const date = item.timestamp.toDate();
-          const day = date.getDate();
+          const day = date.getDate().toString().padStart(2, "0");
           const month = monthNames[date.getMonth()];
-          const year = date.getFullYear();
-          dateStr = `${day} ${month} ${year}`;
+          dateStr = `${day} ${month}`;
         }
 
         const div = document.createElement("div");
