@@ -25,6 +25,7 @@ const addFoodForm = document.getElementById("addFoodForm");
 const foodListContainer = document.querySelector(".my-food-list");
 
 let selectedEmoji = "";
+let countriesData = [];
 
 // ===== Emoji picker =====
 emojiPickerBtn.addEventListener("click", () => {
@@ -41,31 +42,46 @@ emojiPicker.querySelectorAll("span").forEach((span) => {
   });
 });
 
-// ===== Country & City =====
-const countries = {
-  Sweden: ["Stockholm", "Gothenburg", "Malmö"],
-  USA: ["New York", "Los Angeles", "Chicago"],
-  Japan: ["Tokyo", "Osaka", "Kyoto"],
-};
+// ===== Country & City - Dynamiskt =====
+async function loadCountries() {
+  try {
+    const res = await fetch("https://countriesnow.space/api/v0.1/countries");
+    const data = await res.json();
+    countriesData = data.data;
 
-for (const country in countries) {
-  const opt = document.createElement("option");
-  opt.value = country;
-  opt.textContent = country;
-  foodCountry.appendChild(opt);
+    // Rensa och fyll landet dropdown
+    foodCountry.innerHTML = '<option value="">Select Country</option>';
+    countriesData.forEach((c) => {
+      const opt = document.createElement("option");
+      opt.value = c.country;
+      opt.textContent = c.country;
+      foodCountry.appendChild(opt);
+    });
+    foodCountry.disabled = false;
+  } catch (err) {
+    console.error("Failed to fetch countries:", err);
+    alert("Failed to load countries. Try refreshing.");
+  }
 }
 
 foodCountry.addEventListener("change", () => {
-  const cities = countries[foodCountry.value] || [];
   foodCity.innerHTML = '<option value="">Select City</option>';
-  foodCity.disabled = cities.length === 0;
-  cities.forEach((city) => {
+  foodCity.disabled = true;
+
+  const countryObj = countriesData.find((c) => c.country === foodCountry.value);
+  if (!countryObj) return;
+
+  countryObj.cities.forEach((city) => {
     const opt = document.createElement("option");
     opt.value = city;
     opt.textContent = city;
     foodCity.appendChild(opt);
   });
+  foodCity.disabled = false;
 });
+
+// Kör direkt vid sidladdning
+loadCountries();
 
 // ===== Add food to Firestore =====
 addFoodForm.addEventListener("submit", async (e) => {
