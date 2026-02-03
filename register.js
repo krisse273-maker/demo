@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
         name: name,
         publicName: name.toLowerCase(),
         email: email,
-        createdAt: serverTimestamp(),
+        createdAt: serverTimestamp()
       });
 
       await setDoc(doc(db, "publicUsers", user.uid), {
@@ -196,5 +196,3 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "login.html";
   });
 });
-
-
