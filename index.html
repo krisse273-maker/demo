@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Global Food Share</title>
     <link rel="stylesheet" href="style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
 
     <style>
       body {
@@ -47,20 +47,19 @@
 
       #logoutBtn:hover { background-color: #e53935; }
 
-      #myFoodBtn {
+      /* Emoji som navigation */
+      #myFoodEmoji {
         margin-top: 1rem;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        border: none;
-        background-color: #4caf50;
-        color: white;
         cursor: pointer;
-        transition: all 0.2s ease;
-        font-family: 'Poppins', sans-serif;
-        font-weight: 600;
+        font-size: 2.5rem;
+        display: inline-block;
+        transition: transform 0.2s, color 0.2s;
       }
 
-      #myFoodBtn:hover { background-color: #388e3c; }
+      #myFoodEmoji:hover {
+        transform: scale(1.2);
+        color: #fffacd; /* litet gult ljus för hover */
+      }
 
       /* FILTER-SEKTION */
       section.filters {
@@ -212,8 +211,9 @@
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
       <button id="logoutBtn">Log Out</button>
-      <div>
-        <button id="myFoodBtn">My Food List</button>
+      <!-- Emoji som navigationsknapp -->
+      <div style="margin-top: 1rem;">
+        <div id="myFoodEmoji" title="Min Matlista">📝</div>
       </div>
     </header>
 
@@ -264,7 +264,7 @@
       const db = firebase.firestore();
 
       const logoutBtn = document.getElementById("logoutBtn");
-      const myFoodBtn = document.getElementById("myFoodBtn");
+      const myFoodEmoji = document.getElementById("myFoodEmoji");
       const countrySelect = document.getElementById("country");
       const citySelect = document.getElementById("city");
       const filterBtn = document.getElementById("filterBtn");
@@ -297,7 +297,11 @@
       });
 
       logoutBtn.addEventListener("click",()=>auth.signOut().then(()=>window.location.href="login.html"));
-      myFoodBtn.addEventListener("click",()=>window.location.href="myfood.html");
+      
+      // Navigera till myfood.html när man klickar på emojin
+      myFoodEmoji.addEventListener("click", () => {
+        window.location.href = "myfood.html";
+      });
 
       async function loadCountries(){
         const res = await fetch("https://countriesnow.space/api/v0.1/countries");
