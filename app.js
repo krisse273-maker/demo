@@ -13,6 +13,7 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
+const auth = firebase.auth();
 
 window.addEventListener("DOMContentLoaded", async () => {
   const countrySelect = document.getElementById("country");
@@ -21,8 +22,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   const foodList = document.querySelector(".global-food-list");
   const myFoodBtn = document.getElementById("myFoodBtn");
   const logoutBtn = document.getElementById("logoutBtn");
-  const profileIcon = document.getElementById("profileIcon");
   const welcomeMsg = document.getElementById("welcomeMsg");
+  const profileIcon = document.getElementById("profileIcon");
 
   // --- Länder/städer ---
   let countriesData = [];
@@ -66,39 +67,33 @@ window.addEventListener("DOMContentLoaded", async () => {
   // --- Navigera ---
   myFoodBtn.addEventListener("click", () => window.location.href = "myfood.html");
   logoutBtn.addEventListener("click", async () => {
-    await firebase.auth().signOut();
+    await auth.signOut();
     window.location.href = "login.html";
   });
 
   // --- Vänta tills användaren är inloggad ---
-  firebase.auth().onAuthStateChanged(async user => {
+  auth.onAuthStateChanged(user => {
     if (!user) {
       window.location.href = "login.html";
       return;
     }
 
-    // --- Hämta kön från Firestore ---
-    const docRef = db.collection("publicUsers").doc(user.uid);
-    const docSnap = await docRef.get();
-    const gender = docSnap.exists ? docSnap.data().gender : "male";
-
-    // --- Sätt välkomsttext ---
     const loggedInUserName = user.displayName || user.email;
     welcomeMsg.textContent = `Welcome, ${loggedInUserName}!`;
 
-    // --- Sätt emoji i cirkeln baserat på kön ---
-    profileIcon.textContent = gender === "female" ? "👩" : "👨";
+    // Neutral emoji istället för kön
+    profileIcon.textContent = "👤";
 
     // --- Global real-time food list ---
     let allFoods = [];
     db.collection("publicFoods")
       .orderBy("createdAt", "desc")
-      .onSnapshot(async snapshot => {  // <-- async
+      .onSnapshot(snapshot => {
         allFoods = snapshot.docs.map(doc => {
           const data = doc.data();
 
-          // --- Använd samma namn som i välkomsttexten för den inloggade användarens poster ---
-          let posterName = (data.userId === user.uid) ? loggedInUserName : (data.userName || "Anonymous");
+          // Använd ownerId istället för userId
+          let posterName = (data.ownerId === user.uid) ? loggedInUserName : (data.userName || "Anonymous");
 
           return {
             title: data.title || "",
@@ -120,7 +115,6 @@ window.addEventListener("DOMContentLoaded", async () => {
       foodList.innerHTML = "";
       if (!items.length) {
         foodList.innerHTML = "<p>No food found.</p>";
-        stopLoadingDots();
         return;
       }
 
@@ -152,8 +146,6 @@ window.addEventListener("DOMContentLoaded", async () => {
         `;
         foodList.appendChild(div);
       });
-
-      stopLoadingDots();
     }
 
     // --- Filterknapp ---
@@ -168,6 +160,5 @@ window.addEventListener("DOMContentLoaded", async () => {
 
       renderFoodItems(filtered);
     });
-
   });
 });
