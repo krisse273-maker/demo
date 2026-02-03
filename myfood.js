@@ -12,6 +12,7 @@ const firebaseConfig = {
 // Init Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const auth = firebase.auth();
 
 // ===== DOM elements =====
 const emojiPickerBtn = document.getElementById("emojiPickerBtn");
@@ -26,10 +27,11 @@ let selectedEmoji = "";
 
 // ===== Emoji picker =====
 emojiPickerBtn.addEventListener("click", () => {
-  emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
+  emojiPicker.style.display =
+    emojiPicker.style.display === "flex" ? "none" : "flex";
 });
 
-emojiPicker.querySelectorAll("span").forEach(span => {
+emojiPicker.querySelectorAll("span").forEach((span) => {
   span.addEventListener("click", () => {
     selectedEmoji = span.textContent;
     emojiPickerBtn.textContent = selectedEmoji;
@@ -41,7 +43,7 @@ emojiPicker.querySelectorAll("span").forEach(span => {
 const countries = {
   Sweden: ["Stockholm", "Gothenburg", "Malmö"],
   USA: ["New York", "Los Angeles", "Chicago"],
-  Japan: ["Tokyo", "Osaka", "Kyoto"]
+  Japan: ["Tokyo", "Osaka", "Kyoto"],
 };
 
 for (const country in countries) {
@@ -55,7 +57,7 @@ foodCountry.addEventListener("change", () => {
   const cities = countries[foodCountry.value] || [];
   foodCity.innerHTML = '<option value="">Select City</option>';
   foodCity.disabled = cities.length === 0;
-  cities.forEach(city => {
+  cities.forEach((city) => {
     const opt = document.createElement("option");
     opt.value = city;
     opt.textContent = city;
@@ -72,14 +74,22 @@ addFoodForm.addEventListener("submit", async (e) => {
 
   if (!title || !country || !city) return alert("Fill in all fields!");
 
+  const user = auth.currentUser;
+  if (!user) return alert("You must be logged in!");
+
   try {
-    await db.collection("foods").add({
-      title,
-      emoji: selectedEmoji || "🍽️",
-      country,
-      city,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    await db
+      .collection("foods")
+      .doc(user.uid)
+      .collection("items")
+      .add({
+        title,
+        emoji: selectedEmoji || "🍽️",
+        country,
+        city,
+        ownerId: user.uid,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
 
     // Reset form
     foodTitle.value = "";
@@ -98,9 +108,15 @@ addFoodForm.addEventListener("submit", async (e) => {
 
 // ===== Load food list =====
 async function loadFoodList() {
+  const user = auth.currentUser;
+  if (!user) return;
+
   foodListContainer.innerHTML = "";
 
-  const snapshot = await db.collection("foods")
+  const snapshot = await db
+    .collection("foods")
+    .doc(user.uid)
+    .collection("items")
     .orderBy("createdAt", "desc")
     .get();
 
@@ -112,7 +128,7 @@ async function loadFoodList() {
     return;
   }
 
-  snapshot.forEach(docSnap => {
+  snapshot.forEach((docSnap) => {
     const data = docSnap.data();
     const div = document.createElement("div");
     div.className = "food-item";
@@ -122,10 +138,34 @@ async function loadFoodList() {
         <strong>${data.title}</strong><br/>
         <small>${data.city}, ${data.country}</small>
       </div>
+      <button class="delete-btn" data-id="${docSnap.id}">Delete</button>
     `;
     foodListContainer.appendChild(div);
+  });
+
+  // Add delete event listeners
+  document.querySelectorAll(".delete-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const docId = btn.dataset.id;
+      if (!confirm("Are you sure you want to delete this food?")) return;
+
+      try {
+        await db
+          .collection("foods")
+          .doc(user.uid)
+          .collection("items")
+          .doc(docId)
+          .delete();
+        loadFoodList();
+      } catch (err) {
+        console.error(err);
+        alert("Error deleting food.");
+      }
+    });
   });
 }
 
 // ===== Initial load =====
-document.addEventListener("DOMContentLoaded", loadFoodList);
+auth.onAuthStateChanged((user) => {
+  if (user) loadFoodList();
+});
