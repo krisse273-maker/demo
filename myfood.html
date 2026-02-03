@@ -209,6 +209,7 @@
     <form id="addFoodForm">
       <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="50" required />
 
+      <!-- Emoji picker -->
       <button type="button" id="emojiPickerBtn">Select your food Emoji</button>
       <div id="emojiPicker">
         <span>🍔</span><span>🍟</span><span>🌭</span><span>🥪</span>
@@ -235,13 +236,16 @@
     </form>
   </div>
 
-  <!-- Länder och städer script -->
+  <!-- Länder, städer och emoji-picker script -->
   <script>
     let countriesData = [];
-
     const foodCountry = document.getElementById("foodCountry");
     const foodCity = document.getElementById("foodCity");
+    const emojiPickerBtn = document.getElementById("emojiPickerBtn");
+    const emojiPicker = document.getElementById("emojiPicker");
+    let selectedEmoji = "🍽️"; // default
 
+    // Ladda länder
     async function loadCountries() {
       try {
         const res = await fetch("https://countriesnow.space/api/v0.1/countries");
@@ -263,18 +267,28 @@
     foodCountry.addEventListener("change", () => {
       foodCity.innerHTML = '<option value="">Select City</option>';
       foodCity.disabled = true;
-
       const countryObj = countriesData.find(c => c.country === foodCountry.value);
       if (!countryObj) return;
-
       countryObj.cities.forEach(city => {
         const opt = document.createElement("option");
         opt.value = city;
         opt.textContent = city;
         foodCity.appendChild(opt);
       });
-
       foodCity.disabled = false;
+    });
+
+    // Emoji picker funktionalitet
+    emojiPickerBtn.addEventListener("click", () => {
+      emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
+    });
+
+    emojiPicker.querySelectorAll("span").forEach(span => {
+      span.addEventListener("click", () => {
+        selectedEmoji = span.textContent;
+        emojiPickerBtn.textContent = `Emoji: ${selectedEmoji}`;
+        emojiPicker.style.display = "none";
+      });
     });
 
     window.addEventListener("DOMContentLoaded", loadCountries);
