@@ -87,6 +87,7 @@ addFoodForm.addEventListener("submit", async (e) => {
         emoji: selectedEmoji || "🍽️",
         country,
         city,
+        type: "meal",              // <-- Viktigt: lägg till type för rules
         ownerId: user.uid,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
