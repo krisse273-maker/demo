@@ -77,22 +77,26 @@ addFoodForm.addEventListener("submit", async (e) => {
   const user = auth.currentUser;
   if (!user) return alert("You must be logged in!");
 
-  try {
-    await db
-      .collection("foods")
-      .doc(user.uid)
-      .collection("items")
-      .add({
-        title,
-        emoji: selectedEmoji || "🍽️",
-        country,
-        city,
-        type: "meal",              // <-- Viktigt: lägg till type för rules
-        ownerId: user.uid,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      });
+  // --- Prepare the food data ---
+  const newFoodData = {
+    title,
+    emoji: selectedEmoji || "🍽️",
+    country,
+    city,
+    type: "meal",
+    ownerId: user.uid,
+    userName: user.displayName || user.email,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  };
 
-    // Reset form
+  try {
+    // --- Add to private food list ---
+    await db.collection("foods").doc(user.uid).collection("items").add(newFoodData);
+
+    // --- Add to public food list for index ---
+    await db.collection("publicFoods").add(newFoodData);
+
+    // --- Reset form ---
     foodTitle.value = "";
     foodCountry.value = "";
     foodCity.innerHTML = '<option value="">Select City</option>';
@@ -100,6 +104,7 @@ addFoodForm.addEventListener("submit", async (e) => {
     emojiPickerBtn.textContent = "Select your food Emoji";
     selectedEmoji = "";
 
+    // --- Reload private list ---
     loadFoodList();
   } catch (err) {
     console.error(err);
@@ -151,6 +156,7 @@ async function loadFoodList() {
       if (!confirm("Are you sure you want to delete this food?")) return;
 
       try {
+        // --- Delete from private list only ---
         await db
           .collection("foods")
           .doc(user.uid)
