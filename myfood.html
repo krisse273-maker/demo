@@ -78,7 +78,6 @@
       justify-content: center;
     }
 
-    /* Scroll på listan men inte formuläret */
     .my-food-list {
       background-color: #262d37;
       border: 2px solid #1c222b;
@@ -91,7 +90,7 @@
       flex-direction: column;
       gap: 1rem;
       max-height: 75vh;
-      overflow-y: auto; /* Scroll för listan */
+      overflow-y: auto;
     }
 
     #addFoodForm {
@@ -105,8 +104,8 @@
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      max-height: none;      /* Tar bort max-höjd */
-      overflow: visible;     /* Tar bort scroll */
+      max-height: none;
+      overflow: visible;
     }
 
     .food-item {
@@ -190,6 +189,13 @@
       transform: scale(1.4);
     }
 
+    #emojiError {
+      color: #f44336;
+      font-size: 0.9rem;
+      margin: 0.25rem 0;
+      display: none;
+    }
+
     .no-food {
       color: #90a4ae;
       text-align: center;
@@ -226,6 +232,7 @@
         <span>🍺</span><span>🍷</span><span>🥤</span><span>🐟</span>
         <span>🦪</span><span>🦐</span><span>🦑</span>
       </div>
+      <p id="emojiError">Please choose an emoji!</p>
 
       <select id="foodCountry" required>
         <option value="">Select Country</option>
