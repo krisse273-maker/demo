@@ -19,21 +19,26 @@
         text-align: center;
         padding: 1rem;
         position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
       }
 
       header h1 {
         color: #4caf50;
+        margin: 0;
       }
 
       #welcomeMsg {
         color: #cfd8dc;
+        margin: 0;
       }
 
       #logoutBtn {
         position: absolute;
         right: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
+        top: 1rem;
         padding: 0.5rem 1rem;
         border-radius: 6px;
         border: none;
@@ -47,18 +52,23 @@
 
       #logoutBtn:hover { background-color: #e53935; }
 
-      /* Emoji som navigation */
-      #myFoodEmoji {
+      /* Emoji navigation - brevid Min Lista emoji */
+      .nav-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
         margin-top: 1rem;
+      }
+
+      #myListEmoji {
+        font-size: 1.5rem; /* mindre storlek */
         cursor: pointer;
-        font-size: 2.5rem;
-        display: inline-block;
         transition: transform 0.2s, color 0.2s;
       }
 
-      #myFoodEmoji:hover {
+      #myListEmoji:hover {
         transform: scale(1.2);
-        color: #fffacd; /* litet gult ljus för hover */
+        color: #fffacd;
       }
 
       /* FILTER-SEKTION */
@@ -205,15 +215,14 @@
       }
     </style>
   </head>
-
   <body>
     <header>
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
       <button id="logoutBtn">Log Out</button>
-      <!-- Emoji som navigationsknapp -->
-      <div style="margin-top: 1rem;">
-        <div id="myFoodEmoji" title="Min Matlista">📝</div>
+      <!-- Navigationsikonen -->
+      <div class="nav-container">
+        <div id="myListEmoji" title="Min Matlista">📋</div> <!-- Brevid "Min Lista" emoji -->
       </div>
     </header>
 
@@ -264,7 +273,7 @@
       const db = firebase.firestore();
 
       const logoutBtn = document.getElementById("logoutBtn");
-      const myFoodEmoji = document.getElementById("myFoodEmoji");
+      const myListEmoji = document.getElementById("myListEmoji");
       const countrySelect = document.getElementById("country");
       const citySelect = document.getElementById("city");
       const filterBtn = document.getElementById("filterBtn");
@@ -298,8 +307,8 @@
 
       logoutBtn.addEventListener("click",()=>auth.signOut().then(()=>window.location.href="login.html"));
       
-      // Navigera till myfood.html när man klickar på emojin
-      myFoodEmoji.addEventListener("click", () => {
+      // Navigera till myfood.html när man klickar på emoji
+      myListEmoji.addEventListener("click", () => {
         window.location.href = "myfood.html";
       });
 
@@ -344,46 +353,46 @@
       let dots = 0;
       foodTitle.textContent = "Shared Meals";
       const loadingInterval = setInterval(() => {
-        dots = (dots + 1) % 4; // 0,1,2,3
+        dots = (dots + 1) % 4;
         let dotStr = ".".repeat(dots);
         foodTitle.textContent = `Shared Meals${dotStr}`;
       }, 500);
 
-      function loadGlobalFood(){
-        db.collection("publicFoods").orderBy("createdAt","desc")
-          .onSnapshot(snap=>{
-            allFoods = snap.docs.map(d=>d.data());
+      function loadGlobalFood() {
+        db.collection("publicFoods").orderBy("createdAt", "desc")
+          .onSnapshot(snap => {
+            allFoods = snap.docs.map(d => d.data());
             renderFoodItems(allFoods);
-
-            // Stoppa animationen och sätt riktig titel
             clearInterval(loadingInterval);
             foodTitle.textContent = "Shared Meals";
           });
       }
 
-      function renderFoodItems(items){
-        foodList.innerHTML="";
-        if(!items.length){foodList.innerHTML="<p>No food found.</p>";return;}
-        
-        items.forEach(item=>{
-          const div=document.createElement("div");
-          div.className="food-item";
+      function renderFoodItems(items) {
+        foodList.innerHTML = "";
+        if (!items.length) {
+          foodList.innerHTML = "<p>No food found.</p>";
+          return;
+        }
+        items.forEach(item => {
+          const div = document.createElement("div");
+          div.className = "food-item";
 
           let dateStr = "";
-          if(item.createdAt){
+          if (item.createdAt) {
             const date = item.createdAt.toDate ? item.createdAt.toDate() : new Date(item.createdAt);
             const options = { day: '2-digit', month: 'short', year: 'numeric' };
             dateStr = date.toLocaleDateString('en-US', options);
           }
 
-          div.innerHTML=`
+          div.innerHTML = `
             <div class="food-header">
-              <span>${item.emoji||"🍽️"}</span>
-              <h3>${item.title||""}</h3>
+              <span>${item.emoji || "🍽️"}</span>
+              <h3>${item.title || ""}</h3>
             </div>
             <div class="food-details">
-              <p><span class="icon-small">📍</span><strong>Location:</strong> ${item.city||""}, ${item.country||""}</p>
-              <p><span class="icon-small">👤</span><strong>Published By:</strong> ${item.user||"Anonymous"}</p>
+              <p><span class="icon-small">📍</span><strong>Location:</strong> ${item.city || ""}, ${item.country || ""}</p>
+              <p><span class="icon-small">👤</span><strong>Published By:</strong> ${item.user || "Anonymous"}</p>
               <p><span class="icon-small">📅</span><strong>Posted On:</strong> <span class="date">${dateStr}</span></p>
             </div>
           `;
