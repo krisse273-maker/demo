@@ -92,15 +92,13 @@ window.addEventListener("DOMContentLoaded", async () => {
         allFoods = snapshot.docs.map(doc => {
           const data = doc.data();
 
-          // Visa korrekt posterName
-          let posterName = (data.ownerId === user.uid) ? loggedInUserName : (data.userName || "Anonymous");
-
+          // Visa alltid userName som sparades i databasen
           return {
             title: data.title || "",
             city: data.city || "",
             country: data.country || "",
             emoji: data.emoji || "🍽️",
-            user: posterName,
+            user: data.userName || "Anonymous",  // <-- ändrat här
             timestamp: data.publishedAt || null
           };
         });
