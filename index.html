@@ -12,6 +12,7 @@
         background-color: #4caf50;
         color: #cfd8dc;
         font-family: 'Poppins', sans-serif;
+        margin: 0;
       }
 
       header {
@@ -22,7 +23,6 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0.5rem;
       }
 
       header h1 {
@@ -32,41 +32,36 @@
 
       #welcomeMsg {
         color: #cfd8dc;
-        margin: 0;
+        margin: 0.5rem 0;
       }
 
-      /* Ta bort logga ut-knappen helt */
-
-      /* Navigationsikonen för "Min Lista" och "Logga ut" (emoji) */
-      .nav-icons {
+      /* Navigation bar under welcome message */
+      .navbar {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 2rem;
+        gap: 1rem;
         margin-top: 1rem;
+        justify-content: center;
       }
 
-      #myListEmoji {
-        font-size: 1.5rem; /* standardstorlek */
+      .nav-button {
+        background-color: #4caf50;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
         cursor: pointer;
-        transition: transform 0.2s, color 0.2s;
-      }
-      #myListEmoji:hover {
-        transform: scale(1.2);
-        color: #fffacd;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+        font-size: 1rem;
+        color: #fff;
       }
 
-      #logoutEmoji {
-        font-size: 2rem; /* lite större */
-        cursor: pointer;
-        transition: transform 0.2s, color 0.2s;
-      }
-      #logoutEmoji:hover {
-        transform: scale(1.2);
-        color: #fffacd;
+      .nav-button:hover {
+        background-color: #45a045;
+        transform: scale(1.05);
       }
 
-      /* FILTER-SEKTION */
+      /* Filter section style */
       section.filters {
         background-color: #262d37;
         border: 2px solid #1c222b;
@@ -111,6 +106,7 @@
 
       #filterBtn:hover { background-color: #45a045; }
 
+      /* Food list styles */
       .global-food-list {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -150,7 +146,6 @@
         flex-shrink: 0;
       }
 
-      /* MAT TITEL FÄRG */
       .food-header h3 {
         color: #ffffff;
         margin: 0;
@@ -165,6 +160,7 @@
         align-items: center;
         gap: 0.3rem;
         text-align: left;
+        width: 100%;
       }
 
       .food-details p {
@@ -194,7 +190,7 @@
         font-style: italic;
       }
 
-      /* SECTION TITEL */
+      /* Section title */
       .food-list h2 {
         text-align: center;
         color: #fff;
@@ -202,6 +198,7 @@
         margin-top: 1rem;
       }
 
+      /* Footer style */
       footer {
         color: #cfd8dc;
         text-align: center;
@@ -214,10 +211,11 @@
     <header>
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
-      <!-- Ta bort knapp, lägg till emojis i en flex container -->
-      <div class="nav-icons">
-        <div id="myListEmoji" title="Min Matlista">📋</div>
-        <div id="logoutEmoji" title="Logga ut">🔓</div>
+
+      <!-- Navigation bar under welcome text -->
+      <div class="navbar">
+        <button class="nav-button" id="foodListBtn">Food List</button>
+        <button class="nav-button" id="logoutBtn">Log Out</button>
       </div>
     </header>
 
@@ -268,17 +266,18 @@
       const db = firebase.firestore();
 
       const welcomeMsg = document.getElementById("welcomeMsg");
-      const myListEmoji = document.getElementById("myListEmoji");
-      const logoutEmoji = document.getElementById("logoutEmoji");
+      const foodListContainer = document.querySelector(".global-food-list");
       const countrySelect = document.getElementById("country");
       const citySelect = document.getElementById("city");
       const filterBtn = document.getElementById("filterBtn");
-      const foodList = document.querySelector(".global-food-list");
+
+      const foodListBtn = document.getElementById("foodListBtn");
+      const logoutBtn = document.getElementById("logoutBtn");
 
       let countriesData = [];
       let allFoods = [];
 
-      // FLAGGOR
+      // Flag data (not used here, but kept if needed)
       const countryFlags = {
         "Sweden": "🇸🇪",
         "United States": "🇺🇸",
@@ -293,26 +292,25 @@
         "India": "🇮🇳"
       };
 
-      auth.onAuthStateChanged(async user => {
-        if (!user) return window.location.href="login.html";
-        document.getElementById("welcomeMsg").textContent =
-          `Welcome, ${user.displayName || user.email}!`;
+      auth.onAuthStateChanged(async (user) => {
+        if (!user) return window.location.href = "login.html";
+        welcomeMsg.textContent = `Welcome, ${user.displayName || user.email}!`;
         await loadCountries();
         loadGlobalFood();
       });
 
-      // Logga ut via emoji
-      logoutEmoji.addEventListener("click", () => {
+      // Button to go to food list page
+      foodListBtn.addEventListener("click", () => {
+        window.location.href = "myfood.html";
+      });
+
+      // Log out button
+      logoutBtn.addEventListener("click", () => {
         auth.signOut().then(() => {
           window.location.href = "login.html";
         });
       });
 
-      // Gå till myfood.html via emoji
-      myListEmoji.addEventListener("click", () => {
-        window.location.href = "myfood.html";
-      });
-      
       async function loadCountries() {
         const res = await fetch("https://countriesnow.space/api/v0.1/countries");
         const data = await res.json();
@@ -349,7 +347,6 @@
         renderFoodItems(filtered);
       });
 
-      // --- LOADING TITEL ---
       const foodTitle = document.getElementById("foodTitle");
       let dots = 0;
       foodTitle.textContent = "Shared Meals";
@@ -370,9 +367,9 @@
       }
 
       function renderFoodItems(items) {
-        foodList.innerHTML = "";
+        foodListContainer.innerHTML = "";
         if (!items.length) {
-          foodList.innerHTML = "<p>No food found.</p>";
+          foodListContainer.innerHTML = "<p>No food found.</p>";
           return;
         }
         items.forEach(item => {
@@ -397,7 +394,7 @@
               <p><span class="icon-small">📅</span><strong>Posted On:</strong> <span class="date">${dateStr}</span></p>
             </div>
           `;
-          foodList.appendChild(div);
+          foodListContainer.appendChild(div);
         });
       }
     </script>
