@@ -51,32 +51,22 @@
       }
       #logoutBtn:hover { background-color: #e53935; }
 
-      /* ICONS */
-      .icon-container {
+      /* Icon button for My Food List */
+      .icon-btn {
         position: absolute;
+        right: 6rem; /* adjust distance from right edge */
         top: 50%;
-        right: 1rem;
         transform: translateY(-50%);
-        display: flex;
-        gap: 1rem;
-      }
-
-      .icon-link {
-        position: relative;
+        background: none;
+        border: none;
         font-size: 1.8rem;
         cursor: pointer;
-        transition: transform 0.2s;
-        color: white;
-      }
-
-      .icon-link:hover {
-        transform: scale(1.3);
+        color: #fff;
       }
 
       /* Tooltip */
-      .icon-link .tooltip-text {
+      .icon-btn .tooltip-text {
         visibility: hidden;
-        opacity: 0;
         width: max-content;
         background-color: #262d37;
         color: #cfd8dc;
@@ -87,13 +77,14 @@
         bottom: 120%; /* ovanför ikonen */
         left: 50%;
         transform: translateX(-50%);
-        white-space: nowrap;
+        opacity: 0;
         transition: opacity 0.2s;
-        font-size: 0.85rem;
+        white-space: nowrap;
         z-index: 10;
+        font-size: 0.85rem;
       }
 
-      .icon-link:hover .tooltip-text {
+      .icon-btn:hover .tooltip-text {
         visibility: visible;
         opacity: 1;
       }
@@ -116,7 +107,6 @@
       }
 
       section.filters h2 { color: #4caf50; }
-
       label { color: #cfd8dc; }
 
       select {
@@ -245,19 +235,14 @@
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
 
-      <div class="icon-container">
-        <!-- My Food List ikon -->
-        <span class="icon-link" id="myFoodIcon">
-          🍴📋
-          <span class="tooltip-text">My Food List</span>
-        </span>
+      <!-- Log Out button -->
+      <button id="logoutBtn">Log Out</button>
 
-        <!-- Log Out ikon -->
-        <span class="icon-link" id="logoutIcon">
-          🔒
-          <span class="tooltip-text">Log Out</span>
-        </span>
-      </div>
+      <!-- My Food Icon -->
+      <button class="icon-btn" id="myFoodBtn">
+        🍴📋
+        <span class="tooltip-text">My Food List</span>
+      </button>
     </header>
 
     <section class="filters">
@@ -287,16 +272,5 @@
     <footer>
       <p>&copy; 2026 Global Food Share</p>
     </footer>
-
-    <script>
-      // Event listeners för ikoner
-      document.getElementById("myFoodIcon").addEventListener("click", () => {
-        window.location.href = "myfood.html";
-      });
-
-      document.getElementById("logoutIcon").addEventListener("click", () => {
-        firebase.auth().signOut().then(() => window.location.href = "login.html");
-      });
-    </script>
   </body>
 </html>
