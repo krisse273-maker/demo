@@ -22,6 +22,7 @@ const foodCountry = document.getElementById("foodCountry");
 const foodCity = document.getElementById("foodCity");
 const addFoodForm = document.getElementById("addFoodForm");
 const foodListContainer = document.querySelector(".my-food-list");
+const publishCheckbox = document.getElementById("publishCheckbox"); // NY: checkbox för globalt
 
 let selectedEmoji = "";
 
@@ -72,6 +73,7 @@ addFoodForm.addEventListener("submit", async (e) => {
   const title = foodTitle.value.trim();
   const country = foodCountry.value;
   const city = foodCity.value;
+  const publishGlobal = publishCheckbox.checked; // NY
 
   if (!title || !country || !city) return alert("Fill in all fields!");
 
@@ -90,23 +92,26 @@ addFoodForm.addEventListener("submit", async (e) => {
   };
 
   try {
-    // Lägg till i privat lista (foods)
+    // --- Lägg till i privat lista ---
     await db
       .collection("foods")
       .doc(user.uid)
       .collection("items")
       .add(newFoodData);
 
-    // Ta bort inslaget som lägger till i den globala listan
-    // await db.collection("publicFoods").add(newFoodData);  // Ta bort denna rad
+    // --- Lägg till i global lista om checkbox är markerad ---
+    if (publishGlobal) {
+      await db.collection("publicFoods").add(newFoodData);
+    }
 
-    // Reset form
+    // --- Reset form ---
     foodTitle.value = "";
     foodCountry.value = "";
     foodCity.innerHTML = '<option value="">Select City</option>';
     foodCity.disabled = true;
     emojiPickerBtn.textContent = "Select your food Emoji";
     selectedEmoji = "";
+    publishCheckbox.checked = false;
 
     loadFoodList(); // Uppdatera privat lista
   } catch (err) {
@@ -124,7 +129,7 @@ async function loadFoodList() {
 
   const snapshot = await db
     .collection("foods")
-    .doc(user.uid)  // Hämtar bara från den aktuella användarens samling
+    .doc(user.uid)
     .collection("items")
     .orderBy("createdAt", "desc")
     .get();
