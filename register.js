@@ -170,7 +170,8 @@ document.addEventListener("DOMContentLoaded", () => {
         name: name,
         publicName: name.toLowerCase(),
         email: email,
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
+        isAdmin: false  // Sätt alltid detta till false i klientkoden
       });
 
       await setDoc(doc(db, "publicUsers", user.uid), {
@@ -196,3 +197,4 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "login.html";
   });
 });
+
