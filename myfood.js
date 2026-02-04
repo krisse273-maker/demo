@@ -85,34 +85,42 @@ foodCountry.addEventListener("change", () => {
 // Kör direkt vid sidladdning
 loadCountries();
 
-// ===== Kontrollera om användaren är muted/banned =====
-async function checkUserStatus() {
+// ===== Realtidslyssnare för mute/banned =====
+function listenToUserStatus() {
   const user = auth.currentUser;
   if (!user) return;
 
-  try {
-    const userDoc = await db.collection("users").doc(user.uid).get();
-    if (!userDoc.exists) return;
-    currentUserData = userDoc.data();
+  const userDocRef = db.collection("users").doc(user.uid);
+
+  userDocRef.onSnapshot((doc) => {
+    const data = doc.data();
+    if (!data) return;
 
     const now = new Date();
 
-    // Banned
-    if (currentUserData.banned) {
-      alert("You have been banned by an admin. You cannot post foods.");
-      addFoodForm.querySelectorAll("input, select, button").forEach(el => el.disabled = true);
+    // ===== BANNED =====
+    if (data.banned) {
+      alert("You have been banned by an admin. Logging out...");
+      auth.signOut().then(() => window.location.href = "../index.html");
+      return;
     }
 
-    // Muted
-    if (currentUserData.muteUntil) {
-      const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
+    // ===== MUTED =====
+    if (data.muteUntil) {
+      const muteDate = data.muteUntil.toDate ? data.muteUntil.toDate() : new Date(data.muteUntil);
       if (muteDate > now) {
         alert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
       }
     }
-  } catch (err) {
-    console.error("Error fetching user status:", err);
-  }
+
+    // Spara i currentUserData för formulärkontroller
+    currentUserData = data;
+
+    // Om användaren inte är muted längre kan vi låsa upp formuläret
+    if (!data.muteUntil || (data.muteUntil.toDate ? data.muteUntil.toDate() : new Date(data.muteUntil)) <= now) {
+      addFoodForm.querySelectorAll("input, select, button").forEach(el => el.disabled = false);
+    }
+  });
 }
 
 // ===== Add food to Firestore =====
@@ -144,7 +152,7 @@ addFoodForm.addEventListener("submit", async (e) => {
 
   if (!selectedEmoji) {
     emojiError.style.display = "block";
-    return; // stoppar formuläret
+    return;
   }
 
   if (!title || !country || !city) return alert("Fill in all fields!");
@@ -230,7 +238,6 @@ async function loadFoodList() {
       foodListContainer.appendChild(div);
     });
 
-    // Event-listener på röda X
     document.querySelectorAll(".delete-icon").forEach((icon) => {
       icon.addEventListener("click", async () => {
         const docId = icon.dataset.id;
@@ -303,7 +310,7 @@ async function loadPublicFoods() {
 // ===== Initial load =====
 auth.onAuthStateChanged((user) => {
   if (user) {
-    checkUserStatus(); // ✅ kolla mute/banned vid sidladdning
+    listenToUserStatus(); // ✅ Realtidslyssnare på mute/banned
     loadFoodList();
     loadPublicFoods();
   }
