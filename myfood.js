@@ -28,7 +28,7 @@ const publicFoodListContainer = document.querySelector(".public-food-list");
 let selectedEmoji = "";
 let countriesData = [];
 let currentUserData = null; // här sparar vi användardata inkl mute/banned
-let unsubscribeUserStatus = null; // för realtidslyssnaren
+let userDocUnsubscribe = null; // för realtidslyssnare
 
 // ===== Emoji picker =====
 emojiPickerBtn.addEventListener("click", () => {
@@ -86,24 +86,38 @@ foodCountry.addEventListener("change", () => {
 // Kör direkt vid sidladdning
 loadCountries();
 
-// ===== Realtidslyssnare för användarstatus =====
-function listenToUserStatus(userId) {
-  if (unsubscribeUserStatus) unsubscribeUserStatus(); // stäng tidigare listener
+// ===== Kontrollera användarstatus i realtid =====
+async function setupUserListener() {
+  const user = auth.currentUser;
+  if (!user) return;
 
-  unsubscribeUserStatus = db.collection("users").doc(userId)
-    .onSnapshot((doc) => {
-      if (!doc.exists) return;
-      currentUserData = doc.data();
+  if (userDocUnsubscribe) userDocUnsubscribe(); // stoppa tidigare lyssnare om det finns
+
+  userDocUnsubscribe = db.collection("users").doc(user.uid)
+    .onSnapshot(docSnap => {
+      if (!docSnap.exists) return;
+      currentUserData = docSnap.data();
 
       const now = new Date();
 
       // Banned
       if (currentUserData.banned === true) {
-        alert("You have been banned by an admin. Logging out...");
+        addFoodForm.querySelectorAll("input, select, button").forEach(el => el.disabled = true);
+
+        // Visa meddelande
+        const bannedMsg = document.createElement("div");
+        bannedMsg.style.background = "#ffcccc";
+        bannedMsg.style.padding = "10px";
+        bannedMsg.style.marginBottom = "10px";
+        bannedMsg.style.border = "1px solid red";
+        bannedMsg.textContent = "You have been banned by an admin. Logging out...";
+        document.body.prepend(bannedMsg);
+
+        // Logga ut efter kort timeout
         setTimeout(() => {
           auth.signOut().then(() => window.location.href = "../index.html");
-        }, 100);
-        addFoodForm.querySelectorAll("input, select, button").forEach(el => el.disabled = true);
+        }, 500);
+
         return;
       }
 
@@ -112,13 +126,7 @@ function listenToUserStatus(userId) {
         const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
         if (muteDate > now) {
           alert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
-          addFoodForm.querySelectorAll("input, select, button").forEach(el => el.disabled = true);
-        } else {
-          addFoodForm.querySelectorAll("input, select, button").forEach(el => el.disabled = false);
         }
-      } else {
-        // Om ingen mute
-        addFoodForm.querySelectorAll("input, select, button").forEach(el => el.disabled = false);
       }
     });
 }
@@ -130,8 +138,9 @@ addFoodForm.addEventListener("submit", async (e) => {
   const user = auth.currentUser;
   if (!user) return alert("You must be logged in!");
 
+  // Kolla mute/banned innan posten
   const now = new Date();
-  if (currentUserData?.banned === true) {
+  if (currentUserData?.banned) {
     alert("You are banned and cannot post foods.");
     return;
   }
@@ -151,7 +160,7 @@ addFoodForm.addEventListener("submit", async (e) => {
 
   if (!selectedEmoji) {
     emojiError.style.display = "block";
-    return;
+    return; // stoppar formuläret
   }
 
   if (!title || !country || !city) return alert("Fill in all fields!");
@@ -169,7 +178,14 @@ addFoodForm.addEventListener("submit", async (e) => {
   };
 
   try {
-    await db.collection("foods").doc(user.uid).collection("items").add(newFoodData);
+    // 1️⃣ Lägg till i användarens privata collection
+    await db
+      .collection("foods")
+      .doc(user.uid)
+      .collection("items")
+      .add(newFoodData);
+
+    // 2️⃣ Lägg till i global publicFoods collection
     await db.collection("publicFoods").add({
       ...newFoodData,
       publishedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -230,13 +246,19 @@ async function loadFoodList() {
       foodListContainer.appendChild(div);
     });
 
+    // Event-listener på röda X
     document.querySelectorAll(".delete-icon").forEach((icon) => {
       icon.addEventListener("click", async () => {
         const docId = icon.dataset.id;
         if (!confirm("Are you sure you want to delete this food?")) return;
 
         try {
-          await db.collection("foods").doc(user.uid).collection("items").doc(docId).delete();
+          await db
+            .collection("foods")
+            .doc(user.uid)
+            .collection("items")
+            .doc(docId)
+            .delete();
           loadFoodList();
         } catch (err) {
           console.error(err);
@@ -273,7 +295,9 @@ async function loadPublicFoods() {
       const data = doc.data();
       const publishedDate = data.publishedAt?.toDate();
       const options = { day: "2-digit", month: "short" };
-      const formattedDate = publishedDate ? publishedDate.toLocaleDateString("en-US", options) : "";
+      const formattedDate = publishedDate
+        ? publishedDate.toLocaleDateString("en-US", options)
+        : "";
 
       const div = document.createElement("div");
       div.className = "public-food-item";
@@ -295,7 +319,7 @@ async function loadPublicFoods() {
 // ===== Initial load =====
 auth.onAuthStateChanged((user) => {
   if (user) {
-    listenToUserStatus(user.uid); // ✅ Realtidslyssnare för mute/banned
+    setupUserListener(); // ✅ realtime listener för mute/banned
     loadFoodList();
     loadPublicFoods();
   }
