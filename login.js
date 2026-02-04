@@ -53,6 +53,16 @@ loginBtn.addEventListener("click", async () => {
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
 
+    if (userSnap.exists()) {
+  const currentUserData = userSnap.data();
+  if (currentUserData.banned === true) {
+    alert("You are banned from this service.");
+    await auth.signOut();
+    window.location.href = "login.html"; // eller din login-sida
+    return; // Avsluta funktionen här
+  }
+}
+
     if (!userSnap.exists()) {
       await setDoc(userRef, {
         email: user.email,
@@ -81,3 +91,4 @@ if (goRegisterBtn) {
     window.location.href = "register.html";
   });
 }
+
