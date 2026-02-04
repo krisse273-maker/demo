@@ -186,3 +186,12 @@ footer {
     opacity: 1;
   }
 }
+
+.food-header span {
+  font-size: 2.5rem; /* gör emojis större */
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+
