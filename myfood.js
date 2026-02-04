@@ -116,7 +116,7 @@ async function setupUserListener() {
   if (userDocUnsubscribe) userDocUnsubscribe(); // stoppa tidigare lyssnare om det finns
 
   userDocUnsubscribe = db.collection("users").doc(user.uid)
-    .onSnapshot(async (docSnap) => {
+    .onSnapshot(docSnap => {
       if (!docSnap.exists) return;
       currentUserData = docSnap.data();
 
@@ -136,9 +136,8 @@ async function setupUserListener() {
         document.body.prepend(bannedMsg);
 
         // Logga ut efter kort timeout
-        setTimeout(async () => {
-          await auth.signOut();
-          window.location.href = "../login.html";
+        setTimeout(() => {
+          auth.signOut().then(() => window.location.href = "../index.html");
         }, 500);
 
         return;
@@ -148,25 +147,8 @@ async function setupUserListener() {
       if (currentUserData.muteUntil) {
         const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
         if (muteDate > now) {
-          const existingAlert = document.getElementById("muteAlert");
-          if (!existingAlert) {
-            const alertDiv = document.createElement("div");
-            alertDiv.id = "muteAlert";
-            alertDiv.style.background = "#fff3cd";
-            alertDiv.style.color = "#856404";
-            alertDiv.style.padding = "10px";
-            alertDiv.style.marginBottom = "10px";
-            alertDiv.style.border = "1px solid #ffeeba";
-            alertDiv.textContent = `You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`;
-            document.body.prepend(alertDiv);
-          }
-        } else {
-          const existingAlert = document.getElementById("muteAlert");
-          if (existingAlert) existingAlert.remove();
+          alert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
         }
-      } else {
-        const existingAlert = document.getElementById("muteAlert");
-        if (existingAlert) existingAlert.remove();
       }
     });
 }
@@ -214,7 +196,7 @@ addFoodForm.addEventListener("submit", async (e) => {
     type: "meal",
     ownerId: user.uid,
     userName: user.displayName || user.email,
-    createdAt: new Date(),
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   };
 
   try {
@@ -357,42 +339,10 @@ async function loadPublicFoods() {
 }
 
 // ===== Initial load =====
-auth.onAuthStateChanged(async (user) => {
-  if (!user) return window.location.href = "../login.html";
-
-  // Hämta användardata direkt vid sidladdning
-  const userDoc = await db.collection("users").doc(user.uid).get();
-  if (userDoc.exists) {
-    currentUserData = userDoc.data();
-
-    if (currentUserData.banned) {
-      alert("You have been banned by an admin. Logging out...");
-      await auth.signOut();
-      window.location.href = "../login.html";
-      return;
-    }
-
-    // Mute alert direkt vid sidladdning
-    if (currentUserData.muteUntil) {
-      const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
-      const now = new Date();
-      if (muteDate > now) {
-        const alertDiv = document.createElement("div");
-        alertDiv.id = "muteAlert";
-        alertDiv.style.background = "#fff3cd";
-        alertDiv.style.color = "#856404";
-        alertDiv.style.padding = "10px";
-        alertDiv.style.marginBottom = "10px";
-        alertDiv.style.border = "1px solid #ffeeba";
-        alertDiv.textContent = `You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`;
-        document.body.prepend(alertDiv);
-      }
-    }
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    setupUserListener(); // ✅ realtime listener för mute/banned
+    loadFoodList();
+    loadPublicFoods();
   }
-
-  // Setup realtime listener
-  setupUserListener();
-  loadFoodList();
-  loadPublicFoods();
 });
-
