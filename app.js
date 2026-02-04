@@ -25,6 +25,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const logoutBtn = document.getElementById("logoutBtn");
   const welcomeMsg = document.getElementById("welcomeMsg");
   const foodTitle = document.getElementById("foodTitle");
+  const adminPanel = document.getElementById("adminPanel"); // referens till adminpanelen
 
   let countriesData = [];
   let allFoods = [];
@@ -112,6 +113,15 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     const loggedInUserName = user.displayName || user.email;
     if (welcomeMsg) welcomeMsg.textContent = `Welcome, ${loggedInUserName}!`;
+
+    // --- FIX: kolla om användaren är admin via UID ---
+    const userDoc = await db.collection("users").doc(user.uid).get();
+    if (userDoc.exists) {
+      const userData = userDoc.data();
+      if (userData.admin === true && adminPanel) {
+        adminPanel.style.display = "block"; // visa adminpanelen
+      }
+    }
 
     await loadCountries();
     loadGlobalFood(user);
