@@ -82,6 +82,15 @@ window.addEventListener("DOMContentLoaded", async () => {
       const div = document.createElement("div");
       div.className = "user-item";
       div.textContent = `${user.name} (${user.email})`;
+      
+      // Lägg till status om muted/banned
+      if (user.banned) div.textContent += " ⚠️ Banned";
+      else if (user.muteUntil) {
+        const now = new Date();
+        const muteDate = user.muteUntil.toDate ? user.muteUntil.toDate() : new Date(user.muteUntil);
+        if (muteDate > now) div.textContent += ` 🔇 Muted until ${muteDate.toLocaleString()}`;
+      }
+
       div.addEventListener("click", () => openPopup(user));
       fragment.appendChild(div);
     });
@@ -134,13 +143,18 @@ window.addEventListener("DOMContentLoaded", async () => {
     btn.addEventListener("click", async () => {
       if (!selectedUser) return;
       const hours = parseInt(btn.dataset.hours);
-      const now = new Date();
-      const muteUntil = new Date(now.getTime() + hours * 60 * 60 * 1000); // X timmar framåt
+      const muteUntil = firebase.firestore.Timestamp.fromDate(new Date(Date.now() + hours * 60 * 60 * 1000));
 
       try {
-        await db.collection("users").doc(selectedUser.id).update({ muteUntil });
+        // Lägg till muteUntil + notis
+        await db.collection("users").doc(selectedUser.id).update({
+          muteUntil,
+          lastMuteMessage: `You have been muted for ${hours} hour(s) by an admin.`
+        });
+
         alert(`${selectedUser.name} is muted for ${hours} hour(s).`);
         popup.style.display = "none";
+        loadUsers();
       } catch (err) {
         console.error("Error muting user:", err);
         alert("Failed to mute user.");
