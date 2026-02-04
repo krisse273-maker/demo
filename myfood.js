@@ -14,6 +14,21 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
+// ===== Custom Mute Alert =====
+function showCustomMuteAlert(message) {
+  const backdrop = document.getElementById("customAlertBackdrop");
+  const msg = document.getElementById("alertMessage");
+  const okBtn = document.getElementById("alertOkBtn");
+
+  msg.textContent = message;
+  backdrop.classList.remove("hidden");
+
+  okBtn.onclick = () => {
+    backdrop.classList.add("hidden");
+  };
+}
+
+
 // ===== DOM elements =====
 const emojiPickerBtn = document.getElementById("emojiPickerBtn");
 const emojiPicker = document.getElementById("emojiPicker");
@@ -145,11 +160,12 @@ async function setupUserListener() {
 
       // Muted
       if (currentUserData.muteUntil) {
-        const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
-        if (muteDate > now) {
-          alert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
-        }
-      }
+  const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
+  if (muteDate > now) {
+    showCustomMuteAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
+  }
+}
+
     });
 }
 
@@ -167,12 +183,13 @@ addFoodForm.addEventListener("submit", async (e) => {
     return;
   }
   if (currentUserData?.muteUntil) {
-    const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
-    if (muteDate > now) {
-      alert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
-      return;
-    }
+  const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
+  if (muteDate > now) {
+    showCustomMuteAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
+    return; // Stoppar formuläret
   }
+}
+
 
   const title = foodTitle.value.trim();
   const country = foodCountry.value;
@@ -346,3 +363,4 @@ auth.onAuthStateChanged((user) => {
     loadPublicFoods();
   }
 });
+
