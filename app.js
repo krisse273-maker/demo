@@ -8,7 +8,7 @@ const firebaseConfig = {
   appId: "1:902107453892:web:dd9625974cc94ac91"
 };
 
-// Init Firebase
+// Initiera Firebase om det inte redan är gjort
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -25,45 +25,49 @@ window.addEventListener("DOMContentLoaded", async () => {
   const logoutBtn = document.getElementById("logoutBtn");
   const welcomeMsg = document.getElementById("welcomeMsg");
   const foodTitle = document.getElementById("foodTitle");
-  const adminPanel = document.getElementById("adminPanel");
 
   let countriesData = [];
   let allFoods = [];
 
+  // Länder-flaggor (kan lägga till fler)
   const countryFlags = {
-    Sweden: "🇸🇪",
+    "Sweden": "🇸🇪",
     "United States": "🇺🇸",
     "United Kingdom": "🇬🇧",
-    Germany: "🇩🇪",
-    France: "🇫🇷",
-    Italy: "🇮🇹",
-    Spain: "🇪🇸",
-    Mexico: "🇲🇽",
-    Japan: "🇯🇵",
-    China: "🇨🇳",
-    India: "🇮🇳"
+    "Germany": "🇩🇪",
+    "France": "🇫🇷",
+    "Italy": "🇮🇹",
+    "Spain": "🇪🇸",
+    "Mexico": "🇲🇽",
+    "Japan": "🇯🇵",
+    "China": "🇨🇳",
+    "India": "🇮🇳"
   };
 
-  logoutBtn.addEventListener("click", () =>
-    auth.signOut().then(() => (window.location.href = "login.html"))
-  );
+  // --- Logga ut / navigera ---
+  logoutBtn.addEventListener("click", () => auth.signOut().then(() => window.location.href = "login.html"));
+  myFoodBtn.addEventListener("click", () => window.location.href = "myfood.html");
 
-  myFoodBtn.addEventListener("click", () => {
-    window.location.href = "myfood.html";
-  });
-
+  // --- Ladda länder ---
   async function loadCountries() {
-    const res = await fetch("https://countriesnow.space/api/v0.1/countries");
-    const data = await res.json();
-    countriesData = data.data;
+    try {
+      const res = await fetch("https://countriesnow.space/api/v0.1/countries");
+      const data = await res.json();
+      countriesData = data.data;
 
-    countrySelect.innerHTML = '<option value="">Select country</option>';
-    countriesData.forEach(c => {
-      const opt = document.createElement("option");
-      opt.value = c.country;
-      opt.textContent = `${countryFlags[c.country] || ""} ${c.country}`;
-      countrySelect.appendChild(opt);
-    });
+      countrySelect.innerHTML = '<option value="">Select country</option>';
+      countriesData.forEach(c => {
+        const opt = document.createElement("option");
+        const flag = countryFlags[c.country] || "";
+        opt.value = c.country;
+        opt.textContent = `${flag} ${c.country}`;
+        countrySelect.appendChild(opt);
+      });
+      countrySelect.disabled = false;
+    } catch (err) {
+      console.error("Could not fetch countries:", err);
+      alert("Failed to load countries. Try refreshing.");
+    }
   }
 
   countrySelect.addEventListener("change", () => {
@@ -82,6 +86,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     citySelect.disabled = false;
   });
 
+  // --- Filter ---
   filterBtn.addEventListener("click", () => {
     const country = countrySelect.value;
     const city = citySelect.value;
@@ -93,39 +98,52 @@ window.addEventListener("DOMContentLoaded", async () => {
     renderFoodItems(filtered);
   });
 
+  // --- Loading animation ---
+  let dots = 0;
+  foodTitle.textContent = "Shared Meals";
+  const loadingInterval = setInterval(() => {
+    dots = (dots + 1) % 4;
+    foodTitle.textContent = `Shared Meals${".".repeat(dots)}`;
+  }, 500);
+
+  // --- Vänta på inloggad användare ---
   auth.onAuthStateChanged(async user => {
-    if (!user) return (window.location.href = "login.html");
+    if (!user) return window.location.href = "login.html";
 
-    welcomeMsg.textContent = `Welcome, ${user.displayName || user.email}!`;
-
-    const userDoc = await db.collection("users").doc(user.uid).get();
-    if (userDoc.exists && userDoc.data().admin === true) {
-      adminPanel.style.display = "block";
-    }
+    const loggedInUserName = user.displayName || user.email;
+    if (welcomeMsg) welcomeMsg.textContent = `Welcome, ${loggedInUserName}!`;
 
     await loadCountries();
     loadGlobalFood(user);
   });
 
+  // --- Hämta global publicFoods ---
   function loadGlobalFood(user) {
-    db.collection("publicFoods")
-      .orderBy("createdAt", "desc")
+    db.collection("publicFoods").orderBy("createdAt", "desc")
       .onSnapshot(snapshot => {
         allFoods = snapshot.docs.map(doc => {
-          const d = doc.data();
+          const data = doc.data();
           return {
-            title: d.title,
-            city: d.city,
-            country: d.country,
-            emoji: d.emoji || "🍽️",
-            user: d.userName,
-            timestamp: d.createdAt
+            title: data.title || "",
+            city: data.city || "",
+            country: data.country || "",
+            emoji: data.emoji || "🍽️",
+            user: data.ownerId === user.uid ? (user.displayName || user.email) : (data.userName || "Anonymous"),
+            timestamp: data.createdAt || null
           };
         });
+
         renderFoodItems(allFoods);
+        clearInterval(loadingInterval);
+        foodTitle.textContent = "Shared Meals";
+      }, err => {
+        console.error("Error fetching public foods:", err);
+        foodList.innerHTML = "<p>Failed to load public foods.</p>";
+        clearInterval(loadingInterval);
       });
   }
 
+  // --- Renderfunktion ---
   function renderFoodItems(items) {
     foodList.innerHTML = "";
     if (!items.length) {
@@ -133,53 +151,32 @@ window.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
     items.forEach(item => {
+      let dateStr = "";
+      if (item.timestamp && item.timestamp.toDate) {
+        const date = item.timestamp.toDate();
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = monthNames[date.getMonth()];
+        dateStr = `${day} ${month}`;
+      }
+
       const div = document.createElement("div");
       div.className = "food-item";
       div.innerHTML = `
-        <span>${item.emoji}</span>
-        <h3>${item.title}</h3>
-        <p>${item.city}, ${item.country}</p>
-        <small>By ${item.user}</small>
+        <div class="food-header">
+          <span>${item.emoji}</span>
+          <h3>${item.title}</h3>
+        </div>
+        <div class="food-details">
+          <p><span class="icon-small">📍</span><strong>Location:</strong> ${item.city}, ${item.country}</p>
+          <p><span class="icon-small">👤</span><strong>Published By:</strong> ${item.user}</p>
+          ${dateStr ? `<p><span class="icon-small">📅</span><strong>Posted On:</strong> ${dateStr}</p>` : ""}
+        </div>
       `;
       foodList.appendChild(div);
     });
   }
-});
-
-// ===== MUTE ALERT (ENDA LISTENERN) =====
-let muteAlertShown = false;
-
-auth.onAuthStateChanged(user => {
-  if (!user) return;
-
-  db.collection("users")
-    .doc(user.uid)
-    .onSnapshot(docSnap => {
-      if (!docSnap.exists) return;
-
-      const data = docSnap.data();
-      if (!data.muteUntil) return;
-
-      const muteDate = data.muteUntil.toDate
-        ? data.muteUntil.toDate()
-        : new Date(data.muteUntil);
-
-      if (muteDate > new Date() && !muteAlertShown) {
-        muteAlertShown = true;
-
-        const backdrop = document.getElementById("customAlertBackdrop");
-        const msg = document.getElementById("alertMessage");
-        const okBtn = document.getElementById("alertOkBtn");
-
-        if (!backdrop || !msg || !okBtn) return;
-
-        msg.textContent = `You are muted until ${muteDate.toLocaleString()}`;
-        backdrop.classList.remove("hidden");
-
-        okBtn.onclick = () => {
-          backdrop.classList.add("hidden");
-        };
-      }
-    });
 });
