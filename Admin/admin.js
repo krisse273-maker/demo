@@ -22,24 +22,46 @@ window.addEventListener("DOMContentLoaded", async () => {
   const welcomeMsg = document.getElementById("welcomeMsg");
 
   // Logga ut
-  logoutBtn.addEventListener("click", () => auth.signOut().then(() => window.location.href = "../index.html"));
+  logoutBtn.addEventListener("click", () => {
+    auth.signOut()
+      .then(() => window.location.href = "../index.html")
+      .catch(err => console.error("Logout error:", err));
+  });
 
   auth.onAuthStateChanged(async user => {
     if (!user) return window.location.href = "../login.html";
 
-    // Kolla att användaren är admin
-    const userDoc = await db.collection("users").doc(user.uid).get();
-    if (!userDoc.exists || !userDoc.data().admin) {
-      alert("Access denied! Only admins can access this page.");
-      return window.location.href = "../index.html";
+    let userDoc;
+    try {
+      userDoc = await db.collection("users").doc(user.uid).get();
+      if (!userDoc.exists || !userDoc.data()?.admin) {
+        alert("Access denied! Only admins can access this page.");
+        return window.location.href = "../index.html";
+      }
+    } catch (err) {
+      console.error("Error fetching user data:", err);
+      alert("Failed to verify admin. Try logging in again.");
+      return window.location.href = "../login.html";
     }
 
     welcomeMsg.textContent = `Welcome, ${userDoc.data().name}!`;
 
-    // Ladda alla publicFoods
+    // Ladda alla publicFoods med loader
+    const loader = document.createElement("p");
+    loader.textContent = "Loading meals...";
+    foodList.innerHTML = "";
+    foodList.appendChild(loader);
+
     db.collection("publicFoods").orderBy("createdAt", "desc")
       .onSnapshot(snapshot => {
         foodList.innerHTML = "";
+        if (snapshot.empty) {
+          foodList.textContent = "No meals shared yet.";
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+
         snapshot.docs.forEach(doc => {
           const data = doc.data();
           const div = document.createElement("div");
@@ -55,21 +77,27 @@ window.addEventListener("DOMContentLoaded", async () => {
             </div>
             <button class="delete-btn">Delete</button>
           `;
+
+          // Delete-knapp
           const deleteBtn = div.querySelector(".delete-btn");
           deleteBtn.addEventListener("click", async () => {
-            if (confirm(`Are you sure you want to delete "${data.title}"?`)) {
-              try {
-                await db.collection("publicFoods").doc(doc.id).delete();
-                alert("Deleted!");
-              } catch (err) {
-                console.error("Error deleting food:", err);
-                alert("Failed to delete!");
-              }
+            if (!confirm(`Are you sure you want to delete "${data.title}"?`)) return;
+            try {
+              await db.collection("publicFoods").doc(doc.id).delete();
+              alert(`"${data.title}" deleted!`);
+            } catch (err) {
+              console.error("Error deleting food:", err);
+              alert("Failed to delete this meal.");
             }
           });
 
-          foodList.appendChild(div);
+          fragment.appendChild(div);
         });
+
+        foodList.appendChild(fragment);
+      }, err => {
+        console.error("Error fetching publicFoods:", err);
+        foodList.textContent = "Failed to load meals.";
       });
   });
 });
