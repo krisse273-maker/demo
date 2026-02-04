@@ -145,7 +145,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       div.className = "food-item";
       div.innerHTML = `
         <div class="food-header">
-          <span class="title-emoji">${item.emoji}</span> <!-- Större emoji -->
+          <span class="title-emoji">${item.emoji}</span> <!-- Emoji med egen klass -->
           <h3>${item.title}</h3>
         </div>
         <div class="food-details">
@@ -181,4 +181,3 @@ window.addEventListener("DOMContentLoaded", async () => {
     };
   }
 });
-
