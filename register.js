@@ -170,8 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
         name: name,
         publicName: name.toLowerCase(),
         email: email,
-        createdAt: serverTimestamp(),
-        admin: false,
+        createdAt: serverTimestamp()
       });
 
       await setDoc(doc(db, "publicUsers", user.uid), {
