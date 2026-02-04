@@ -46,10 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===== Toggle password visibility (👁️ / 🙈) =====
   togglePasswordBtn.addEventListener("click", () => {
     const isVisible = passwordInput.type === "text";
-
     passwordInput.type = isVisible ? "password" : "text";
     confirmPasswordInput.type = isVisible ? "password" : "text";
-
     togglePasswordBtn.textContent = isVisible ? "👁️" : "🙈";
   });
 
@@ -73,10 +71,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const showPasswordError = (type) => {
     passwordLengthError.style.display = "none";
     uppercaseNumberError.style.display = "none";
-
     if (type === "length") passwordLengthError.style.display = "block";
     if (type === "uppercaseNumber") uppercaseNumberError.style.display = "block";
-
     passwordInput.style.borderColor = "red";
     confirmPasswordInput.style.borderColor = "red";
   };
@@ -166,13 +162,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
       await updateProfile(user, { displayName: name });
 
+      // ✅ Users document with required fields for Firestore rules
       await setDoc(doc(db, "users", user.uid), {
         name: name,
         publicName: name.toLowerCase(),
         email: email,
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
+        admin: false,      // needed for rules
+        banned: false,     // needed for rules
+        muteUntil: null    // needed for rules
       });
 
+      // Public users
       await setDoc(doc(db, "publicUsers", user.uid), {
         name: name,
         gender: gender
