@@ -214,7 +214,7 @@ addFoodForm.addEventListener("submit", async (e) => {
     type: "meal",
     ownerId: user.uid,
     userName: user.displayName || user.email,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    createdAt: new Date(),
   };
 
   try {
@@ -395,3 +395,4 @@ auth.onAuthStateChanged(async (user) => {
   loadFoodList();
   loadPublicFoods();
 });
+
