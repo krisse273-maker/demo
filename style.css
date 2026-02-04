@@ -187,8 +187,10 @@ footer {
   }
 }
 
-.food-header .title-emoji {
-  font-size: 2rem; /* eller 2.2rem om du vill ha lite större */
+.title-emoji {
+  font-size: 2rem;  /* justera storlek här om du vill större/mindre */
   display: inline-block;
-  margin-right: 0.5rem; /* lite spacing till titeln */
+  vertical-align: middle;
+  margin-right: 0.5rem;
 }
+
