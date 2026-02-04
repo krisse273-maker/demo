@@ -8,12 +8,29 @@ const firebaseConfig = {
   appId: "1:902107453892:web:dd9625974cc94ac91"
 };
 
+//Init Firebase
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
 const db = firebase.firestore();
 const auth = firebase.auth();
+
+// ===== Kolla om användaren är bannad =====
+auth.onAuthStateChanged((user) => {
+  if (!user) return; // Om ingen är inloggad, gör inget
+
+  db.collection("users").doc(user.uid).onSnapshot((docSnap) => {
+    if (!docSnap.exists) return;
+    const data = docSnap.data();
+
+    if (data.banned === true) {
+      // Skicka direkt till login.html
+      auth.signOut().then(() => window.location.href = "login.html");
+    }
+  });
+});
+
 
 window.addEventListener("DOMContentLoaded", async () => {
   const countrySelect = document.getElementById("country");
@@ -181,3 +198,4 @@ window.addEventListener("DOMContentLoaded", async () => {
     };
   }
 });
+
