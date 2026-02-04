@@ -167,18 +167,16 @@ document.addEventListener("DOMContentLoaded", () => {
       await updateProfile(user, { displayName: name });
 
       await setDoc(doc(db, "users", user.uid), {
-  name: name,
-  publicName: name.toLowerCase(),
-  email: email,
-  createdAt: serverTimestamp(),
-  admin: false  // nu fungerar det utan fel
-});
+        name: name,
+        publicName: name.toLowerCase(),
+        email: email,
+        createdAt: serverTimestamp()
+      });
 
-await setDoc(doc(db, "publicUsers", user.uid), {
-  name: name,
-  gender: gender
-});
-
+      await setDoc(doc(db, "publicUsers", user.uid), {
+        name: name,
+        gender: gender
+      });
 
       window.location.href = "index.html";
     } catch (error) {
@@ -198,4 +196,3 @@ await setDoc(doc(db, "publicUsers", user.uid), {
     window.location.href = "login.html";
   });
 });
-
