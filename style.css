@@ -194,3 +194,44 @@ footer {
   margin-right: 0.5rem;
 }
 
+/* Lägg till detta i din style.css eller <style> i <head> */
+.alert-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.hidden {
+  display: none;
+}
+.alert-box {
+  background-color: #262d37; /* matchar din bakgrund */
+  color: #cfd8dc; /* textfärg */
+  padding: 2rem;
+  border-radius: 12px;
+  border: 2px solid #1c222b;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+}
+#alertOkBtn {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #4caf50;
+  color: #fff;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+}
+#alertOkBtn:hover {
+  background-color: #388e3c;
+}
