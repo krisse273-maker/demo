@@ -25,10 +25,28 @@ const addFoodForm = document.getElementById("addFoodForm");
 const foodListContainer = document.querySelector(".my-food-list");
 const publicFoodListContainer = document.querySelector(".public-food-list");
 
+const logoutBtn = document.getElementById("logoutBtn"); // ✅ logout
+const homeBtn = document.getElementById("homeBtn");     // ✅ home
+
 let selectedEmoji = "";
 let countriesData = [];
 let currentUserData = null; // här sparar vi användardata inkl mute/banned
 let userDocUnsubscribe = null; // för realtidslyssnare
+
+// ===== Home & Logout knappar =====
+logoutBtn.addEventListener("click", async () => {
+  try {
+    await auth.signOut();
+    window.location.href = "../login.html"; // redirect till login
+  } catch (err) {
+    console.error("Logout failed:", err);
+    alert("Failed to log out.");
+  }
+});
+
+homeBtn.addEventListener("click", () => {
+  window.location.href = "../index.html"; // redirect till home
+});
 
 // ===== Emoji picker =====
 emojiPickerBtn.addEventListener("click", () => {
