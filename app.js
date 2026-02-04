@@ -25,7 +25,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const logoutBtn = document.getElementById("logoutBtn");
   const welcomeMsg = document.getElementById("welcomeMsg");
   const foodTitle = document.getElementById("foodTitle");
-  const adminPanel = document.getElementById("adminPanel"); // Nytt: referens till adminpanelen
+  const adminPanel = document.getElementById("adminPanel"); // referens till adminpanelen
 
   let countriesData = [];
   let allFoods = [];
@@ -114,12 +114,12 @@ window.addEventListener("DOMContentLoaded", async () => {
     const loggedInUserName = user.displayName || user.email;
     if (welcomeMsg) welcomeMsg.textContent = `Welcome, ${loggedInUserName}!`;
 
-    // --- NYT: kolla om användaren är admin ---
-    const userDoc = await db.collection("users").doc(user.uid).get();
-    if (userDoc.exists) {
-      const userData = userDoc.data();
+    // --- FIX: kolla om användaren är admin baserat på email ---
+    const userSnapshot = await db.collection("users").where("email", "==", user.email).get();
+    if (!userSnapshot.empty) {
+      const userData = userSnapshot.docs[0].data();
       if (userData.admin === true && adminPanel) {
-        adminPanel.style.display = "block";
+        adminPanel.style.display = "block"; // visa adminpanelen
       }
     }
 
