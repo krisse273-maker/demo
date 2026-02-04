@@ -56,10 +56,11 @@ loginBtn.addEventListener("click", async () => {
     if (userSnap.exists()) {
   const currentUserData = userSnap.data();
   if (currentUserData.banned === true) {
-    alert("You are banned from this service.");
+    // Sätt sessionStorage-flaggan och skicka användaren till login-sidan
+    sessionStorage.setItem('banned', 'true');
     await auth.signOut();
     window.location.href = "login.html"; // eller din login-sida
-    return; // Avsluta funktionen här
+    return;
   }
 }
 
@@ -91,4 +92,5 @@ if (goRegisterBtn) {
     window.location.href = "register.html";
   });
 }
+
 
