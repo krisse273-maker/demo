@@ -25,7 +25,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   const logoutBtn = document.getElementById("logoutBtn");
   const welcomeMsg = document.getElementById("welcomeMsg");
   const foodTitle = document.getElementById("foodTitle");
-  const adminPanelBtn = document.getElementById("adminPanelBtn"); // Ny admin-knapp i UI
 
   let countriesData = [];
   let allFoods = [];
@@ -47,7 +46,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // --- Logga ut / navigera ---
   logoutBtn.addEventListener("click", () => auth.signOut().then(() => window.location.href = "login.html"));
-  myFoodBtn.addEventListener("click", () => window.location.href = "myfood.html"));
+  myFoodBtn.addEventListener("click", () => window.location.href = "myfood.html");
 
   // --- Ladda länder ---
   async function loadCountries() {
@@ -113,20 +112,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     const loggedInUserName = user.displayName || user.email;
     if (welcomeMsg) welcomeMsg.textContent = `Welcome, ${loggedInUserName}!`;
-
-    // ===== Kontrollera adminstatus =====
-    if (adminPanelBtn) adminPanelBtn.style.display = "none"; // Dölj först
-    try {
-      const userDoc = await db.collection("users").doc(user.uid).get();
-      const isAdmin = userDoc.exists && userDoc.data().admin === true;
-
-      if (isAdmin) {
-        console.log("Du är admin!");
-        if (adminPanelBtn) adminPanelBtn.style.display = "inline-block"; // Visa admin-knapp
-      }
-    } catch (err) {
-      console.error("Error checking admin status:", err);
-    }
 
     await loadCountries();
     loadGlobalFood(user);
