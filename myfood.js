@@ -27,6 +27,7 @@ const publicFoodListContainer = document.querySelector(".public-food-list");
 
 let selectedEmoji = "";
 let countriesData = [];
+let currentUserData = null; // här sparar vi användardata inkl mute/banned
 
 // ===== Emoji picker =====
 emojiPickerBtn.addEventListener("click", () => {
@@ -84,9 +85,56 @@ foodCountry.addEventListener("change", () => {
 // Kör direkt vid sidladdning
 loadCountries();
 
+// ===== Kontrollera om användaren är muted/banned =====
+async function checkUserStatus() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  try {
+    const userDoc = await db.collection("users").doc(user.uid).get();
+    if (!userDoc.exists) return;
+    currentUserData = userDoc.data();
+
+    const now = new Date();
+
+    // Banned
+    if (currentUserData.banned) {
+      alert("You have been banned by an admin. You cannot post foods.");
+      addFoodForm.querySelectorAll("input, select, button").forEach(el => el.disabled = true);
+    }
+
+    // Muted
+    if (currentUserData.muteUntil) {
+      const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
+      if (muteDate > now) {
+        alert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
+      }
+    }
+  } catch (err) {
+    console.error("Error fetching user status:", err);
+  }
+}
+
 // ===== Add food to Firestore =====
 addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
+
+  const user = auth.currentUser;
+  if (!user) return alert("You must be logged in!");
+
+  // Kolla mute/banned innan posten
+  const now = new Date();
+  if (currentUserData?.banned) {
+    alert("You are banned and cannot post foods.");
+    return;
+  }
+  if (currentUserData?.muteUntil) {
+    const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
+    if (muteDate > now) {
+      alert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
+      return;
+    }
+  }
 
   const title = foodTitle.value.trim();
   const country = foodCountry.value;
@@ -100,11 +148,7 @@ addFoodForm.addEventListener("submit", async (e) => {
   }
 
   if (!title || !country || !city) return alert("Fill in all fields!");
-
   if (!confirm(`Are you sure you want to publish this Foodpost: "${title}"?`)) return;
-
-  const user = auth.currentUser;
-  if (!user) return alert("You must be logged in!");
 
   const newFoodData = {
     title,
@@ -259,6 +303,7 @@ async function loadPublicFoods() {
 // ===== Initial load =====
 auth.onAuthStateChanged((user) => {
   if (user) {
+    checkUserStatus(); // ✅ kolla mute/banned vid sidladdning
     loadFoodList();
     loadPublicFoods();
   }
