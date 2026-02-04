@@ -136,8 +136,9 @@ async function setupUserListener() {
         document.body.prepend(bannedMsg);
 
         // Logga ut efter kort timeout
-        setTimeout(() => {
-          auth.signOut().then(() => window.location.href = "../index.html");
+        setTimeout(async () => {
+          await auth.signOut();
+          window.location.href = "../login.html"; // nu redirect till login
         }, 500);
 
         return;
@@ -339,10 +340,24 @@ async function loadPublicFoods() {
 }
 
 // ===== Initial load =====
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    setupUserListener(); // ✅ realtime listener för mute/banned
-    loadFoodList();
-    loadPublicFoods();
+auth.onAuthStateChanged(async (user) => {
+  if (!user) return window.location.href = "../login.html";
+
+  // Hämta användardata direkt vid sidladdning
+  const userDoc = await db.collection("users").doc(user.uid).get();
+  if (userDoc.exists) {
+    currentUserData = userDoc.data();
+
+    if (currentUserData.banned) {
+      alert("You have been banned by an admin. Logging out...");
+      await auth.signOut();
+      window.location.href = "../login.html";
+      return;
+    }
   }
+
+  // Setup realtime listener
+  setupUserListener();
+  loadFoodList();
+  loadPublicFoods();
 });
