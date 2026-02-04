@@ -66,6 +66,17 @@
 
       #myFoodBtn:hover { background-color: #388e3c; }
 
+      /* Adminpanel styling */
+      #adminPanel {
+        display: none;
+        border: 1px solid #333;
+        padding: 20px;
+        background: #f0f0f0;
+        margin-top: 10px; /* lite avstånd från logout-knappen */
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+
       /* FILTER-SEKTION */
       section.filters {
         background-color: #262d37;
@@ -214,6 +225,13 @@
       <h1>🌍 Global Food Share</h1>
       <p id="welcomeMsg">Welcome! Find and share food near you!</p>
       <button id="logoutBtn">Log Out</button>
+
+      <!-- Adminpanel placeras direkt under Logout-knappen -->
+      <div id="adminPanel">
+        <h2>Adminpanel</h2>
+        <p>Endast synlig för admin (du!)</p>
+      </div>
+
       <div>
         <button id="myFoodBtn">My Food List</button>
       </div>
@@ -248,4 +266,3 @@
     </footer>
   </body>
 </html>
-
