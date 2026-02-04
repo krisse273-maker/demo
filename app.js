@@ -114,10 +114,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     const loggedInUserName = user.displayName || user.email;
     if (welcomeMsg) welcomeMsg.textContent = `Welcome, ${loggedInUserName}!`;
 
-    // --- FIX: kolla om användaren är admin baserat på email ---
-    const userSnapshot = await db.collection("users").where("email", "==", user.email).get();
-    if (!userSnapshot.empty) {
-      const userData = userSnapshot.docs[0].data();
+    // --- FIX: kolla om användaren är admin via UID ---
+    const userDoc = await db.collection("users").doc(user.uid).get();
+    if (userDoc.exists) {
+      const userData = userDoc.data();
       if (userData.admin === true && adminPanel) {
         adminPanel.style.display = "block"; // visa adminpanelen
       }
