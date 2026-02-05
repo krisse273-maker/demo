@@ -5,16 +5,15 @@ const firebaseConfig = {
   projectId: "global-food-share",
   storageBucket: "global-food-share.appspot.com",
   messagingSenderId: "902107453892",
-  appId: "1:902107453892:web:dd9625974cc94ac91",
+  appId: "1:902107453892:web:dd9625974b8744cc94ac91",
   measurementId: "G-S1G7JY0TH5",
 };
 
-// Init Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// ===== Custom Mute Alert =====
+// ===== Custom Alert =====
 function showCustomMuteAlert(message) {
   const backdrop = document.getElementById("customAlertBackdrop");
   const msg = document.getElementById("alertMessage");
@@ -23,17 +22,14 @@ function showCustomMuteAlert(message) {
   msg.textContent = message;
   backdrop.classList.remove("hidden");
 
-  okBtn.onclick = () => {
-    backdrop.classList.add("hidden");
-  };
+  okBtn.onclick = () => backdrop.classList.add("hidden");
 }
 
-// Ny funktion för att visa alla typer av alerts
 function showAlert(message) {
   showCustomMuteAlert(message);
 }
 
-// ===== DOM elements =====
+// ===== DOM =====
 const emojiPickerBtn = document.getElementById("emojiPickerBtn");
 const emojiPicker = document.getElementById("emojiPicker");
 const emojiError = document.getElementById("emojiError");
@@ -43,7 +39,6 @@ const foodCity = document.getElementById("foodCity");
 const addFoodForm = document.getElementById("addFoodForm");
 const foodListContainer = document.querySelector(".my-food-list");
 const publicFoodListContainer = document.querySelector(".public-food-list");
-
 const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
 
@@ -52,334 +47,201 @@ let countriesData = [];
 let currentUserData = null;
 let userDocUnsubscribe = null;
 
-// ===== Home & Logout knappar =====
+// ===== Navigation =====
 window.addEventListener("DOMContentLoaded", () => {
-  logoutBtn.addEventListener("click", async () => {
-    try {
-      await auth.signOut();
-      window.location.href = "../login.html";
-    } catch (err) {
-      console.error("Logout failed:", err);
-      showAlert("Failed to log out.");
-    }
-  });
+  logoutBtn.onclick = async () => {
+    await auth.signOut();
+    window.location.href = "../login.html";
+  };
 
-  homeBtn.addEventListener("click", () => {
+  homeBtn.onclick = () => {
     window.location.href = "../index.html";
-  });
+  };
 });
 
 // ===== Emoji picker =====
-emojiPickerBtn.addEventListener("click", () => {
+emojiPickerBtn.onclick = () => {
   emojiPicker.style.display =
     emojiPicker.style.display === "flex" ? "none" : "flex";
-});
+};
 
-emojiPicker.querySelectorAll("span").forEach((span) => {
-  span.addEventListener("click", () => {
+emojiPicker.querySelectorAll("span").forEach(span => {
+  span.onclick = () => {
     selectedEmoji = span.textContent;
     emojiPickerBtn.textContent = selectedEmoji;
     emojiPicker.style.display = "none";
     emojiError.style.display = "none";
-  });
+  };
 });
 
-// ===== Country & City - Dynamiskt =====
+// ===== Countries =====
 async function loadCountries() {
-  try {
-    const res = await fetch("https://countriesnow.space/api/v0.1/countries");
-    const data = await res.json();
-    countriesData = data.data;
+  const res = await fetch("https://countriesnow.space/api/v0.1/countries");
+  const data = await res.json();
+  countriesData = data.data;
 
-    foodCountry.innerHTML = '<option value="">Select Country</option>';
-    countriesData.forEach((c) => {
-      const opt = document.createElement("option");
-      opt.value = c.country;
-      opt.textContent = c.country;
-      foodCountry.appendChild(opt);
-    });
-    foodCountry.disabled = false;
-  } catch (err) {
-    console.error("Failed to fetch countries:", err);
-    showAlert("Failed to load countries. Try refreshing.");
-  }
+  foodCountry.innerHTML = `<option value="">Select Country</option>`;
+  countriesData.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c.country;
+    opt.textContent = c.country;
+    foodCountry.appendChild(opt);
+  });
 }
 
-foodCountry.addEventListener("change", () => {
-  foodCity.innerHTML = '<option value="">Select City</option>';
+foodCountry.onchange = () => {
+  foodCity.innerHTML = `<option value="">Select City</option>`;
   foodCity.disabled = true;
 
-  const countryObj = countriesData.find((c) => c.country === foodCountry.value);
-  if (!countryObj || !countryObj.cities || countryObj.cities.length === 0) return;
+  const c = countriesData.find(c => c.country === foodCountry.value);
+  if (!c || !c.cities) return;
 
-  countryObj.cities.forEach((city) => {
+  c.cities.forEach(city => {
     const opt = document.createElement("option");
     opt.value = city;
     opt.textContent = city;
     foodCity.appendChild(opt);
   });
+
   foodCity.disabled = false;
-});
+};
 
 loadCountries();
 
-// ===== Kontrollera användarstatus i realtid =====
-async function setupUserListener() {
+// ===== User listener =====
+function setupUserListener() {
   const user = auth.currentUser;
   if (!user) return;
 
   if (userDocUnsubscribe) userDocUnsubscribe();
 
   userDocUnsubscribe = db.collection("users").doc(user.uid)
-    .onSnapshot((docSnap) => {
-      if (!docSnap.exists) return;
-      currentUserData = docSnap.data();
+    .onSnapshot(doc => {
+      currentUserData = doc.data();
 
-      const now = new Date();
-
-      if (currentUserData.banned === true) {
-        addFoodForm.querySelectorAll("input, select, button").forEach(el => el.disabled = true);
-
-        const bannedMsg = document.createElement("div");
-        bannedMsg.style.background = "#ffcccc";
-        bannedMsg.style.padding = "10px";
-        bannedMsg.style.marginBottom = "10px";
-        bannedMsg.style.border = "1px solid red";
-        bannedMsg.textContent = "You have been banned by an admin. Logging out...";
-        document.body.prepend(bannedMsg);
-
-        setTimeout(() => {
-          auth.signOut().then(() => window.location.href = "../index.html");
-        }, 500);
-
-        return;
-      }
-
-      if (currentUserData.muteUntil) {
-        const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
-        if (muteDate > now) {
-          showAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
-        }
+      if (currentUserData?.banned) {
+        showAlert("You are banned.");
+        auth.signOut().then(() => window.location.href = "../index.html");
       }
     });
 }
 
-// ===== Valideringsfunktion för Food Name =====
+// ===== Validation =====
 function validateTitle(title) {
-  const minLength = 5;
-  const maxTitleLength = 20;
-  const regex = /^[a-zA-Z0-9\s\-]+$/;
-
-  if (!title) return "⚠️ Title cannot be empty.";
-  if (title.trim().length < minLength) return `⚠️ Title must be at least ${minLength} characters long.`;
-  if (title.length > maxTitleLength) return `⚠️ Title cannot be longer than ${maxTitleLength} characters.`;
-  if (!regex.test(title)) return "⚠️ Title contains invalid characters.";
+  if (!title || title.length < 5 || title.length > 20) return "Invalid title";
   return null;
 }
 
-function checkMuteStatus() {
-  if (currentUserData?.muteUntil) {
-    const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
-    if (muteDate > new Date()) {
-      showAlert(`You are muted until ${muteDate.toLocaleString()}.`);
-      return true;
-    }
-  }
-  return false;
-}
-
-// ===== Add food to Firestore =====
-addFoodForm.addEventListener("submit", async (e) => {
+// ===== Add food =====
+addFoodForm.onsubmit = async e => {
   e.preventDefault();
 
-  if (checkMuteStatus()) return;
-
   const user = auth.currentUser;
-  if (!user) return showAlert("You must be logged in!");
+  if (!user) return;
 
-  if (currentUserData?.banned) return showAlert("You are banned and cannot post foods.");
+  const error = validateTitle(foodTitle.value.trim());
+  if (error) return alert(error);
+  if (!selectedEmoji) return emojiError.style.display = "block";
 
-  const title = foodTitle.value.trim();
-  const country = foodCountry.value;
-  const city = foodCity.value;
+  const foodRef = db
+    .collection("foods")
+    .doc(user.uid)
+    .collection("items")
+    .doc();
 
-  const titleValidationError = validateTitle(title);
-  if (titleValidationError) {
-    alert(titleValidationError);
-    return;
-  }
+  const foodId = foodRef.id;
 
-  emojiError.style.display = "none";
-  if (!selectedEmoji) {
-    emojiError.style.display = "block";
-    return;
-  }
-
-  if (!title || !country || !city) return showAlert("Fill in all fields!");
-  if (!confirm(`Are you sure you want to publish this Foodpost: "${title}"?`)) return;
-
-  const newFoodData = {
-    title,
+  const foodData = {
+    title: foodTitle.value.trim(),
     emoji: selectedEmoji,
-    country,
-    city,
+    country: foodCountry.value,
+    city: foodCity.value,
     type: "meal",
     ownerId: user.uid,
     userName: user.displayName || user.email,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   };
 
-  try {
-    await db.collection("foods").doc(user.uid).collection("items").add(newFoodData);
-    await db.collection("publicFoods").add({
-      ...newFoodData,
-      publishedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+  await foodRef.set(foodData);
+  await db.collection("publicFoods").doc(foodId).set({
+    ...foodData,
+    publishedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
 
-    foodTitle.value = "";
-    foodCountry.value = "";
-    foodCity.innerHTML = '<option value="">Select City</option>';
-    foodCity.disabled = true;
-    emojiPickerBtn.textContent = "Select your food Emoji";
-    selectedEmoji = "";
-    emojiError.style.display = "none";
+  addFoodForm.reset();
+  emojiPickerBtn.textContent = "Select your food Emoji";
+  selectedEmoji = "";
 
-    loadFoodList();
-    loadPublicFoods();
-  } catch (err) {
-    console.error("Error adding food: ", err);
-    showAlert("Error adding food. Please try again.");
-  }
-});
+  loadFoodList();
+  loadPublicFoods();
+};
 
-// ===== Load food list (privat, sanerad) =====
+// ===== Load private foods =====
 async function loadFoodList() {
   const user = auth.currentUser;
   if (!user) return;
+
   foodListContainer.innerHTML = "";
 
-  try {
-    const snapshot = await db.collection("foods").doc(user.uid).collection("items")
-      .orderBy("createdAt", "desc").get();
+  const snap = await db
+    .collection("foods")
+    .doc(user.uid)
+    .collection("items")
+    .orderBy("createdAt", "desc")
+    .get();
 
-    if (snapshot.empty) {
-      const p = document.createElement("p");
-      p.className = "no-food";
-      p.textContent = "No foods added yet!";
-      foodListContainer.appendChild(p);
-      return;
-    }
+  snap.forEach(docSnap => {
+    const data = docSnap.data();
 
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      const div = document.createElement("div");
-      div.className = "food-item";
+    const div = document.createElement("div");
+    div.className = "food-item";
 
-      const iconSpan = document.createElement("span");
-      iconSpan.className = "icon";
-      iconSpan.textContent = data.emoji || "🍽️";
+    const del = document.createElement("span");
+    del.textContent = "×";
+    del.className = "delete-icon";
 
-      const infoDiv = document.createElement("div");
-      infoDiv.className = "food-info";
+    del.onclick = async () => {
+      if (!confirm("Delete this food?")) return;
 
-      const strong = document.createElement("strong");
-      strong.textContent = data.title;
+      await db.collection("foods")
+        .doc(user.uid)
+        .collection("items")
+        .doc(docSnap.id)
+        .delete();
 
-      const small = document.createElement("small");
-      small.textContent = `${data.city}, ${data.country}`;
+      await db.collection("publicFoods")
+        .doc(docSnap.id)
+        .delete();
 
-      infoDiv.appendChild(strong);
-      infoDiv.appendChild(document.createElement("br"));
-      infoDiv.appendChild(small);
+      loadFoodList();
+      loadPublicFoods();
+    };
 
-      const deleteSpan = document.createElement("span");
-      deleteSpan.className = "delete-icon";
-      deleteSpan.dataset.id = docSnap.id;
-      deleteSpan.textContent = "×";
-
-      div.appendChild(iconSpan);
-      div.appendChild(infoDiv);
-      div.appendChild(deleteSpan);
-
-      foodListContainer.appendChild(div);
-
-      deleteSpan.addEventListener("click", async () => {
-        if (!confirm("Are you sure you want to delete this food?")) return;
-        try {
-          await db.collection("foods").doc(user.uid).collection("items").doc(docSnap.id).delete();
-          loadFoodList();
-        } catch (err) {
-          console.error(err);
-          showAlert("Error deleting food.");
-        }
-      });
-    });
-  } catch (err) {
-    console.error("Error loading foods:", err);
-    showAlert("Failed to load foods.");
-  }
+    div.textContent = `${data.emoji} ${data.title}`;
+    div.appendChild(del);
+    foodListContainer.appendChild(div);
+  });
 }
 
-// ===== Load public foods (sanerad) =====
+// ===== Load public foods =====
 async function loadPublicFoods() {
   if (!publicFoodListContainer) return;
   publicFoodListContainer.innerHTML = "";
 
-  try {
-    const snapshot = await db.collection("publicFoods")
-      .orderBy("publishedAt", "desc").get();
+  const snap = await db.collection("publicFoods")
+    .orderBy("publishedAt", "desc")
+    .get();
 
-    if (snapshot.empty) {
-      const p = document.createElement("p");
-      p.textContent = "No public foods yet!";
-      publicFoodListContainer.appendChild(p);
-      return;
-    }
-
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      const publishedDate = data.publishedAt?.toDate();
-      const formattedDate = publishedDate
-        ? publishedDate.toLocaleDateString("en-US", { day: "2-digit", month: "short" })
-        : "";
-
-      const div = document.createElement("div");
-      div.className = "public-food-item";
-
-      const iconSpan = document.createElement("span");
-      iconSpan.className = "icon";
-      iconSpan.textContent = data.emoji || "🍽️";
-
-      const infoDiv = document.createElement("div");
-
-      const strong = document.createElement("strong");
-      strong.textContent = data.title;
-
-      const em = document.createElement("em");
-      em.textContent = data.userName;
-
-      const small = document.createElement("small");
-      small.textContent = `${data.city}, ${data.country} • ${formattedDate}`;
-
-      infoDiv.appendChild(strong);
-      infoDiv.appendChild(document.createTextNode(" by "));
-      infoDiv.appendChild(em);
-      infoDiv.appendChild(document.createElement("br"));
-      infoDiv.appendChild(small);
-
-      div.appendChild(iconSpan);
-      div.appendChild(infoDiv);
-
-      publicFoodListContainer.appendChild(div);
-    });
-  } catch (err) {
-    console.error("Error loading public foods:", err);
-    showAlert("Failed to load public foods.");
-  }
+  snap.forEach(doc => {
+    const d = doc.data();
+    const div = document.createElement("div");
+    div.textContent = `${d.emoji} ${d.title} by ${d.userName}`;
+    publicFoodListContainer.appendChild(div);
+  });
 }
 
-// ===== Initial load =====
-auth.onAuthStateChanged((user) => {
+// ===== Init =====
+auth.onAuthStateChanged(user => {
   if (user) {
     setupUserListener();
     loadFoodList();
