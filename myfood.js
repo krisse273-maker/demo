@@ -117,6 +117,12 @@ function validateTitle(title) {
 addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
+  const user = auth.currentUser;
+  if (!user) {
+    alert("You must be logged in to post food!");
+    return;
+  }
+
   const title = foodTitle.value.trim();
   const country = foodCountry.value;
   const city = foodCity.value;
@@ -135,17 +141,17 @@ addFoodForm.addEventListener("submit", async (e) => {
   if (!confirm(`Publish "${title}"?`)) return;
 
   await db.collection("publicFoods").add({
-  title,
-  emoji: selectedEmoji,
-  country,
-  city,
-  type: "meal", // ✅ obligatoriskt
-  ownerId: auth.currentUser.uid, // ✅ obligatoriskt
-  userName: auth.currentUser.displayName || auth.currentUser.email, // ✅ obligatoriskt
-  createdAt: firebase.firestore.FieldValue.serverTimestamp() // ✅ obligatoriskt
-});
+    title,
+    emoji: selectedEmoji,
+    country,
+    city,
+    type: "meal", // ✅ obligatoriskt
+    ownerId: user.uid, // ✅ obligatoriskt
+    userName: user.displayName || user.email || "Unknown", // ✅ obligatoriskt
+    createdAt: firebase.firestore.FieldValue.serverTimestamp() // ✅ obligatoriskt
+  });
 
-
+  // Reset form
   foodTitle.value = "";
   foodCountry.value = "";
   foodCity.innerHTML = '<option value="">Select City</option>';
@@ -153,4 +159,3 @@ addFoodForm.addEventListener("submit", async (e) => {
   emojiPickerBtn.textContent = "Select your food Emoji";
   selectedEmoji = "";
 });
-
