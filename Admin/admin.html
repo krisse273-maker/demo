@@ -6,146 +6,55 @@
     <title>Admin Panel - Global Food Share</title>
     <link rel="stylesheet" href="../style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+    <!-- CSP för säkerhet -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self' https://*.googleapis.com https://*.gstatic.com https://firebasestorage.googleapis.com;
+      style-src 'self' https://fonts.googleapis.com;
+      script-src 'self' https://www.gstatic.com https://www.googleapis.com https://firebase.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com;
+      img-src 'self' data:;
+    " />
+
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script defer src="admin.js"></script>
+
     <style>
       /* Admin-specifik styling */
-      body {
-        background-color: #4caf50;
-        color: #cfd8dc;
-        font-family: 'Poppins', sans-serif;
-      }
-
-      header {
-        background-color: #262d37;
-        text-align: center;
-        padding: 1rem;
-        position: relative;
-      }
-
+      body { background-color: #4caf50; color: #cfd8dc; font-family: 'Poppins', sans-serif; }
+      header { background-color: #262d37; text-align: center; padding: 1rem; position: relative; }
       header h1 { color: #4caf50; }
       #welcomeMsg { color: #cfd8dc; }
-
-      #logoutBtn {
-        position: absolute;
-        right: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        border: none;
-        background-color: #f44336;
-        color: #fff;
-        cursor: pointer;
-        font-family: 'Poppins', sans-serif;
-        font-weight: 600;
-      }
-
+      #logoutBtn { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); padding: 0.5rem 1rem; border-radius: 6px; border: none; background-color: #f44336; color: #fff; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 600; }
       #logoutBtn:hover { background-color: #e53935; }
-
-      /* Styles för knappar under welcome-meddelandet */
-      .nav-buttons {
-        display: flex;
-        justify-content: center;
-        margin-top: 10px;
-        gap: 10px;
-      }
-
-      .nav-button {
-        background-color: #f44336;
-        color: #fff;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-family: 'Poppins', sans-serif;
-        font-weight: 600;
-        text-decoration: none;
-        font-size: 1rem;
-        transition: background-color 0.3s;
-      }
-
-      .nav-button:hover {
-        background-color: #e53935;
-      }
-
-      .admin-food-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1rem;
-        padding: 1rem;
-      }
-
-      .food-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background-color: #2b3340;
-        color: #cfd8dc;
-        border-radius: 10px;
-        border: 2px solid #1c222b;
-        padding: 1rem;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        text-align: center;
-      }
-
-      .food-header {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-      }
-
+      .nav-buttons { display: flex; justify-content: center; margin-top: 10px; gap: 10px; }
+      .nav-button { background-color: #f44336; color: #fff; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 600; text-decoration: none; font-size: 1rem; transition: background-color 0.3s; }
+      .nav-button:hover { background-color: #e53935; }
+      .admin-food-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; padding: 1rem; }
+      .food-item { display: flex; flex-direction: column; align-items: center; background-color: #2b3340; color: #cfd8dc; border-radius: 10px; border: 2px solid #1c222b; padding: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: transform 0.2s ease, box-shadow 0.2s ease; text-align: center; }
+      .food-header { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem; }
       .food-header span { font-size: 2rem; flex-shrink: 0; }
       .food-header h3 { color: #ffffff; margin: 0; font-weight: 600; font-size: 1.25rem; text-shadow: 1px 1px 2px #000; }
-
-      .food-details {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.3rem;
-        text-align: left;
-      }
-
+      .food-details { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; text-align: left; }
       .food-details p { font-size: 1rem; color: #b0bec5; margin: 0.2rem 0; line-height: 1.4; display: flex; align-items: center; gap: 0.4rem; }
-
       .food-details p strong { color: #cfd8dc; font-weight: 600; }
       .food-details p span.icon-small { font-size: 1.2rem; flex-shrink: 0; }
-
-      .delete-btn {
-        margin-top: 0.5rem;
-        padding: 0.4rem 0.8rem;
-        border: none;
-        border-radius: 6px;
-        background-color: #f44336;
-        color: white;
-        cursor: pointer;
-        font-weight: 600;
-      }
-
+      .delete-btn { margin-top: 0.5rem; padding: 0.4rem 0.8rem; border: none; border-radius: 6px; background-color: #f44336; color: white; cursor: pointer; font-weight: 600; }
       .delete-btn:hover { background-color: #e53935; }
-
-      footer {
-        color: #cfd8dc;
-        text-align: center;
-        padding: 1rem;
-        background-color: #262d37;
-        margin-top: 2rem;
-      }
+      footer { color: #cfd8dc; text-align: center; padding: 1rem; background-color: #262d37; margin-top: 2rem; }
     </style>
   </head>
 
   <body>
     <header>
       <h1>🔐 Admin Panel</h1>
-      <p id="welcomeMsg">Welcome, Krisse!</p>
-      <!-- Endast en knapp för användare -->
+      <p id="welcomeMsg">Welcome, Admin!</p>
       <div class="nav-buttons">
-        <button class="nav-button" onclick="window.location.href='user.html'">Users</button>
+        <button id="usersBtn" class="nav-button">Users</button>
       </div>
       <button id="logoutBtn">Log Out</button>
     </header>
