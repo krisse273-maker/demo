@@ -3,11 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>User Management - Admin Panel</title>
-
-  <!-- Content Security Policy för att minska XSS-risk -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com; style-src 'self' 'unsafe-inline';">
-
+  <title>Admin Panel - User Management</title>
   <link rel="stylesheet" href="../style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
@@ -19,158 +15,29 @@
   <script defer src="user.js"></script>
 
   <style>
-    body {
-      background-color: #4caf50;
-      color: #cfd8dc;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    header {
-      background-color: #262d37;
-      text-align: center;
-      padding: 1rem;
-      position: relative;
-    }
-
+    /* --- Admin-sida --- */
+    body { background-color: #4caf50; color: #cfd8dc; font-family: 'Poppins', sans-serif; }
+    header { background-color: #262d37; text-align: center; padding: 1rem; position: relative; }
     header h1 { color: #4caf50; }
-
-    /* Header-knappar */
-    #header-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .header-btn {
-      background-color: #f44336;
-      color: #fff;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-family: 'Poppins', sans-serif;
-      transition: background-color 0.3s;
-      font-size: 1rem;
-    }
-
-    .header-btn:hover {
-      background-color: #e53935;
-    }
-
-    #logoutBtn {
-      position: absolute;
-      right: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      border: none;
-      background-color: #f44336;
-      color: #fff;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    #logoutBtn:hover { background-color: #e53935; }
-
-    /* Sökfält */
-    .search-container {
-      margin: 1rem;
-      text-align: center;
-    }
-
-    #searchInput {
-      padding: 0.5rem;
-      border-radius: 6px;
-      border: none;
-      width: 300px;
-      max-width: 90%;
-    }
-
-    /* User-lista */
-    .user-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-      padding: 1rem;
-    }
-
-    .user-item {
-      background-color: #2b3340;
-      color: #cfd8dc;
-      border-radius: 10px;
-      border: 2px solid #1c222b;
-      padding: 1rem;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      text-align: center;
-    }
-
-    .user-item:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 12px rgba(0,0,0,0.5);
-    }
-
-    /* Popup */
-    .user-popup {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: #2b3340;
-      border-radius: 10px;
-      border: 2px solid #1c222b;
-      padding: 1.5rem;
-      display: none;
-      flex-direction: column;
-      gap: 1rem;
-      z-index: 1000;
-      min-width: 250px;
-    }
-
-    .user-popup[aria-hidden="false"] {
-      display: flex;
-    }
-
-    .user-popup h3 {
-      margin: 0;
-      color: #ffffff;
-      text-align: center;
-    }
-
-    .popup-btn {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .ban-btn { background-color: #f44336; color: #fff; }
-    .ban-btn:hover { background-color: #e53935; }
-
-    .mute-btn { background-color: #ff9800; color: #fff; }
-    .mute-btn:hover { background-color: #fb8c00; }
-
-    .close-popup {
-      align-self: flex-end;
-      background-color: #616161;
-      color: #fff;
-      padding: 0.3rem 0.6rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    footer {
-      color: #cfd8dc;
-      text-align: center;
-      padding: 1rem;
-      background-color: #262d37;
-      margin-top: 2rem;
-    }
+    #header-buttons { display:flex; justify-content:center; gap:10px; margin-top:10px; }
+    .header-btn { background-color:#f44336; color:#fff; padding:0.5rem 1rem; border:none; border-radius:6px; cursor:pointer; font-weight:600; font-family:'Poppins', sans-serif; transition: background-color 0.3s; font-size:1rem; }
+    .header-btn:hover { background-color:#e53935; }
+    #logoutBtn { position:absolute; right:1rem; top:50%; transform:translateY(-50%); padding:0.5rem 1rem; border-radius:6px; border:none; background-color:#f44336; color:#fff; cursor:pointer; font-weight:600; }
+    #logoutBtn:hover { background-color:#e53935; }
+    .search-container { margin:1rem; text-align:center; }
+    #searchInput { padding:0.5rem; border-radius:6px; border:none; width:300px; max-width:90%; }
+    .user-list { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:1rem; padding:1rem; }
+    .user-item { background-color:#2b3340; color:#cfd8dc; border-radius:10px; border:2px solid #1c222b; padding:1rem; box-shadow:0 4px 6px rgba(0,0,0,0.3); cursor:pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; text-align:center; }
+    .user-item:hover { transform: translateY(-5px); box-shadow:0 8px 12px rgba(0,0,0,0.5); }
+    .user-popup { position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background-color:#2b3340; border-radius:10px; border:2px solid #1c222b; padding:1.5rem; display:none; flex-direction:column; gap:1rem; z-index:1000; min-width:250px; }
+    .user-popup h3 { margin:0; color:#ffffff; text-align:center; }
+    .popup-btn { padding:0.5rem 1rem; border:none; border-radius:6px; cursor:pointer; font-weight:600; }
+    .ban-btn { background-color:#f44336; color:#fff; }
+    .ban-btn:hover { background-color:#e53935; }
+    .mute-btn { background-color:#ff9800; color:#fff; }
+    .mute-btn:hover { background-color:#fb8c00; }
+    .close-popup { align-self:flex-end; background-color:#616161; color:#fff; padding:0.3rem 0.6rem; font-weight:600; cursor:pointer; }
+    footer { color:#cfd8dc; text-align:center; padding:1rem; background-color:#262d37; margin-top:2rem; }
   </style>
 </head>
 <body>
@@ -183,13 +50,13 @@
   </header>
 
   <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Search users by name or email..." autocomplete="off" aria-label="Search users">
+    <input type="text" id="searchInput" placeholder="Search users by name or email..." />
   </div>
 
   <div class="user-list"></div>
 
   <!-- Popup -->
-  <div class="user-popup" id="userPopup" role="dialog" aria-hidden="true">
+  <div class="user-popup" id="userPopup">
     <button class="close-popup" id="closePopup">X</button>
     <h3 id="popupUserName">User Name</h3>
     <button class="popup-btn ban-btn" id="banBtn">Ban User</button>
