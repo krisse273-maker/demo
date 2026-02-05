@@ -235,3 +235,18 @@ footer {
 #alertOkBtn:hover {
   background-color: #388e3c;
 }
+
+section.filters {
+  border: 2px solid black; /* Svart outline */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Skugga */
+}
+
+.food-item {
+  background-color: #2b3340;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  border: 2px solid #000; /* Svart kant */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Skugga */
+  /* outline: 2px solid black; */ /* Kan tas bort om du vill */
+}
