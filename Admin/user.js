@@ -68,7 +68,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Rendera användare
+  // Rendera användare med XSS-skydd
   function renderUsers(users) {
     userList.innerHTML = "";
     if (users.length === 0) {
@@ -81,15 +81,17 @@ window.addEventListener("DOMContentLoaded", async () => {
     users.forEach(user => {
       const div = document.createElement("div");
       div.className = "user-item";
-      div.textContent = `${user.name} (${user.email})`;
-      
-      // Lägg till status om muted/banned
-      if (user.banned) div.textContent += " ⚠️ Banned";
+
+      // Sanera innehåll
+      let text = `${escapeHTML(user.name)} (${escapeHTML(user.email || "")})`;
+      if (user.banned) text += " ⚠️ Banned";
       else if (user.muteUntil) {
         const now = new Date();
         const muteDate = user.muteUntil.toDate ? user.muteUntil.toDate() : new Date(user.muteUntil);
-        if (muteDate > now) div.textContent += ` 🔇 Muted until ${muteDate.toLocaleString()}`;
+        if (muteDate > now) text += ` 🔇 Muted until ${muteDate.toLocaleString()}`;
       }
+
+      div.textContent = text;
 
       div.addEventListener("click", () => openPopup(user));
       fragment.appendChild(div);
@@ -111,21 +113,22 @@ window.addEventListener("DOMContentLoaded", async () => {
   // Öppna popup
   function openPopup(user) {
     selectedUser = user;
-    popupUserName.textContent = `${user.name} (${user.email})`;
+    popupUserName.textContent = `${user.name} (${user.email || "No email"})`;
     popup.style.display = "flex";
   }
 
   // Stäng popup
-  closePopup.addEventListener("click", () => {
-    popup.style.display = "none";
-    selectedUser = null;
+  closePopup.addEventListener("click", () => { popup.style.display = "none"; selectedUser = null; });
+
+  // Klick utanför popup stänger popup
+  window.addEventListener("click", e => {
+    if (e.target === popup) { popup.style.display = "none"; selectedUser = null; }
   });
 
   // Ban användare
   banBtn.addEventListener("click", async () => {
     if (!selectedUser) return;
-    const confirmBan = confirm(`Are you sure you want to ban ${selectedUser.name}?`);
-    if (!confirmBan) return;
+    if (!confirm(`Ban ${selectedUser.name}?`)) return;
 
     try {
       await db.collection("users").doc(selectedUser.id).update({ banned: true });
@@ -146,7 +149,6 @@ window.addEventListener("DOMContentLoaded", async () => {
       const muteUntil = firebase.firestore.Timestamp.fromDate(new Date(Date.now() + hours * 60 * 60 * 1000));
 
       try {
-        // Lägg till muteUntil + notis
         await db.collection("users").doc(selectedUser.id).update({
           muteUntil,
           lastMuteMessage: `You have been muted for ${hours} hour(s) by an admin.`
@@ -162,4 +164,14 @@ window.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
+  // Enkel XSS-skydd
+  function escapeHTML(str) {
+    return str.replace(/[&<>"']/g, tag => ({
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+    }[tag]));
+  }
 });
