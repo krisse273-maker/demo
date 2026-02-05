@@ -248,13 +248,15 @@ section.filters {
   text-align: center;
   border: 2px solid #000; /* Svart kant */
   box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Skugga */
+  transition: all 0.3s ease; /* Lägg till transition för smidiga 
   /* outline: 2px solid black; */ /* Kan tas bort om du vill */
 }
 
 .food-item:hover {
-  transform: translateY(-5px); /* Lägger till en liten lyft-effekt */
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3); /* Förstärker skuggan */
-  background-color: #3b4450; /* Lite mörkare bakgrund på hover */
-  transition: all 0.3s ease; /* Gör effekten smidig */
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  background-color: #3b4450;
 }
+  
+
 
