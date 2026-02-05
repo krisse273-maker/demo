@@ -182,8 +182,11 @@ async function loadFoodList() {
     const del = document.createElement("span");
     del.textContent = "×";
     del.className = "delete-icon";
+
+    // === Ändrat: Ta bort confirm popup ===
     del.onclick = async () => {
-      if (!confirm("Delete this food?")) return;
+      const user = auth.currentUser;
+      if (!user) return;
 
       await db.collection("foods").doc(user.uid).collection("items").doc(docSnap.id).delete();
       await db.collection("publicFoods").doc(docSnap.id).delete();
