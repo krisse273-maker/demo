@@ -238,10 +238,11 @@ addFoodForm.addEventListener("submit", async (e) => {
   const country = foodCountry.value;
   const city = foodCity.value;
 
-  // Validera titel
+  // Validera titel – här använder vi **vanlig alert istället för custom alert**
   const titleValidationError = validateTitle(title);
   if (titleValidationError) {
-    return showAlert(titleValidationError);
+    alert(titleValidationError); // ❌ ändrad här
+    return; // stoppar formuläret
   }
 
   emojiError.style.display = "none"; // reset
@@ -276,17 +277,10 @@ addFoodForm.addEventListener("submit", async (e) => {
       .add(newFoodData);
 
     // 2️⃣ Lägg till i global publicFoods collection
-await db.collection("publicFoods").add({
-  title: newFoodData.title,
-  emoji: newFoodData.emoji,
-  country: newFoodData.country,
-  city: newFoodData.city,
-  type: newFoodData.type,
-  ownerId: newFoodData.ownerId,
-  userName: newFoodData.userName,
-  publishedAt: firebase.firestore.FieldValue.serverTimestamp()
-});
-
+    await db.collection("publicFoods").add({
+      ...newFoodData,
+      publishedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
 
     // Reset form
     foodTitle.value = "";
@@ -421,5 +415,3 @@ auth.onAuthStateChanged((user) => {
     loadPublicFoods();
   }
 });
-
-
