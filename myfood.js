@@ -30,7 +30,7 @@ function showCustomMuteAlert(message) {
 
 // Funktion för valideringsfel
 function showValidationError(message) {
-  alert(message); // Kan ersättas med ett mer snyggt element om du vill
+  showCustomMuteAlert(message); // Använder samma custom alert för valideringsfel
 }
 
 // ===== DOM elements =====
