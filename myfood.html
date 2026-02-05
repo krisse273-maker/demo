@@ -5,13 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Food List - Global Food Share</title>
 
-  <!-- Länka till extern CSS -->
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-  <!-- CSP för att tillåta nödvändiga resurser -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self' https://*.googleapis.com https://*.gstatic.com https://firebasestorage.googleapis.com;
     style-src 'self' https://fonts.googleapis.com;
@@ -21,13 +17,10 @@
     img-src 'self' data:;
   " />
 
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-  <!-- Lägg till ?v=3 för att tvinga uppdatering -->
-  <script defer src="myfood.js?v=3"></script>
+  <script defer src="myfood.js?v=4"></script>
 </head>
 
 <body>
@@ -43,9 +36,9 @@
 
     <form id="addFoodForm">
       <label for="foodTitle">Food Name</label>
-      <input type="text" id="foodTitle" name="title" placeholder="Enter food name" maxlength="20" required />
+      <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="15" required />
+      <p class="error-message" id="titleError"></p>
 
-      <!-- Emoji picker -->
       <button type="button" id="emojiPickerBtn" aria-haspopup="true" aria-expanded="false">Select your food Emoji</button>
       <div id="emojiPicker" aria-hidden="true">
         <span>🍔</span><span>🍟</span><span>🌭</span><span>🥪</span>
@@ -59,17 +52,19 @@
         <span>🍺</span><span>🍷</span><span>🥤</span><span>🐟</span>
         <span>🦪</span><span>🦐</span><span>🦑</span>
       </div>
-      <p id="emojiError" style="display:none; color:red;">Please choose an emoji!</p>
+      <p class="error-message" id="emojiError">Please choose an emoji!</p>
 
       <label for="foodCountry">Country</label>
       <select id="foodCountry" required>
         <option value="">Select Country</option>
       </select>
+      <p class="error-message" id="countryError"></p>
 
       <label for="foodCity">City</label>
       <select id="foodCity" disabled required>
         <option value="">Select City</option>
       </select>
+      <p class="error-message" id="cityError"></p>
 
       <button type="submit">Add Food</button>
     </form>
