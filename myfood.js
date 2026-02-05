@@ -238,10 +238,11 @@ addFoodForm.addEventListener("submit", async (e) => {
   const country = foodCountry.value;
   const city = foodCity.value;
 
-  // Validera titel
+  // Validera titel – här använder vi **vanlig alert istället för custom alert**
   const titleValidationError = validateTitle(title);
   if (titleValidationError) {
-    return showAlert(titleValidationError);
+    alert(titleValidationError); // ❌ ändrad här
+    return; // stoppar formuläret
   }
 
   emojiError.style.display = "none"; // reset
@@ -414,5 +415,3 @@ auth.onAuthStateChanged((user) => {
     loadPublicFoods();
   }
 });
-
-
