@@ -54,20 +54,18 @@ let userDocUnsubscribe = null; // för realtidslyssnare
 
 // ===== Home & Logout knappar =====
 window.addEventListener("DOMContentLoaded", () => {
-  // Logout
   logoutBtn.addEventListener("click", async () => {
     try {
       await auth.signOut();
-      window.location.href = "../login.html"; // redirect till login
+      window.location.href = "../login.html";
     } catch (err) {
       console.error("Logout failed:", err);
       showAlert("Failed to log out.");
     }
   });
 
-  // Home
   homeBtn.addEventListener("click", () => {
-    window.location.href = "../index.html"; // redirect till home
+    window.location.href = "../index.html";
   });
 });
 
@@ -82,7 +80,7 @@ emojiPicker.querySelectorAll("span").forEach((span) => {
     selectedEmoji = span.textContent;
     emojiPickerBtn.textContent = selectedEmoji;
     emojiPicker.style.display = "none";
-    emojiError.style.display = "none"; // göm felmeddelande direkt
+    emojiError.style.display = "none";
   });
 });
 
@@ -93,7 +91,6 @@ async function loadCountries() {
     const data = await res.json();
     countriesData = data.data;
 
-    // Rensa och fyll landet dropdown
     foodCountry.innerHTML = '<option value="">Select Country</option>';
     countriesData.forEach((c) => {
       const opt = document.createElement("option");
@@ -108,19 +105,13 @@ async function loadCountries() {
   }
 }
 
-// Uppdaterad event listener för landval, med kontroll för saknade städer
 foodCountry.addEventListener("change", () => {
   foodCity.innerHTML = '<option value="">Select City</option>';
   foodCity.disabled = true;
 
   const countryObj = countriesData.find((c) => c.country === foodCountry.value);
-  if (!countryObj || !countryObj.cities || countryObj.cities.length === 0) {
-    // Inga städer tillgängliga
-    console.log("Inga städer tillgängliga för detta land");
-    return;
-  }
+  if (!countryObj || !countryObj.cities || countryObj.cities.length === 0) return;
 
-  // Fyll i städer om de finns
   countryObj.cities.forEach((city) => {
     const opt = document.createElement("option");
     opt.value = city;
@@ -130,7 +121,6 @@ foodCountry.addEventListener("change", () => {
   foodCity.disabled = false;
 });
 
-// Kör direkt vid sidladdning
 loadCountries();
 
 // ===== Kontrollera användarstatus i realtid =====
@@ -138,20 +128,17 @@ async function setupUserListener() {
   const user = auth.currentUser;
   if (!user) return;
 
-  if (userDocUnsubscribe) userDocUnsubscribe(); // stoppa tidigare lyssnare om det finns
+  if (userDocUnsubscribe) userDocUnsubscribe();
 
   userDocUnsubscribe = db.collection("users").doc(user.uid)
     .onSnapshot((docSnap) => {
       if (!docSnap.exists) return;
       currentUserData = docSnap.data();
-
       const now = new Date();
 
-      // Banned
       if (currentUserData.banned === true) {
         addFoodForm.querySelectorAll("input, select, button").forEach(el => el.disabled = true);
 
-        // Visa meddelande
         const bannedMsg = document.createElement("div");
         bannedMsg.style.background = "#ffcccc";
         bannedMsg.style.padding = "10px";
@@ -160,7 +147,6 @@ async function setupUserListener() {
         bannedMsg.textContent = "You have been banned by an admin. Logging out...";
         document.body.prepend(bannedMsg);
 
-        // Logga ut efter kort timeout
         setTimeout(() => {
           auth.signOut().then(() => window.location.href = "../index.html");
         }, 500);
@@ -168,7 +154,6 @@ async function setupUserListener() {
         return;
       }
 
-      // Muted
       if (currentUserData.muteUntil) {
         const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
         if (muteDate > now) {
@@ -180,23 +165,15 @@ async function setupUserListener() {
 
 // ===== Valideringsfunktion för Food Name =====
 function validateTitle(title) {
-  const minLength = 5; // Minsta antal tecken
-  const maxTitleLength = 20; // Max antal tecken
-  const regex = /^[a-zA-Z0-9\s\-]+$/; // tillåter bokstäver, siffror, mellanslag, bindestreck
+  const minLength = 5;
+  const maxTitleLength = 20;
+  const regex = /^[a-zA-Z0-9\s\-]+$/;
 
-  if (!title) {
-    return "⚠️ Title cannot be empty.";
-  }
-  if (title.trim().length < minLength) {
-    return `⚠️ Title must be at least ${minLength} characters long.`;
-  }
-  if (title.length > maxTitleLength) {
-    return `⚠️ Title cannot be longer than ${maxTitleLength} characters.`;
-  }
-  if (!regex.test(title)) {
-    return "⚠️ Title contains invalid characters.";
-  }
-  return null; // inga fel
+  if (!title) return "⚠️ Title cannot be empty.";
+  if (title.trim().length < minLength) return `⚠️ Title must be at least ${minLength} characters long.`;
+  if (title.length > maxTitleLength) return `⚠️ Title cannot be longer than ${maxTitleLength} characters.`;
+  if (!regex.test(title)) return "⚠️ Title contains invalid characters.";
+  return null;
 }
 
 // ===== Kontrollera mutstatus separat =====
@@ -205,59 +182,48 @@ function checkMuteStatus() {
     const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
     if (muteDate > new Date()) {
       showAlert(`You are muted until ${muteDate.toLocaleString()}.`);
-      return true; // mutad
+      return true;
     }
   }
-  return false; // inte mutad
+  return false;
 }
 
 // ===== Add food to Firestore =====
 addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // Kontrollera mutstatus först
-  if (checkMuteStatus()) {
-    return; // avbryt om mutad
-  }
+  if (checkMuteStatus()) return;
 
   const user = auth.currentUser;
   if (!user) return showAlert("You must be logged in!");
 
-  // Kolla mute/banned innan posten
-  if (currentUserData?.banned) {
-    return showAlert("You are banned and cannot post foods.");
-  }
-  if (currentUserData?.muteUntil) {
-    const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
-    if (muteDate > new Date()) {
-      return showAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
-    }
-  }
+  if (currentUserData?.banned) return showAlert("You are banned and cannot post foods.");
 
   const title = foodTitle.value.trim();
   const country = foodCountry.value;
   const city = foodCity.value;
 
-  // Validera titel – här använder vi **vanlig alert istället för custom alert**
   const titleValidationError = validateTitle(title);
   if (titleValidationError) {
-    alert(titleValidationError); // ❌ ändrad här
-    return; // stoppar formuläret
+    alert(titleValidationError);
+    return;
   }
 
-  emojiError.style.display = "none"; // reset
+  emojiError.style.display = "none";
 
   if (!selectedEmoji) {
     emojiError.style.display = "block";
-    return; // stoppar formuläret
+    return;
   }
 
   if (!title || !country || !city) {
     return showAlert("Fill in all fields!");
   }
+
   if (!confirm(`Are you sure you want to publish this Foodpost: "${title}"?`)) return;
 
-  const newFoodData = {
+  // Exakt fält som Firestore-reglerna tillåter
+  const privateFoodData = {
     title,
     emoji: selectedEmoji,
     country,
@@ -268,19 +234,28 @@ addFoodForm.addEventListener("submit", async (e) => {
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   };
 
+  const publicFoodData = {
+    title,
+    emoji: selectedEmoji,
+    country,
+    city,
+    type: "meal",
+    ownerId: user.uid,
+    userName: user.displayName || user.email,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    publishedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  };
+
   try {
-    // 1️⃣ Lägg till i användarens privata collection
+    // Privat food
     await db
       .collection("foods")
       .doc(user.uid)
       .collection("items")
-      .add(newFoodData);
+      .add(privateFoodData);
 
-    // 2️⃣ Lägg till i global publicFoods collection
-    await db.collection("publicFoods").add({
-      ...newFoodData,
-      publishedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    // Public food
+    await db.collection("publicFoods").add(publicFoodData);
 
     // Reset form
     foodTitle.value = "";
@@ -337,7 +312,6 @@ async function loadFoodList() {
       foodListContainer.appendChild(div);
     });
 
-    // Event-listener på röda X
     document.querySelectorAll(".delete-icon").forEach((icon) => {
       icon.addEventListener("click", async () => {
         const docId = icon.dataset.id;
@@ -410,7 +384,7 @@ async function loadPublicFoods() {
 // ===== Initial load =====
 auth.onAuthStateChanged((user) => {
   if (user) {
-    setupUserListener(); // ✅ realtime lyssnare för mute/banned
+    setupUserListener();
     loadFoodList();
     loadPublicFoods();
   }
