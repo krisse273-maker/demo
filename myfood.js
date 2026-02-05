@@ -5,7 +5,7 @@ const firebaseConfig = {
   projectId: "global-food-share",
   storageBucket: "global-food-share.appspot.com",
   messagingSenderId: "902107453892",
-  appId: "1:902107453892:web:dd9625974b8744cc94ac91",
+  appId: "1:902107453892:web:dd9625974cc94ac91",
   measurementId: "G-S1G7JY0TH5",
 };
 
@@ -44,30 +44,28 @@ const addFoodForm = document.getElementById("addFoodForm");
 const foodListContainer = document.querySelector(".my-food-list");
 const publicFoodListContainer = document.querySelector(".public-food-list");
 
-const logoutBtn = document.getElementById("logoutBtn"); // ✅ logout
-const homeBtn = document.getElementById("homeBtn");     // ✅ home
+const logoutBtn = document.getElementById("logoutBtn");
+const homeBtn = document.getElementById("homeBtn");
 
 let selectedEmoji = "";
 let countriesData = [];
-let currentUserData = null; // här sparar vi användardata inkl mute/banned
-let userDocUnsubscribe = null; // för realtidslyssnare
+let currentUserData = null;
+let userDocUnsubscribe = null;
 
 // ===== Home & Logout knappar =====
 window.addEventListener("DOMContentLoaded", () => {
-  // Logout
   logoutBtn.addEventListener("click", async () => {
     try {
       await auth.signOut();
-      window.location.href = "../login.html"; // redirect till login
+      window.location.href = "../login.html";
     } catch (err) {
       console.error("Logout failed:", err);
       showAlert("Failed to log out.");
     }
   });
 
-  // Home
   homeBtn.addEventListener("click", () => {
-    window.location.href = "../index.html"; // redirect till home
+    window.location.href = "../index.html";
   });
 });
 
@@ -82,7 +80,7 @@ emojiPicker.querySelectorAll("span").forEach((span) => {
     selectedEmoji = span.textContent;
     emojiPickerBtn.textContent = selectedEmoji;
     emojiPicker.style.display = "none";
-    emojiError.style.display = "none"; // göm felmeddelande direkt
+    emojiError.style.display = "none";
   });
 });
 
@@ -93,7 +91,6 @@ async function loadCountries() {
     const data = await res.json();
     countriesData = data.data;
 
-    // Rensa och fyll landet dropdown
     foodCountry.innerHTML = '<option value="">Select Country</option>';
     countriesData.forEach((c) => {
       const opt = document.createElement("option");
@@ -108,19 +105,13 @@ async function loadCountries() {
   }
 }
 
-// Uppdaterad event listener för landval, med kontroll för saknade städer
 foodCountry.addEventListener("change", () => {
   foodCity.innerHTML = '<option value="">Select City</option>';
   foodCity.disabled = true;
 
   const countryObj = countriesData.find((c) => c.country === foodCountry.value);
-  if (!countryObj || !countryObj.cities || countryObj.cities.length === 0) {
-    // Inga städer tillgängliga
-    console.log("Inga städer tillgängliga för detta land");
-    return;
-  }
+  if (!countryObj || !countryObj.cities || countryObj.cities.length === 0) return;
 
-  // Fyll i städer om de finns
   countryObj.cities.forEach((city) => {
     const opt = document.createElement("option");
     opt.value = city;
@@ -130,7 +121,6 @@ foodCountry.addEventListener("change", () => {
   foodCity.disabled = false;
 });
 
-// Kör direkt vid sidladdning
 loadCountries();
 
 // ===== Kontrollera användarstatus i realtid =====
@@ -138,7 +128,7 @@ async function setupUserListener() {
   const user = auth.currentUser;
   if (!user) return;
 
-  if (userDocUnsubscribe) userDocUnsubscribe(); // stoppa tidigare lyssnare om det finns
+  if (userDocUnsubscribe) userDocUnsubscribe();
 
   userDocUnsubscribe = db.collection("users").doc(user.uid)
     .onSnapshot((docSnap) => {
@@ -147,11 +137,9 @@ async function setupUserListener() {
 
       const now = new Date();
 
-      // Banned
       if (currentUserData.banned === true) {
         addFoodForm.querySelectorAll("input, select, button").forEach(el => el.disabled = true);
 
-        // Visa meddelande
         const bannedMsg = document.createElement("div");
         bannedMsg.style.background = "#ffcccc";
         bannedMsg.style.padding = "10px";
@@ -160,7 +148,6 @@ async function setupUserListener() {
         bannedMsg.textContent = "You have been banned by an admin. Logging out...";
         document.body.prepend(bannedMsg);
 
-        // Logga ut efter kort timeout
         setTimeout(() => {
           auth.signOut().then(() => window.location.href = "../index.html");
         }, 500);
@@ -168,7 +155,6 @@ async function setupUserListener() {
         return;
       }
 
-      // Muted
       if (currentUserData.muteUntil) {
         const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
         if (muteDate > now) {
@@ -180,81 +166,56 @@ async function setupUserListener() {
 
 // ===== Valideringsfunktion för Food Name =====
 function validateTitle(title) {
-  const minLength = 5; // Minsta antal tecken
-  const maxTitleLength = 20; // Max antal tecken
-  const regex = /^[a-zA-Z0-9\s\-]+$/; // tillåter bokstäver, siffror, mellanslag, bindestreck
+  const minLength = 5;
+  const maxTitleLength = 20;
+  const regex = /^[a-zA-Z0-9\s\-]+$/;
 
-  if (!title) {
-    return "⚠️ Title cannot be empty.";
-  }
-  if (title.trim().length < minLength) {
-    return `⚠️ Title must be at least ${minLength} characters long.`;
-  }
-  if (title.length > maxTitleLength) {
-    return `⚠️ Title cannot be longer than ${maxTitleLength} characters.`;
-  }
-  if (!regex.test(title)) {
-    return "⚠️ Title contains invalid characters.";
-  }
-  return null; // inga fel
+  if (!title) return "⚠️ Title cannot be empty.";
+  if (title.trim().length < minLength) return `⚠️ Title must be at least ${minLength} characters long.`;
+  if (title.length > maxTitleLength) return `⚠️ Title cannot be longer than ${maxTitleLength} characters.`;
+  if (!regex.test(title)) return "⚠️ Title contains invalid characters.";
+  return null;
 }
 
-// ===== Kontrollera mutstatus separat =====
 function checkMuteStatus() {
   if (currentUserData?.muteUntil) {
     const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
     if (muteDate > new Date()) {
       showAlert(`You are muted until ${muteDate.toLocaleString()}.`);
-      return true; // mutad
+      return true;
     }
   }
-  return false; // inte mutad
+  return false;
 }
 
 // ===== Add food to Firestore =====
 addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // Kontrollera mutstatus först
-  if (checkMuteStatus()) {
-    return; // avbryt om mutad
-  }
+  if (checkMuteStatus()) return;
 
   const user = auth.currentUser;
   if (!user) return showAlert("You must be logged in!");
 
-  // Kolla mute/banned innan posten
-  if (currentUserData?.banned) {
-    return showAlert("You are banned and cannot post foods.");
-  }
-  if (currentUserData?.muteUntil) {
-    const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
-    if (muteDate > new Date()) {
-      return showAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
-    }
-  }
+  if (currentUserData?.banned) return showAlert("You are banned and cannot post foods.");
 
   const title = foodTitle.value.trim();
   const country = foodCountry.value;
   const city = foodCity.value;
 
-  // Validera titel – här använder vi **vanlig alert istället för custom alert**
   const titleValidationError = validateTitle(title);
   if (titleValidationError) {
-    alert(titleValidationError); // ❌ ändrad här
-    return; // stoppar formuläret
+    alert(titleValidationError);
+    return;
   }
 
-  emojiError.style.display = "none"; // reset
-
+  emojiError.style.display = "none";
   if (!selectedEmoji) {
     emojiError.style.display = "block";
-    return; // stoppar formuläret
+    return;
   }
 
-  if (!title || !country || !city) {
-    return showAlert("Fill in all fields!");
-  }
+  if (!title || !country || !city) return showAlert("Fill in all fields!");
   if (!confirm(`Are you sure you want to publish this Foodpost: "${title}"?`)) return;
 
   const newFoodData = {
@@ -269,20 +230,12 @@ addFoodForm.addEventListener("submit", async (e) => {
   };
 
   try {
-    // 1️⃣ Lägg till i användarens privata collection
-    await db
-      .collection("foods")
-      .doc(user.uid)
-      .collection("items")
-      .add(newFoodData);
-
-    // 2️⃣ Lägg till i global publicFoods collection
+    await db.collection("foods").doc(user.uid).collection("items").add(newFoodData);
     await db.collection("publicFoods").add({
       ...newFoodData,
       publishedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    // Reset form
     foodTitle.value = "";
     foodCountry.value = "";
     foodCity.innerHTML = '<option value="">Select City</option>';
@@ -299,20 +252,15 @@ addFoodForm.addEventListener("submit", async (e) => {
   }
 });
 
-// ===== Load food list =====
+// ===== Load food list (privat, sanerad) =====
 async function loadFoodList() {
   const user = auth.currentUser;
   if (!user) return;
-
   foodListContainer.innerHTML = "";
 
   try {
-    const snapshot = await db
-      .collection("foods")
-      .doc(user.uid)
-      .collection("items")
-      .orderBy("createdAt", "desc")
-      .get();
+    const snapshot = await db.collection("foods").doc(user.uid).collection("items")
+      .orderBy("createdAt", "desc").get();
 
     if (snapshot.empty) {
       const p = document.createElement("p");
@@ -326,30 +274,39 @@ async function loadFoodList() {
       const data = docSnap.data();
       const div = document.createElement("div");
       div.className = "food-item";
-      div.innerHTML = `
-        <span class="icon">${data.emoji || "🍽️"}</span>
-        <div class="food-info">
-          <strong>${data.title}</strong><br/>
-          <small>${data.city}, ${data.country}</small>
-        </div>
-        <span class="delete-icon" data-id="${docSnap.id}">&times;</span>
-      `;
+
+      const iconSpan = document.createElement("span");
+      iconSpan.className = "icon";
+      iconSpan.textContent = data.emoji || "🍽️";
+
+      const infoDiv = document.createElement("div");
+      infoDiv.className = "food-info";
+
+      const strong = document.createElement("strong");
+      strong.textContent = data.title;
+
+      const small = document.createElement("small");
+      small.textContent = `${data.city}, ${data.country}`;
+
+      infoDiv.appendChild(strong);
+      infoDiv.appendChild(document.createElement("br"));
+      infoDiv.appendChild(small);
+
+      const deleteSpan = document.createElement("span");
+      deleteSpan.className = "delete-icon";
+      deleteSpan.dataset.id = docSnap.id;
+      deleteSpan.textContent = "×";
+
+      div.appendChild(iconSpan);
+      div.appendChild(infoDiv);
+      div.appendChild(deleteSpan);
+
       foodListContainer.appendChild(div);
-    });
 
-    // Event-listener på röda X
-    document.querySelectorAll(".delete-icon").forEach((icon) => {
-      icon.addEventListener("click", async () => {
-        const docId = icon.dataset.id;
+      deleteSpan.addEventListener("click", async () => {
         if (!confirm("Are you sure you want to delete this food?")) return;
-
         try {
-          await db
-            .collection("foods")
-            .doc(user.uid)
-            .collection("items")
-            .doc(docId)
-            .delete();
+          await db.collection("foods").doc(user.uid).collection("items").doc(docSnap.id).delete();
           loadFoodList();
         } catch (err) {
           console.error(err);
@@ -363,17 +320,14 @@ async function loadFoodList() {
   }
 }
 
-// ===== Load public foods =====
+// ===== Load public foods (sanerad) =====
 async function loadPublicFoods() {
   if (!publicFoodListContainer) return;
-
   publicFoodListContainer.innerHTML = "";
 
   try {
-    const snapshot = await db
-      .collection("publicFoods")
-      .orderBy("publishedAt", "desc")
-      .get();
+    const snapshot = await db.collection("publicFoods")
+      .orderBy("publishedAt", "desc").get();
 
     if (snapshot.empty) {
       const p = document.createElement("p");
@@ -385,20 +339,37 @@ async function loadPublicFoods() {
     snapshot.forEach((doc) => {
       const data = doc.data();
       const publishedDate = data.publishedAt?.toDate();
-      const options = { day: "2-digit", month: "short" };
       const formattedDate = publishedDate
-        ? publishedDate.toLocaleDateString("en-US", options)
+        ? publishedDate.toLocaleDateString("en-US", { day: "2-digit", month: "short" })
         : "";
 
       const div = document.createElement("div");
       div.className = "public-food-item";
-      div.innerHTML = `
-        <span class="icon">${data.emoji || "🍽️"}</span>
-        <div>
-          <strong>${data.title}</strong> by <em>${data.userName}</em><br/>
-          <small>${data.city}, ${data.country} • ${formattedDate}</small>
-        </div>
-      `;
+
+      const iconSpan = document.createElement("span");
+      iconSpan.className = "icon";
+      iconSpan.textContent = data.emoji || "🍽️";
+
+      const infoDiv = document.createElement("div");
+
+      const strong = document.createElement("strong");
+      strong.textContent = data.title;
+
+      const em = document.createElement("em");
+      em.textContent = data.userName;
+
+      const small = document.createElement("small");
+      small.textContent = `${data.city}, ${data.country} • ${formattedDate}`;
+
+      infoDiv.appendChild(strong);
+      infoDiv.appendChild(document.createTextNode(" by "));
+      infoDiv.appendChild(em);
+      infoDiv.appendChild(document.createElement("br"));
+      infoDiv.appendChild(small);
+
+      div.appendChild(iconSpan);
+      div.appendChild(infoDiv);
+
       publicFoodListContainer.appendChild(div);
     });
   } catch (err) {
@@ -410,7 +381,7 @@ async function loadPublicFoods() {
 // ===== Initial load =====
 auth.onAuthStateChanged((user) => {
   if (user) {
-    setupUserListener(); // ✅ realtime lyssnare för mute/banned
+    setupUserListener();
     loadFoodList();
     loadPublicFoods();
   }
