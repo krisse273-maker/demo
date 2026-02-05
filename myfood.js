@@ -56,7 +56,7 @@ window.addEventListener("DOMContentLoaded", () => {
       window.location.href = "../login.html"; // redirect till login
     } catch (err) {
       console.error("Logout failed:", err);
-      alert("Failed to log out.");
+      showCustomMuteAlert("Failed to log out.");
     }
   });
 
@@ -99,7 +99,7 @@ async function loadCountries() {
     foodCountry.disabled = false;
   } catch (err) {
     console.error("Failed to fetch countries:", err);
-    alert("Failed to load countries. Try refreshing.");
+    showCustomMuteAlert("Failed to load countries. Try refreshing.");
   }
 }
 
@@ -192,19 +192,17 @@ addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const user = auth.currentUser;
-  if (!user) return alert("You must be logged in!");
+  if (!user) return showCustomMuteAlert("You must be logged in!");
 
   // Kolla mute/banned innan posten
   const now = new Date();
   if (currentUserData?.banned) {
-    alert("You are banned and cannot post foods.");
-    return;
+    return showCustomMuteAlert("You are banned and cannot post foods.");
   }
   if (currentUserData?.muteUntil) {
     const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
     if (muteDate > now) {
-      showCustomMuteAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
-      return; // Stoppar formuläret
+      return showCustomMuteAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
     }
   }
 
@@ -215,8 +213,7 @@ addFoodForm.addEventListener("submit", async (e) => {
   // Validera titel
   const titleValidationError = validateTitle(title);
   if (titleValidationError) {
-    alert(titleValidationError);
-    return;
+    return showCustomMuteAlert(titleValidationError);
   }
 
   emojiError.style.display = "none"; // reset
@@ -226,7 +223,9 @@ addFoodForm.addEventListener("submit", async (e) => {
     return; // stoppar formuläret
   }
 
-  if (!title || !country || !city) return alert("Fill in all fields!");
+  if (!title || !country || !city) {
+    return showCustomMuteAlert("Fill in all fields!");
+  }
   if (!confirm(`Are you sure you want to publish this Foodpost: "${title}"?`)) return;
 
   const newFoodData = {
@@ -267,7 +266,7 @@ addFoodForm.addEventListener("submit", async (e) => {
     loadPublicFoods();
   } catch (err) {
     console.error("Error adding food: ", err);
-    alert("Error adding food. Please try again.");
+    showCustomMuteAlert("Error adding food. Please try again.");
   }
 });
 
@@ -325,13 +324,13 @@ async function loadFoodList() {
           loadFoodList();
         } catch (err) {
           console.error(err);
-          alert("Error deleting food.");
+          showCustomMuteAlert("Error deleting food.");
         }
       });
     });
   } catch (err) {
     console.error("Error loading foods:", err);
-    foodListContainer.textContent = "Failed to load foods.";
+    showCustomMuteAlert("Failed to load foods.");
   }
 }
 
@@ -375,7 +374,7 @@ async function loadPublicFoods() {
     });
   } catch (err) {
     console.error("Error loading public foods:", err);
-    publicFoodListContainer.textContent = "Failed to load public foods.";
+    showCustomMuteAlert("Failed to load public foods.");
   }
 }
 
