@@ -30,7 +30,7 @@ function showCustomMuteAlert(message) {
 
 // Funktion för valideringsfel
 function showValidationError(message) {
-  showCustomMuteAlert(message); // Använder samma custom alert för valideringsfel
+  alert(message); // ändrat här för att inte visa mute-meddelande
 }
 
 // ===== DOM elements =====
@@ -199,21 +199,38 @@ function validateTitle(title) {
   return null; // inga fel
 }
 
+// ===== Kontrollera mutstatus =====
+function checkMuteStatus() {
+  if (currentUserData?.muteUntil) {
+    const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
+    const now = new Date();
+    if (muteDate > now) {
+      showCustomMuteAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
+      return true; // mutad
+    }
+  }
+  return false; // inte mutad
+}
+
 // ===== Add food to Firestore =====
 addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
+
+  // Kontrollera mutstatus först
+  if (checkMuteStatus()) {
+    return; // avbryt om mutad
+  }
 
   const user = auth.currentUser;
   if (!user) return showCustomMuteAlert("You must be logged in!");
 
   // Kolla mute/banned innan posten
-  const now = new Date();
   if (currentUserData?.banned) {
     return showCustomMuteAlert("You are banned and cannot post foods.");
   }
   if (currentUserData?.muteUntil) {
     const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
-    if (muteDate > now) {
+    if (muteDate > new Date()) {
       return showCustomMuteAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
     }
   }
