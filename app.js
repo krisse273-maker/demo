@@ -243,4 +243,84 @@ window.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("customAlertBackdrop").classList.add("hidden");
     };
   }
+
+  // Här kan du lägga till funktionen för att skapa en ny matpost
+  // Exempel: ett formulär eller knapp
+  // Jag visar ett exempel på hur du kan använda valideringen:
+
+  // Antag du har ett formulär med id "addFoodForm"
+  document.getElementById("addFoodForm")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const titleInput = document.getElementById("foodTitle");
+    const emojiInput = document.getElementById("foodEmoji");
+    const countryInput = document.getElementById("country");
+    const cityInput = document.getElementById("city");
+
+    const newFood = {
+      title: titleInput.value,
+      emoji: emojiInput.value,
+      country: countryInput.value,
+      city: cityInput.value
+    };
+
+    try {
+      const validatedData = validateFoodData(newFood);
+      // Lägg till i Firestore
+      await db.collection("publicFoods").add({
+        ...validatedData,
+        ownerId: auth.currentUser.uid,
+        userName: auth.currentUser.displayName || auth.currentUser.email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      alert("Din matpost har lagts till!");
+    } catch (error) {
+      alert(error.message);
+    }
+  });
+
+  // Valideringsfunktion samt sanitization
+  function validateFoodData(data) {
+    // Kontrollera att titel inte är tom eller innehåller farliga tecken
+    if (!data.title || data.title.trim() === "") {
+      throw new Error("Titel är obligatoriskt");
+    }
+    // Sanera titel
+    data.title = sanitizeString(data.title);
+
+    // Kontrollera att country är vald
+    if (!data.country || data.country.trim() === "") {
+      throw new Error("Välj ett land");
+    }
+    data.country = sanitizeString(data.country);
+
+    // Kontrollera att city är vald
+    if (!data.city || data.city.trim() === "") {
+      throw new Error("Välj en stad");
+    }
+    data.city = sanitizeString(data.city);
+
+    // Validera emoji (enkel check)
+    if (!isValidEmoji(data.emoji)) {
+      // Om inte giltig, sätt till standard
+      data.emoji = "🍽️";
+    }
+    // Sanera emoji
+    data.emoji = sanitizeString(data.emoji);
+
+    return data;
+  }
+
+  // Funktion för att sanera strängar
+  function sanitizeString(str) {
+    const temp = document.createElement("div");
+    temp.textContent = str;
+    return temp.innerText;
+  }
+
+  // Enkel emoji-validering
+  function isValidEmoji(emoji) {
+    const emojiRegex = /[\p{Emoji}]/u;
+    return emojiRegex.test(emoji);
+  }
 });
