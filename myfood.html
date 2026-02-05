@@ -25,8 +25,9 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <!-- Lägg till ?v=2 (eller ett annat nummer/sträng) för att tvinga webbläsaren hämta nytt -->
-<script defer src="myfood.js?v=3"></script>
+
+  <!-- Lägg till ?v=3 för att tvinga uppdatering -->
+  <script defer src="myfood.js?v=3"></script>
 </head>
 
 <body>
@@ -41,9 +42,8 @@
     <div class="my-food-list"></div>
 
     <form id="addFoodForm">
-      <!-- Added label for accessibility -->
       <label for="foodTitle">Food Name</label>
-      <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="20" required />
+      <input type="text" id="foodTitle" name="title" placeholder="Enter food name" maxlength="20" required />
 
       <!-- Emoji picker -->
       <button type="button" id="emojiPickerBtn" aria-haspopup="true" aria-expanded="false">Select your food Emoji</button>
@@ -59,7 +59,7 @@
         <span>🍺</span><span>🍷</span><span>🥤</span><span>🐟</span>
         <span>🦪</span><span>🦐</span><span>🦑</span>
       </div>
-      <p id="emojiError">Please choose an emoji!</p>
+      <p id="emojiError" style="display:none; color:red;">Please choose an emoji!</p>
 
       <label for="foodCountry">Country</label>
       <select id="foodCountry" required>
@@ -74,16 +74,5 @@
       <button type="submit">Add Food</button>
     </form>
   </div>
-
-  <!-- CUSTOM MUTE ALERT -->
-  <div id="customAlertBackdrop" class="alert-backdrop hidden">
-    <div class="alert-box">
-      <h3>⚠️ You are muted</h3>
-      <p id="alertMessage"></p>
-      <button id="alertOkBtn">OK</button>
-    </div>
-  </div>
 </body>
 </html>
-
-
