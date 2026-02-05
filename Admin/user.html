@@ -29,7 +29,32 @@
     }
 
     header h1 { color: #4caf50; }
-    
+
+    /* Lägg till knappar i headern */
+    #header-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .header-btn {
+      background-color: #f44336;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      transition: background-color 0.3s;
+      font-size: 1rem;
+    }
+
+    .header-btn:hover {
+      background-color: #e53935;
+    }
+
     #logoutBtn {
       position: absolute;
       right: 1rem;
@@ -46,6 +71,7 @@
 
     #logoutBtn:hover { background-color: #e53935; }
 
+    /* Resten av stilen är samma */
     .search-container {
       margin: 1rem;
       text-align: center;
@@ -139,6 +165,10 @@
 <body>
   <header>
     <h1>🔐 User Management</h1>
+    <!-- Lägg till knappen här -->
+    <div id="header-buttons">
+      <button class="header-btn" onclick="window.location.href='posts.html'">Posts</button>
+    </div>
     <button id="logoutBtn">Log Out</button>
   </header>
 
