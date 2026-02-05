@@ -13,10 +13,9 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// ===== DOM =====
+// ===== DOM Elements =====
 const emojiPickerBtn = document.getElementById("emojiPickerBtn");
 const emojiPicker = document.getElementById("emojiPicker");
-const emojiError = document.getElementById("emojiError");
 const foodTitle = document.getElementById("foodTitle");
 const foodCountry = document.getElementById("foodCountry");
 const foodCity = document.getElementById("foodCity");
@@ -26,29 +25,27 @@ const publicFoodListContainer = document.querySelector(".public-food-list");
 const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
 
+const titleError = document.getElementById("titleError");
+const emojiError = document.getElementById("emojiError");
+const countryError = document.getElementById("countryError");
+const cityError = document.getElementById("cityError");
+
 let selectedEmoji = "";
 let countriesData = [];
 let currentUserData = null;
 let userDocUnsubscribe = null;
 
 // ===== Navigation =====
-window.addEventListener("DOMContentLoaded", () => {
-  logoutBtn.onclick = async () => {
-    await auth.signOut();
-    window.location.href = "../login.html";
-  };
-
-  homeBtn.onclick = () => {
-    window.location.href = "../index.html";
-  };
-});
+logoutBtn.onclick = async () => {
+  await auth.signOut();
+  window.location.href = "../login.html";
+};
+homeBtn.onclick = () => window.location.href = "../index.html";
 
 // ===== Emoji picker =====
 emojiPickerBtn.onclick = () => {
-  emojiPicker.style.display =
-    emojiPicker.style.display === "flex" ? "none" : "flex";
+  emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
 };
-
 emojiPicker.querySelectorAll("span").forEach(span => {
   span.onclick = () => {
     selectedEmoji = span.textContent;
@@ -58,7 +55,7 @@ emojiPicker.querySelectorAll("span").forEach(span => {
   };
 });
 
-// ===== Countries =====
+// ===== Load countries and cities =====
 async function loadCountries() {
   const res = await fetch("https://countriesnow.space/api/v0.1/countries");
   const data = await res.json();
@@ -96,13 +93,11 @@ loadCountries();
 function setupUserListener() {
   const user = auth.currentUser;
   if (!user) return;
-
   if (userDocUnsubscribe) userDocUnsubscribe();
 
   userDocUnsubscribe = db.collection("users").doc(user.uid)
     .onSnapshot(doc => {
       currentUserData = doc.data();
-
       if (currentUserData?.banned) {
         alert("You are banned.");
         auth.signOut().then(() => window.location.href = "../index.html");
@@ -114,36 +109,40 @@ function setupUserListener() {
 function validateTitle(title) {
   if (!title || title.trim() === "") return "Title cannot be empty";
   if (title.length < 5) return "Title must be at least 5 characters long";
-  if (title.length > 20) return "Title cannot be longer than 20 characters";
-
-  // Ogiltiga tecken
-  const invalidChars = /[<>\/()=]/;
-  if (invalidChars.test(title)) return "Title contains invalid characters: < > / ( ) =";
-
-  return null; // allt ok
+  if (title.length > 15) return "Title cannot be longer than 15 characters";
+  if (/[<>\/()=]/.test(title)) return "Title contains invalid characters: < > / ( ) =";
+  return null;
 }
 
-// ===== Add food =====
+// ===== Add Food =====
 addFoodForm.onsubmit = async e => {
   e.preventDefault();
+
+  // Reset errors
+  titleError.textContent = "";
+  emojiError.style.display = "none";
+  countryError.textContent = "";
+  cityError.textContent = "";
+
+  const title = foodTitle.value.trim();
+
+  let hasError = false;
+  const titleErr = validateTitle(title);
+  if (titleErr) { titleError.textContent = titleErr; hasError = true; }
+  if (!selectedEmoji) { emojiError.style.display = "block"; hasError = true; }
+  if (!foodCountry.value) { countryError.textContent = "Please select a country"; hasError = true; }
+  if (!foodCity.value) { cityError.textContent = "Please select a city"; hasError = true; }
+
+  if (hasError) return;
 
   const user = auth.currentUser;
   if (!user) return;
 
-  const error = validateTitle(foodTitle.value.trim());
-  if (error) return alert(error);
-  if (!selectedEmoji) return emojiError.style.display = "block";
-
-  const foodRef = db
-    .collection("foods")
-    .doc(user.uid)
-    .collection("items")
-    .doc();
-
+  const foodRef = db.collection("foods").doc(user.uid).collection("items").doc();
   const foodId = foodRef.id;
 
   const foodData = {
-    title: foodTitle.value.trim(),
+    title,
     emoji: selectedEmoji,
     country: foodCountry.value,
     city: foodCity.value,
@@ -167,42 +166,27 @@ addFoodForm.onsubmit = async e => {
   loadPublicFoods();
 };
 
-// ===== Load private foods =====
+// ===== Load Private Foods =====
 async function loadFoodList() {
   const user = auth.currentUser;
   if (!user) return;
 
   foodListContainer.innerHTML = "";
-
-  const snap = await db
-    .collection("foods")
-    .doc(user.uid)
-    .collection("items")
-    .orderBy("createdAt", "desc")
-    .get();
+  const snap = await db.collection("foods").doc(user.uid).collection("items").orderBy("createdAt", "desc").get();
 
   snap.forEach(docSnap => {
     const data = docSnap.data();
-
     const div = document.createElement("div");
     div.className = "food-item";
 
     const del = document.createElement("span");
     del.textContent = "×";
     del.className = "delete-icon";
-
     del.onclick = async () => {
       if (!confirm("Delete this food?")) return;
 
-      await db.collection("foods")
-        .doc(user.uid)
-        .collection("items")
-        .doc(docSnap.id)
-        .delete();
-
-      await db.collection("publicFoods")
-        .doc(docSnap.id)
-        .delete();
+      await db.collection("foods").doc(user.uid).collection("items").doc(docSnap.id).delete();
+      await db.collection("publicFoods").doc(docSnap.id).delete();
 
       loadFoodList();
       loadPublicFoods();
@@ -214,15 +198,12 @@ async function loadFoodList() {
   });
 }
 
-// ===== Load public foods =====
+// ===== Load Public Foods =====
 async function loadPublicFoods() {
   if (!publicFoodListContainer) return;
   publicFoodListContainer.innerHTML = "";
 
-  const snap = await db.collection("publicFoods")
-    .orderBy("publishedAt", "desc")
-    .get();
-
+  const snap = await db.collection("publicFoods").orderBy("publishedAt", "desc").get();
   snap.forEach(doc => {
     const d = doc.data();
     const div = document.createElement("div");
