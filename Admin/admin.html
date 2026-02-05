@@ -22,6 +22,7 @@
         background-color: #262d37;
         text-align: center;
         padding: 1rem;
+        position: relative;
       }
 
       header h1 { color: #4caf50; }
@@ -43,6 +44,32 @@
       }
 
       #logoutBtn:hover { background-color: #e53935; }
+
+      /* Styles för knappar under welcome-meddelandet */
+      .nav-buttons {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+        gap: 10px;
+      }
+
+      .nav-button {
+        background-color: #f44336;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 1rem;
+        transition: background-color 0.3s;
+      }
+
+      .nav-button:hover {
+        background-color: #e53935;
+      }
 
       .admin-food-list {
         display: grid;
@@ -115,7 +142,12 @@
   <body>
     <header>
       <h1>🔐 Admin Panel</h1>
-      <p id="welcomeMsg">Welcome, Admin!</p>
+      <p id="welcomeMsg">Welcome, Krisse!</p>
+      <!-- Här lägger vi till knappar -->
+      <div class="nav-buttons">
+        <button class="nav-button" onclick="window.location.href='user.html'">Gå till User-sidan</button>
+        <button class="nav-button" onclick="window.location.href='admin.html'">Gå till Admin-sidan</button>
+      </div>
       <button id="logoutBtn">Log Out</button>
     </header>
 
