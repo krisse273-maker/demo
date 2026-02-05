@@ -129,7 +129,7 @@ addFoodForm.addEventListener("submit", async (e) => {
 
   const titleValidationError = validateTitle(title);
   if (titleValidationError) {
-    alert(titleValidationError); // ✅ VANLIG ALERT
+    alert(titleValidationError);
     return;
   }
 
@@ -140,22 +140,36 @@ addFoodForm.addEventListener("submit", async (e) => {
 
   if (!confirm(`Publish "${title}"?`)) return;
 
-  await db.collection("publicFoods").add({
+  // Skapa matobjektet
+  const foodData = {
     title,
     emoji: selectedEmoji,
     country,
     city,
-    type: "meal", // ✅ obligatoriskt
-    ownerId: user.uid, // ✅ obligatoriskt
-    userName: user.displayName || user.email || "Unknown", // ✅ obligatoriskt
-    createdAt: firebase.firestore.FieldValue.serverTimestamp() // ✅ obligatoriskt
-  });
+    type: "meal",
+    ownerId: user.uid,
+    userName: user.displayName || user.email || "Unknown",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
 
-  // Reset form
-  foodTitle.value = "";
-  foodCountry.value = "";
-  foodCity.innerHTML = '<option value="">Select City</option>';
-  foodCity.disabled = true;
-  emojiPickerBtn.textContent = "Select your food Emoji";
-  selectedEmoji = "";
+  try {
+    // Lägg till i publicFoods
+    await db.collection("publicFoods").add(foodData);
+
+    // Lägg till i användarens privata lista
+    await db.collection("foods").doc(user.uid).collection("items").add(foodData);
+
+    // Reset form
+    foodTitle.value = "";
+    foodCountry.value = "";
+    foodCity.innerHTML = '<option value="">Select City</option>';
+    foodCity.disabled = true;
+    emojiPickerBtn.textContent = "Select your food Emoji";
+    selectedEmoji = "";
+
+    showAlert("Food added successfully!");
+  } catch (err) {
+    console.error(err);
+    showAlert("Failed to add food. Check console.");
+  }
 });
