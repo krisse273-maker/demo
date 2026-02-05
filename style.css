@@ -78,11 +78,15 @@ button:hover {
 }
 
 .food-item {
-  background-color: white;
+  background-color: #2b3340;
+  border-radius: 10px;
   padding: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  text-align: center;
+  border: 2px solid #000;
+  box-shadow: 
+    0 8px 16px rgba(0, 0, 0, 0.3),
+    0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .food-item h3 {
@@ -258,6 +262,7 @@ section.filters {
   background-color: #3b4450;
 }
   
+
 
 
 
