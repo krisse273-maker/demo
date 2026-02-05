@@ -135,12 +135,16 @@ addFoodForm.addEventListener("submit", async (e) => {
   if (!confirm(`Publish "${title}"?`)) return;
 
   await db.collection("publicFoods").add({
-    title,
-    emoji: selectedEmoji,
-    country,
-    city,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
+  title,
+  emoji: selectedEmoji,
+  country,
+  city,
+  type: "meal", // ✅ obligatoriskt
+  ownerId: auth.currentUser.uid, // ✅ obligatoriskt
+  userName: auth.currentUser.displayName || auth.currentUser.email, // ✅ obligatoriskt
+  createdAt: firebase.firestore.FieldValue.serverTimestamp() // ✅ obligatoriskt
+});
+
 
   foodTitle.value = "";
   foodCountry.value = "";
@@ -149,3 +153,4 @@ addFoodForm.addEventListener("submit", async (e) => {
   emojiPickerBtn.textContent = "Select your food Emoji";
   selectedEmoji = "";
 });
+
