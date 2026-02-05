@@ -179,22 +179,22 @@ async function setupUserListener() {
 }
 
 // ===== Valideringsfunktion för Food Name =====
-const maxTitleLength = 20; // max 20 tecken
-
 function validateTitle(title) {
   const minLength = 5; // Minsta antal tecken
+  const maxTitleLength = 20; // Max antal tecken
   const regex = /^[a-zA-Z0-9\s\-]+$/; // tillåter bokstäver, siffror, mellanslag, bindestreck
+
   if (!title) {
-    return "Title cannot be empty.";
+    return "⚠️ Title cannot be empty.";
   }
   if (title.trim().length < minLength) {
-    return `Title must be at least ${minLength} characters long.`;
+    return `⚠️ Title must be at least ${minLength} characters long.`;
   }
   if (!regex.test(title)) {
-    return "Title can only contain letters, numbers, spaces, and hyphens.";
+    return "⚠️ Title contains invalid characters.";
   }
   if (title.length > maxTitleLength) {
-    return `Title cannot be longer than ${maxTitleLength} characters.`;
+    return `⚠️ Title cannot be longer than ${maxTitleLength} characters.`;
   }
   return null; // inga fel
 }
@@ -415,3 +415,4 @@ auth.onAuthStateChanged((user) => {
     loadPublicFoods();
   }
 });
+
