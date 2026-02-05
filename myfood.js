@@ -28,6 +28,11 @@ function showCustomMuteAlert(message) {
   };
 }
 
+// Funktion för valideringsfel
+function showValidationError(message) {
+  alert(message); // Kan ersättas med ett mer snyggt element om du vill
+}
+
 // ===== DOM elements =====
 const emojiPickerBtn = document.getElementById("emojiPickerBtn");
 const emojiPicker = document.getElementById("emojiPicker");
@@ -112,8 +117,6 @@ foodCountry.addEventListener("change", () => {
   if (!countryObj || !countryObj.cities || countryObj.cities.length === 0) {
     // Inga städer tillgängliga
     console.log("Inga städer tillgängliga för detta land");
-    // Alternativ: visa ett meddelande till användaren
-    // alert("Inga städer tillgängliga för detta land");
     return;
   }
 
@@ -222,7 +225,7 @@ addFoodForm.addEventListener("submit", async (e) => {
   // Validera titel
   const titleValidationError = validateTitle(title);
   if (titleValidationError) {
-    return showCustomMuteAlert(titleValidationError);
+    return showValidationError(titleValidationError); // Använd vår nya funktion här
   }
 
   emojiError.style.display = "none"; // reset
@@ -233,7 +236,7 @@ addFoodForm.addEventListener("submit", async (e) => {
   }
 
   if (!title || !country || !city) {
-    return showCustomMuteAlert("Fill in all fields!");
+    return showValidationError("Fill in all fields!"); // Använd vår nya funktion här
   }
   if (!confirm(`Are you sure you want to publish this Foodpost: "${title}"?`)) return;
 
