@@ -200,16 +200,16 @@ function validateTitle(title) {
 }
 
 // ===== Kontrollera mutstatus =====
-function handleMuteStatus() {
+function checkMuteStatus() {
   if (currentUserData?.muteUntil) {
     const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
     const now = new Date();
     if (muteDate > now) {
       showAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
-      return true; // Mutad
+      return true; // mutad
     }
   }
-  return false; // Inte mutad
+  return false; // inte mutad
 }
 
 // ===== Add food to Firestore =====
@@ -217,7 +217,7 @@ addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   // Kontrollera mutstatus först
-  if (handleMuteStatus()) {
+  if (checkMuteStatus()) {
     return; // avbryt om mutad
   }
 
@@ -236,13 +236,11 @@ addFoodForm.addEventListener("submit", async (e) => {
   }
 
   const title = foodTitle.value.trim();
-  const country = foodCountry.value;
-  const city = foodCity.value;
 
   // Validera titel
   const titleValidationError = validateTitle(title);
   if (titleValidationError) {
-    return showAlert(titleValidationError); // Använder vår generella funktion
+    return showAlert(titleValidationError); // Visa specifikt felmeddelande för titel
   }
 
   emojiError.style.display = "none"; // reset
@@ -336,11 +334,13 @@ async function loadFoodList() {
       `;
       foodListContainer.appendChild(div);
     });
-    // Event för delete
+
+    // Event-listener på röda X
     document.querySelectorAll(".delete-icon").forEach((icon) => {
       icon.addEventListener("click", async () => {
         const docId = icon.dataset.id;
         if (!confirm("Are you sure you want to delete this food?")) return;
+
         try {
           await db
             .collection("foods")
