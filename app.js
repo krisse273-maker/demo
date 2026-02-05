@@ -145,7 +145,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   function renderFoodItems(items) {
     foodList.innerHTML = "";
     if (!items.length) {
-      foodList.innerHTML = "<p>No food found.</p>";
+      const p = document.createElement("p");
+      p.textContent = "No food found.";
+      foodList.appendChild(p);
       return;
     }
 
@@ -160,17 +162,48 @@ window.addEventListener("DOMContentLoaded", async () => {
 
       const div = document.createElement("div");
       div.className = "food-item";
-      div.innerHTML = `
-        <div class="food-header">
-          <span class="title-emoji">${item.emoji}</span> <!-- Emoji med egen klass -->
-          <h3>${item.title}</h3>
-        </div>
-        <div class="food-details">
-          <p>📍 <strong>Location:</strong> ${item.city}, ${item.country}</p>
-          <p>👤 <strong>Published By:</strong> ${item.user}</p>
-          ${dateStr ? `<p>📅 <strong>Posted On:</strong> ${dateStr}</p>` : ""}
-        </div>
-      `;
+
+      // Skapa header-div
+      const headerDiv = document.createElement("div");
+      headerDiv.className = "food-header";
+
+      const emojiSpan = document.createElement("span");
+      emojiSpan.className = "title-emoji";
+      emojiSpan.textContent = item.emoji;
+
+      const h3 = document.createElement("h3");
+      h3.textContent = item.title;
+
+      headerDiv.appendChild(emojiSpan);
+      headerDiv.appendChild(h3);
+
+      // Skapa detaljer-div
+      const detailsDiv = document.createElement("div");
+      detailsDiv.className = "food-details";
+
+      // Lägg till plats
+      const locationP = document.createElement("p");
+      locationP.textContent = `📍 ${item.city}, ${item.country}`;
+
+      // Lägg till publicerare
+      const userP = document.createElement("p");
+      userP.textContent = `👤 ${item.user}`;
+
+      detailsDiv.appendChild(locationP);
+      detailsDiv.appendChild(userP);
+
+      // Lägg till datum om finns
+      if (dateStr) {
+        const dateP = document.createElement("p");
+        dateP.textContent = `📅 ${dateStr}`;
+        detailsDiv.appendChild(dateP);
+      }
+
+      // Lägg till header och details i huvuddiven
+      div.appendChild(headerDiv);
+      div.appendChild(detailsDiv);
+
+      // Lägg till i listan
       foodList.appendChild(div);
     });
   }
@@ -198,4 +231,3 @@ window.addEventListener("DOMContentLoaded", async () => {
     };
   }
 });
-
