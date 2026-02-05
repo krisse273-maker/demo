@@ -40,11 +40,13 @@
     <div class="my-food-list"></div>
 
     <form id="addFoodForm">
-      <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="50" required />
+      <!-- Added label for accessibility -->
+      <label for="foodTitle">Food Name</label>
+      <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="20" required />
 
       <!-- Emoji picker -->
-      <button type="button" id="emojiPickerBtn">Select your food Emoji</button>
-      <div id="emojiPicker">
+      <button type="button" id="emojiPickerBtn" aria-haspopup="true" aria-expanded="false">Select your food Emoji</button>
+      <div id="emojiPicker" aria-hidden="true">
         <span>🍔</span><span>🍟</span><span>🌭</span><span>🥪</span>
         <span>🥗</span><span>🍣</span><span>🍤</span><span>🍜</span>
         <span>🍝</span><span>🍲</span><span>🍛</span><span>🥩</span>
@@ -58,10 +60,12 @@
       </div>
       <p id="emojiError">Please choose an emoji!</p>
 
+      <label for="foodCountry">Country</label>
       <select id="foodCountry" required>
         <option value="">Select Country</option>
       </select>
 
+      <label for="foodCity">City</label>
       <select id="foodCity" disabled required>
         <option value="">Select City</option>
       </select>
@@ -80,4 +84,3 @@
   </div>
 </body>
 </html>
-
