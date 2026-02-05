@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel - User Management</title>
+  <title>User Management - Admin Panel</title>
+
+  <!-- Content Security Policy för att minska XSS-risk -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com; style-src 'self' 'unsafe-inline';">
+
   <link rel="stylesheet" href="../style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
@@ -30,7 +34,7 @@
 
     header h1 { color: #4caf50; }
 
-    /* Lägg till knappen här */
+    /* Header-knappar */
     #header-buttons {
       display: flex;
       justify-content: center;
@@ -71,7 +75,7 @@
 
     #logoutBtn:hover { background-color: #e53935; }
 
-    /* Resten av stilen är samma */
+    /* Sökfält */
     .search-container {
       margin: 1rem;
       text-align: center;
@@ -85,6 +89,7 @@
       max-width: 90%;
     }
 
+    /* User-lista */
     .user-list {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -109,6 +114,7 @@
       box-shadow: 0 8px 12px rgba(0,0,0,0.5);
     }
 
+    /* Popup */
     .user-popup {
       position: fixed;
       top: 50%;
@@ -123,6 +129,10 @@
       gap: 1rem;
       z-index: 1000;
       min-width: 250px;
+    }
+
+    .user-popup[aria-hidden="false"] {
+      display: flex;
     }
 
     .user-popup h3 {
@@ -151,6 +161,7 @@
       color: #fff;
       padding: 0.3rem 0.6rem;
       font-weight: 600;
+      cursor: pointer;
     }
 
     footer {
@@ -165,7 +176,6 @@
 <body>
   <header>
     <h1>🔐 User Management</h1>
-    <!-- Knappen "Posts" som länkar till admin.html -->
     <div id="header-buttons">
       <button class="header-btn" onclick="window.location.href='admin.html'">Posts</button>
     </div>
@@ -173,13 +183,13 @@
   </header>
 
   <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Search users by name or email..." />
+    <input type="text" id="searchInput" placeholder="Search users by name or email..." autocomplete="off" aria-label="Search users">
   </div>
 
   <div class="user-list"></div>
 
   <!-- Popup -->
-  <div class="user-popup" id="userPopup">
+  <div class="user-popup" id="userPopup" role="dialog" aria-hidden="true">
     <button class="close-popup" id="closePopup">X</button>
     <h3 id="popupUserName">User Name</h3>
     <button class="popup-btn ban-btn" id="banBtn">Ban User</button>
