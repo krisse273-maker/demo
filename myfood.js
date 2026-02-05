@@ -28,9 +28,9 @@ function showCustomMuteAlert(message) {
   };
 }
 
-// Funktion för valideringsfel
-function showValidationError(message) {
-  alert(message); // ändrat här för att inte visa mute-meddelande
+// Ny funktion för att visa alla typer av alerts
+function showAlert(message) {
+  showCustomMuteAlert(message);
 }
 
 // ===== DOM elements =====
@@ -61,7 +61,7 @@ window.addEventListener("DOMContentLoaded", () => {
       window.location.href = "../login.html"; // redirect till login
     } catch (err) {
       console.error("Logout failed:", err);
-      showCustomMuteAlert("Failed to log out.");
+      showAlert("Failed to log out.");
     }
   });
 
@@ -104,7 +104,7 @@ async function loadCountries() {
     foodCountry.disabled = false;
   } catch (err) {
     console.error("Failed to fetch countries:", err);
-    showCustomMuteAlert("Failed to load countries. Try refreshing.");
+    showAlert("Failed to load countries. Try refreshing.");
   }
 }
 
@@ -172,7 +172,7 @@ async function setupUserListener() {
       if (currentUserData.muteUntil) {
         const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
         if (muteDate > now) {
-          showCustomMuteAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
+          showAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
         }
       }
     });
@@ -205,7 +205,7 @@ function checkMuteStatus() {
     const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
     const now = new Date();
     if (muteDate > now) {
-      showCustomMuteAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
+      showAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
       return true; // mutad
     }
   }
@@ -222,16 +222,16 @@ addFoodForm.addEventListener("submit", async (e) => {
   }
 
   const user = auth.currentUser;
-  if (!user) return showCustomMuteAlert("You must be logged in!");
+  if (!user) return showAlert("You must be logged in!");
 
   // Kolla mute/banned innan posten
   if (currentUserData?.banned) {
-    return showCustomMuteAlert("You are banned and cannot post foods.");
+    return showAlert("You are banned and cannot post foods.");
   }
   if (currentUserData?.muteUntil) {
     const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
     if (muteDate > new Date()) {
-      return showCustomMuteAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
+      return showAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
     }
   }
 
@@ -242,7 +242,7 @@ addFoodForm.addEventListener("submit", async (e) => {
   // Validera titel
   const titleValidationError = validateTitle(title);
   if (titleValidationError) {
-    return showValidationError(titleValidationError); // Använd vår nya funktion här
+    return showAlert(titleValidationError); // Använder vår generella funktion
   }
 
   emojiError.style.display = "none"; // reset
@@ -253,7 +253,7 @@ addFoodForm.addEventListener("submit", async (e) => {
   }
 
   if (!title || !country || !city) {
-    return showValidationError("Fill in all fields!"); // Använd vår nya funktion här
+    return showAlert("Fill in all fields!"); // Använder vår generella funktion
   }
   if (!confirm(`Are you sure you want to publish this Foodpost: "${title}"?`)) return;
 
@@ -295,7 +295,7 @@ addFoodForm.addEventListener("submit", async (e) => {
     loadPublicFoods();
   } catch (err) {
     console.error("Error adding food: ", err);
-    showCustomMuteAlert("Error adding food. Please try again.");
+    showAlert("Error adding food. Please try again.");
   }
 });
 
@@ -353,13 +353,13 @@ async function loadFoodList() {
           loadFoodList();
         } catch (err) {
           console.error(err);
-          showCustomMuteAlert("Error deleting food.");
+          showAlert("Error deleting food.");
         }
       });
     });
   } catch (err) {
     console.error("Error loading foods:", err);
-    showCustomMuteAlert("Failed to load foods.");
+    showAlert("Failed to load foods.");
   }
 }
 
@@ -403,7 +403,7 @@ async function loadPublicFoods() {
     });
   } catch (err) {
     console.error("Error loading public foods:", err);
-    showCustomMuteAlert("Failed to load public foods.");
+    showAlert("Failed to load public foods.");
   }
 }
 
