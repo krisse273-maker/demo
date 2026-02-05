@@ -116,9 +116,8 @@ foodCountry.addEventListener("change", () => {
     opt.textContent = city;
     foodCity.appendChild(opt);
   });
-  foodCity.disabled = false;
 });
-
+ 
 // Kör direkt vid sidladdning
 loadCountries();
 
@@ -171,7 +170,14 @@ async function setupUserListener() {
 const maxTitleLength = 20; // max 20 tecken
 
 function validateTitle(title) {
+  const minLength = 5; // Minsta antal tecken
   const regex = /^[a-zA-Z0-9\s\-]+$/; // tillåter bokstäver, siffror, mellanslag, bindestreck
+  if (!title) {
+    return "Title cannot be empty.";
+  }
+  if (title.trim().length < minLength) {
+    return `Title must be at least ${minLength} characters long.`;
+  }
   if (!regex.test(title)) {
     return "Title can only contain letters, numbers, spaces, and hyphens.";
   }
