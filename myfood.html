@@ -11,9 +11,16 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-  <!-- CSP för att tillåta endast CSS från samma domän -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com; script-src 'self' https://www.gstatic.com https://firebasestorage.googleapis.com;">
-  
+  <!-- CSP för att tillåta nödvändiga resurser -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self' https://*.googleapis.com https://*.gstatic.com https://firebasestorage.googleapis.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    script-src 'self' https://www.gstatic.com https://www.googleapis.com https://firebase.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com;
+    connect-src 'self' https://countriesnow.space https://firestore.googleapis.com https://identitytoolkit.googleapis.com;
+    img-src 'self' data:;
+  " />
+
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -62,6 +69,7 @@
       <button type="submit">Add Food</button>
     </form>
   </div>
+
   <!-- CUSTOM MUTE ALERT -->
   <div id="customAlertBackdrop" class="alert-backdrop hidden">
     <div class="alert-box">
@@ -72,4 +80,3 @@
   </div>
 </body>
 </html>
-
