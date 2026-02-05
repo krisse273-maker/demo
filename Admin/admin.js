@@ -21,12 +21,20 @@ window.addEventListener("DOMContentLoaded", async () => {
   const logoutBtn = document.getElementById("logoutBtn");
   const welcomeMsg = document.getElementById("welcomeMsg");
   const usersBtn = document.getElementById("usersBtn");
+  const toastContainer = document.getElementById("toastContainer");
+
+  // Toast-funktion
+  function showToast(message) {
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.textContent = message;
+    toastContainer.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
 
   // Logga ut
   logoutBtn.addEventListener("click", () => {
-    auth.signOut()
-      .then(() => window.location.href = "../index.html")
-      .catch(err => console.error("Logout error:", err));
+    auth.signOut().then(() => window.location.href = "../index.html");
   });
 
   // Navigera till Users-sidan
@@ -41,26 +49,20 @@ window.addEventListener("DOMContentLoaded", async () => {
     try {
       userDoc = await db.collection("users").doc(user.uid).get();
       if (!userDoc.exists || !userDoc.data()?.admin) {
-        alert("Access denied! Only admins can access this page.");
+        showToast("Access denied! Only admins can access this page.");
         return window.location.href = "../index.html";
       }
     } catch (err) {
       console.error("Error fetching user data:", err);
-      alert("Failed to verify admin. Try logging in again.");
+      showToast("Failed to verify admin. Try logging in again.");
       return window.location.href = "../login.html";
     }
 
-    // Sätt välkomsttext med sanering
-    const adminName = userDoc.data().name || "Admin";
-    welcomeMsg.textContent = `Welcome, ${adminName}!`;
+    welcomeMsg.textContent = `Welcome, ${userDoc.data().name || "Admin"}!`;
 
     // Loader
-    foodList.innerHTML = "";
-    const loader = document.createElement("p");
-    loader.textContent = "Loading meals...";
-    foodList.appendChild(loader);
+    foodList.innerHTML = "<p>Loading meals...</p>";
 
-    // Ladda publicFoods
     db.collection("publicFoods").orderBy("createdAt", "desc")
       .onSnapshot(snapshot => {
         foodList.innerHTML = "";
@@ -73,8 +75,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 
         snapshot.docs.forEach(doc => {
           const data = doc.data();
-
-          // Sanera data innan användning
           const title = data.title || "";
           const emoji = data.emoji || "🍽️";
           const city = data.city || "";
@@ -84,62 +84,28 @@ window.addEventListener("DOMContentLoaded", async () => {
           const div = document.createElement("div");
           div.className = "food-item";
 
-          const header = document.createElement("div");
-          header.className = "food-header";
-
-          const emojiSpan = document.createElement("span");
-          emojiSpan.textContent = emoji;
-
-          const h3 = document.createElement("h3");
-          h3.textContent = title;
-
-          header.appendChild(emojiSpan);
-          header.appendChild(h3);
-
-          const details = document.createElement("div");
-          details.className = "food-details";
-
-          const locationP = document.createElement("p");
-          const locationIcon = document.createElement("span");
-          locationIcon.className = "icon-small";
-          locationIcon.textContent = "📍";
-          locationP.appendChild(locationIcon);
-          const locationStrong = document.createElement("strong");
-          locationStrong.textContent = "Location:";
-          locationP.appendChild(locationStrong);
-          locationP.appendChild(document.createTextNode(` ${city}, ${country}`));
-
-          const userP = document.createElement("p");
-          const userIcon = document.createElement("span");
-          userIcon.className = "icon-small";
-          userIcon.textContent = "👤";
-          userP.appendChild(userIcon);
-          const userStrong = document.createElement("strong");
-          userStrong.textContent = "Published By:";
-          userP.appendChild(userStrong);
-          userP.appendChild(document.createTextNode(` ${userName}`));
-
-          details.appendChild(locationP);
-          details.appendChild(userP);
+          div.innerHTML = `
+            <div class="food-header">
+              <span>${emoji}</span>
+              <h3>${title}</h3>
+            </div>
+            <div class="food-details">
+              <p><span class="icon-small">📍</span><strong>Location:</strong> ${city}, ${country}</p>
+              <p><span class="icon-small">👤</span><strong>Published By:</strong> ${userName}</p>
+            </div>
+            <button class="delete-btn">Delete</button>
+          `;
 
           // Delete-knapp
-          const deleteBtn = document.createElement("button");
-          deleteBtn.className = "delete-btn";
-          deleteBtn.textContent = "Delete";
-          deleteBtn.addEventListener("click", async () => {
-            if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
+          div.querySelector(".delete-btn").addEventListener("click", async () => {
             try {
               await db.collection("publicFoods").doc(doc.id).delete();
-              alert(`"${title}" deleted!`);
+              showToast(`"${title}" deleted!`);
             } catch (err) {
               console.error("Error deleting food:", err);
-              alert("Failed to delete this meal.");
+              showToast("Failed to delete this meal.");
             }
           });
-
-          div.appendChild(header);
-          div.appendChild(details);
-          div.appendChild(deleteBtn);
 
           fragment.appendChild(div);
         });
