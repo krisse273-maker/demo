@@ -28,7 +28,6 @@ function showCustomMuteAlert(message) {
   };
 }
 
-
 // ===== DOM elements =====
 const emojiPickerBtn = document.getElementById("emojiPickerBtn");
 const emojiPicker = document.getElementById("emojiPicker");
@@ -160,13 +159,26 @@ async function setupUserListener() {
 
       // Muted
       if (currentUserData.muteUntil) {
-  const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
-  if (muteDate > now) {
-    showCustomMuteAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
-  }
+        const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
+        if (muteDate > now) {
+          showCustomMuteAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
+        }
+      }
+    });
 }
 
-    });
+// ===== Valideringsfunktion för Food Name =====
+const maxTitleLength = 20; // max 20 tecken
+
+function validateTitle(title) {
+  const regex = /^[a-zA-Z0-9\s\-]+$/; // tillåter bokstäver, siffror, mellanslag, bindestreck
+  if (!regex.test(title)) {
+    return "Title can only contain letters, numbers, spaces, and hyphens.";
+  }
+  if (title.length > maxTitleLength) {
+    return `Title cannot be longer than ${maxTitleLength} characters.`;
+  }
+  return null; // inga fel
 }
 
 // ===== Add food to Firestore =====
@@ -183,17 +195,23 @@ addFoodForm.addEventListener("submit", async (e) => {
     return;
   }
   if (currentUserData?.muteUntil) {
-  const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
-  if (muteDate > now) {
-    showCustomMuteAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
-    return; // Stoppar formuläret
+    const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
+    if (muteDate > now) {
+      showCustomMuteAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
+      return; // Stoppar formuläret
+    }
   }
-}
-
 
   const title = foodTitle.value.trim();
   const country = foodCountry.value;
   const city = foodCity.value;
+
+  // Validera titel
+  const titleValidationError = validateTitle(title);
+  if (titleValidationError) {
+    alert(titleValidationError);
+    return;
+  }
 
   emojiError.style.display = "none"; // reset
 
@@ -363,4 +381,3 @@ auth.onAuthStateChanged((user) => {
     loadPublicFoods();
   }
 });
-
