@@ -200,16 +200,16 @@ function validateTitle(title) {
 }
 
 // ===== Kontrollera mutstatus =====
-function checkMuteStatus() {
+function handleMuteStatus() {
   if (currentUserData?.muteUntil) {
     const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
     const now = new Date();
     if (muteDate > now) {
       showAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
-      return true; // mutad
+      return true; // Mutad
     }
   }
-  return false; // inte mutad
+  return false; // Inte mutad
 }
 
 // ===== Add food to Firestore =====
@@ -217,7 +217,7 @@ addFoodForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   // Kontrollera mutstatus först
-  if (checkMuteStatus()) {
+  if (handleMuteStatus()) {
     return; // avbryt om mutad
   }
 
@@ -336,13 +336,11 @@ async function loadFoodList() {
       `;
       foodListContainer.appendChild(div);
     });
-
-    // Event-listener på röda X
+    // Event för delete
     document.querySelectorAll(".delete-icon").forEach((icon) => {
       icon.addEventListener("click", async () => {
         const docId = icon.dataset.id;
         if (!confirm("Are you sure you want to delete this food?")) return;
-
         try {
           await db
             .collection("foods")
@@ -410,9 +408,8 @@ async function loadPublicFoods() {
 // ===== Initial load =====
 auth.onAuthStateChanged((user) => {
   if (user) {
-    setupUserListener(); // ✅ realtime listener för mute/banned
+    setupUserListener(); // ✅ realtime lyssnare för mute/banned
     loadFoodList();
     loadPublicFoods();
   }
 });
-
