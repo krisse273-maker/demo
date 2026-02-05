@@ -13,6 +13,20 @@ const firebaseConfig = {
   measurementId: "G-S1G7JY0TH5",
 };
 
+// Kontrollera om användaren är bannad
+if (sessionStorage.getItem('banned') === 'true') {
+  // Skapa ett meddelande
+  let bannedMsg = document.createElement("p");
+  bannedMsg.style.color = "red";
+  bannedMsg.style.textAlign = "center";
+  bannedMsg.style.marginTop = "0.5rem";
+  bannedMsg.textContent = "You are banned from this service.";
+  // Visa meddelandet i login-formuläret
+  document.querySelector(".login-form").appendChild(bannedMsg);
+  // Radera flaggan så det inte visas igen
+  sessionStorage.removeItem('banned');
+}
+
 // ===== Initiera Firebase =====
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -92,5 +106,6 @@ if (goRegisterBtn) {
     window.location.href = "register.html";
   });
 }
+
 
 
