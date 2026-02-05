@@ -31,7 +31,6 @@ auth.onAuthStateChanged((user) => {
   });
 });
 
-
 window.addEventListener("DOMContentLoaded", async () => {
   const countrySelect = document.getElementById("country");
   const citySelect = document.getElementById("city");
@@ -70,7 +69,13 @@ window.addEventListener("DOMContentLoaded", async () => {
     const data = await res.json();
     countriesData = data.data;
 
-    countrySelect.innerHTML = `<option value="">Select country</option>`;
+    // Rensa countrySelect och lägg till default
+    countrySelect.innerHTML = "";
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "Select country";
+    countrySelect.appendChild(defaultOption);
+
     countriesData.forEach(c => {
       const opt = document.createElement("option");
       opt.value = c.country;
@@ -80,7 +85,13 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   countrySelect.onchange = () => {
-    citySelect.innerHTML = `<option value="">Select city</option>`;
+    // Rensa och lägg till default för city
+    citySelect.innerHTML = "";
+    const defaultCity = document.createElement("option");
+    defaultCity.value = "";
+    defaultCity.textContent = "Select city";
+    citySelect.appendChild(defaultCity);
+
     const country = countriesData.find(c => c.country === countrySelect.value);
     if (!country) return;
 
@@ -143,7 +154,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   function renderFoodItems(items) {
+    // Rensa listan
     foodList.innerHTML = "";
+
     if (!items.length) {
       const p = document.createElement("p");
       p.textContent = "No food found.";
