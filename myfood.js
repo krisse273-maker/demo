@@ -13,22 +13,6 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// ===== Custom Alert =====
-function showCustomMuteAlert(message) {
-  const backdrop = document.getElementById("customAlertBackdrop");
-  const msg = document.getElementById("alertMessage");
-  const okBtn = document.getElementById("alertOkBtn");
-
-  msg.textContent = message;
-  backdrop.classList.remove("hidden");
-
-  okBtn.onclick = () => backdrop.classList.add("hidden");
-}
-
-function showAlert(message) {
-  showCustomMuteAlert(message);
-}
-
 // ===== DOM =====
 const emojiPickerBtn = document.getElementById("emojiPickerBtn");
 const emojiPicker = document.getElementById("emojiPicker");
@@ -120,7 +104,7 @@ function setupUserListener() {
       currentUserData = doc.data();
 
       if (currentUserData?.banned) {
-        showAlert("You are banned.");
+        alert("You are banned.");
         auth.signOut().then(() => window.location.href = "../index.html");
       }
     });
@@ -147,7 +131,7 @@ addFoodForm.onsubmit = async e => {
   if (!user) return;
 
   const error = validateTitle(foodTitle.value.trim());
-  if (error) return showAlert(error);
+  if (error) return alert(error);
   if (!selectedEmoji) return emojiError.style.display = "block";
 
   const foodRef = db
