@@ -103,21 +103,30 @@ async function loadCountries() {
   }
 }
 
+// Uppdaterad event listener för landval, med kontroll för saknade städer
 foodCountry.addEventListener("change", () => {
   foodCity.innerHTML = '<option value="">Select City</option>';
   foodCity.disabled = true;
 
   const countryObj = countriesData.find((c) => c.country === foodCountry.value);
-  if (!countryObj) return;
+  if (!countryObj || !countryObj.cities || countryObj.cities.length === 0) {
+    // Inga städer tillgängliga
+    console.log("Inga städer tillgängliga för detta land");
+    // Alternativ: visa ett meddelande till användaren
+    // alert("Inga städer tillgängliga för detta land");
+    return;
+  }
 
+  // Fyll i städer om de finns
   countryObj.cities.forEach((city) => {
     const opt = document.createElement("option");
     opt.value = city;
     opt.textContent = city;
     foodCity.appendChild(opt);
   });
+  foodCity.disabled = false;
 });
- 
+
 // Kör direkt vid sidladdning
 loadCountries();
 
@@ -129,7 +138,7 @@ async function setupUserListener() {
   if (userDocUnsubscribe) userDocUnsubscribe(); // stoppa tidigare lyssnare om det finns
 
   userDocUnsubscribe = db.collection("users").doc(user.uid)
-    .onSnapshot(docSnap => {
+    .onSnapshot((docSnap) => {
       if (!docSnap.exists) return;
       currentUserData = docSnap.data();
 
