@@ -128,8 +128,15 @@ function setupUserListener() {
 
 // ===== Validation =====
 function validateTitle(title) {
-  if (!title || title.length < 5 || title.length > 20) return "Invalid title";
-  return null;
+  if (!title || title.trim() === "") return "Title cannot be empty";
+  if (title.length < 5) return "Title must be at least 5 characters long";
+  if (title.length > 20) return "Title cannot be longer than 20 characters";
+
+  // Ogiltiga tecken
+  const invalidChars = /[<>\/()=]/;
+  if (invalidChars.test(title)) return "Title contains invalid characters: < > / ( ) =";
+
+  return null; // allt ok
 }
 
 // ===== Add food =====
@@ -140,7 +147,7 @@ addFoodForm.onsubmit = async e => {
   if (!user) return;
 
   const error = validateTitle(foodTitle.value.trim());
-  if (error) return alert(error);
+  if (error) return showAlert(error);
   if (!selectedEmoji) return emojiError.style.display = "block";
 
   const foodRef = db
