@@ -190,22 +190,21 @@ function validateTitle(title) {
   if (title.trim().length < minLength) {
     return `⚠️ Title must be at least ${minLength} characters long.`;
   }
-  if (!regex.test(title)) {
-    return "⚠️ Title contains invalid characters.";
-  }
   if (title.length > maxTitleLength) {
     return `⚠️ Title cannot be longer than ${maxTitleLength} characters.`;
+  }
+  if (!regex.test(title)) {
+    return "⚠️ Title contains invalid characters.";
   }
   return null; // inga fel
 }
 
-// ===== Kontrollera mutstatus =====
+// ===== Kontrollera mutstatus separat =====
 function checkMuteStatus() {
   if (currentUserData?.muteUntil) {
     const muteDate = currentUserData.muteUntil.toDate ? currentUserData.muteUntil.toDate() : new Date(currentUserData.muteUntil);
-    const now = new Date();
-    if (muteDate > now) {
-      showAlert(`You are muted until ${muteDate.toLocaleString()}. You cannot post foods right now.`);
+    if (muteDate > new Date()) {
+      showAlert(`You are muted until ${muteDate.toLocaleString()}.`);
       return true; // mutad
     }
   }
@@ -236,11 +235,13 @@ addFoodForm.addEventListener("submit", async (e) => {
   }
 
   const title = foodTitle.value.trim();
+  const country = foodCountry.value;
+  const city = foodCity.value;
 
   // Validera titel
   const titleValidationError = validateTitle(title);
   if (titleValidationError) {
-    return showAlert(titleValidationError); // Visa specifikt felmeddelande för titel
+    return showAlert(titleValidationError);
   }
 
   emojiError.style.display = "none"; // reset
@@ -251,7 +252,7 @@ addFoodForm.addEventListener("submit", async (e) => {
   }
 
   if (!title || !country || !city) {
-    return showAlert("Fill in all fields!"); // Använder vår generella funktion
+    return showAlert("Fill in all fields!");
   }
   if (!confirm(`Are you sure you want to publish this Foodpost: "${title}"?`)) return;
 
