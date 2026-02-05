@@ -20,12 +20,18 @@ window.addEventListener("DOMContentLoaded", async () => {
   const foodList = document.querySelector(".admin-food-list");
   const logoutBtn = document.getElementById("logoutBtn");
   const welcomeMsg = document.getElementById("welcomeMsg");
+  const usersBtn = document.getElementById("usersBtn");
 
   // Logga ut
   logoutBtn.addEventListener("click", () => {
     auth.signOut()
       .then(() => window.location.href = "../index.html")
       .catch(err => console.error("Logout error:", err));
+  });
+
+  // Navigera till Users-sidan
+  usersBtn.addEventListener("click", () => {
+    window.location.href = "user.html";
   });
 
   auth.onAuthStateChanged(async user => {
@@ -44,14 +50,17 @@ window.addEventListener("DOMContentLoaded", async () => {
       return window.location.href = "../login.html";
     }
 
-    welcomeMsg.textContent = `Welcome, ${userDoc.data().name}!`;
+    // Sätt välkomsttext med sanering
+    const adminName = userDoc.data().name || "Admin";
+    welcomeMsg.textContent = `Welcome, ${adminName}!`;
 
-    // Ladda alla publicFoods med loader
+    // Loader
+    foodList.innerHTML = "";
     const loader = document.createElement("p");
     loader.textContent = "Loading meals...";
-    foodList.innerHTML = "";
     foodList.appendChild(loader);
 
+    // Ladda publicFoods
     db.collection("publicFoods").orderBy("createdAt", "desc")
       .onSnapshot(snapshot => {
         foodList.innerHTML = "";
@@ -64,32 +73,73 @@ window.addEventListener("DOMContentLoaded", async () => {
 
         snapshot.docs.forEach(doc => {
           const data = doc.data();
+
+          // Sanera data innan användning
+          const title = data.title || "";
+          const emoji = data.emoji || "🍽️";
+          const city = data.city || "";
+          const country = data.country || "";
+          const userName = data.userName || "Anonymous";
+
           const div = document.createElement("div");
           div.className = "food-item";
-          div.innerHTML = `
-            <div class="food-header">
-              <span>${data.emoji || "🍽️"}</span>
-              <h3>${data.title}</h3>
-            </div>
-            <div class="food-details">
-              <p><span class="icon-small">📍</span><strong>Location:</strong> ${data.city || ""}, ${data.country || ""}</p>
-              <p><span class="icon-small">👤</span><strong>Published By:</strong> ${data.userName || "Anonymous"}</p>
-            </div>
-            <button class="delete-btn">Delete</button>
-          `;
+
+          const header = document.createElement("div");
+          header.className = "food-header";
+
+          const emojiSpan = document.createElement("span");
+          emojiSpan.textContent = emoji;
+
+          const h3 = document.createElement("h3");
+          h3.textContent = title;
+
+          header.appendChild(emojiSpan);
+          header.appendChild(h3);
+
+          const details = document.createElement("div");
+          details.className = "food-details";
+
+          const locationP = document.createElement("p");
+          const locationIcon = document.createElement("span");
+          locationIcon.className = "icon-small";
+          locationIcon.textContent = "📍";
+          locationP.appendChild(locationIcon);
+          const locationStrong = document.createElement("strong");
+          locationStrong.textContent = "Location:";
+          locationP.appendChild(locationStrong);
+          locationP.appendChild(document.createTextNode(` ${city}, ${country}`));
+
+          const userP = document.createElement("p");
+          const userIcon = document.createElement("span");
+          userIcon.className = "icon-small";
+          userIcon.textContent = "👤";
+          userP.appendChild(userIcon);
+          const userStrong = document.createElement("strong");
+          userStrong.textContent = "Published By:";
+          userP.appendChild(userStrong);
+          userP.appendChild(document.createTextNode(` ${userName}`));
+
+          details.appendChild(locationP);
+          details.appendChild(userP);
 
           // Delete-knapp
-          const deleteBtn = div.querySelector(".delete-btn");
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "delete-btn";
+          deleteBtn.textContent = "Delete";
           deleteBtn.addEventListener("click", async () => {
-            if (!confirm(`Are you sure you want to delete "${data.title}"?`)) return;
+            if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
             try {
               await db.collection("publicFoods").doc(doc.id).delete();
-              alert(`"${data.title}" deleted!`);
+              alert(`"${title}" deleted!`);
             } catch (err) {
               console.error("Error deleting food:", err);
               alert("Failed to delete this meal.");
             }
           });
+
+          div.appendChild(header);
+          div.appendChild(details);
+          div.appendChild(deleteBtn);
 
           fragment.appendChild(div);
         });
