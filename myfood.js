@@ -252,7 +252,6 @@ style.textContent = `
 document.head.appendChild(style);
 
 let selectedEmoji = "";
-let countriesData = [];
 let currentUserData = null;
 let userDocUnsubscribe = null;
 
