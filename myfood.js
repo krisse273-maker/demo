@@ -37,6 +37,7 @@ const cityError = document.getElementById("cityError");
 
 // --- Hårdkodad lista av länder och städer (börjar med A, kan fyllas på med resten) ---
   const countriesData = [
+    
   // --- A-länder ---
   { country: "Afghanistan", cities: ["Kabul", "Kandahar", "Herat", "Mazar-i-Sharif", "Jalalabad"] },
   { country: "Albania", cities: ["Tirana", "Durrës", "Vlorë", "Shkodër", "Fier"] },
@@ -238,6 +239,18 @@ const cityError = document.getElementById("cityError");
 { country: "Zambia", cities: ["Lusaka", "Ndola", "Kitwe", "Kabwe", "Chingola"] },
 { country: "Zimbabwe", cities: ["Harare", "Bulawayo", "Chitungwiza", "Mutare", "Gweru"] }
 ];
+
+// ===== Populate country dropdown (egen lista) =====
+foodCountry.innerHTML = `<option value="">Select Country</option>`;
+
+countriesData.forEach(c => {
+  const opt = document.createElement("option");
+  opt.value = c.country;
+  opt.textContent = c.country;
+  foodCountry.appendChild(opt);
+});
+
+
 
 // ===== Styling for validation (JS only) =====
 titleError.style.color = "red";
