@@ -1,8 +1,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-// ===== Firebase-konfiguration =====
+/* =========================
+   Firebase config
+========================= */
 const firebaseConfig = {
   apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
   authDomain: "global-food-share.firebaseapp.com",
@@ -13,52 +15,103 @@ const firebaseConfig = {
   measurementId: "G-S1G7JY0TH5",
 };
 
-// Kontrollera om användaren är bannad
-if (sessionStorage.getItem('banned') === 'true') {
-  // Skapa ett meddelande
-  let bannedMsg = document.createElement("p");
-  bannedMsg.style.color = "red";
-  bannedMsg.style.textAlign = "center";
-  bannedMsg.style.marginTop = "0.5rem";
-  bannedMsg.textContent = "You are banned from this service.";
-  // Visa meddelandet i login-formuläret
-  document.querySelector(".login-form").appendChild(bannedMsg);
-  // Radera flaggan så det inte visas igen
-  sessionStorage.removeItem('banned');
-}
-
-// ===== Initiera Firebase =====
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ===== UI =====
+/* =========================
+   UI elements
+========================= */
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
 const loginBtn = document.getElementById("loginBtn");
-const goRegisterBtn = document.getElementById("goRegisterBtn"); // ✅ NY
+const goRegisterBtn = document.getElementById("goRegisterBtn");
 const spinner = document.getElementById("spinner");
 
-let msgElem = document.createElement("p");
+/* =========================
+   Message element (safe)
+========================= */
+const msgElem = document.createElement("p");
 msgElem.style.color = "red";
 msgElem.style.textAlign = "center";
 msgElem.style.marginTop = "0.5rem";
 document.querySelector(".login-form").appendChild(msgElem);
 
-// ===== LOGIN =====
+/* =========================
+   Banned flag (session)
+========================= */
+if (sessionStorage.getItem("banned") === "true") {
+  msgElem.textContent = "You are banned from this service.";
+  sessionStorage.removeItem("banned");
+}
+
+/* =========================
+   Helpers: input styles
+========================= */
+function setValid(input) {
+  input.style.borderColor = "#69f0ae";
+}
+
+function setInvalid(input) {
+  input.style.borderColor = "#ef5350";
+}
+
+/* =========================
+   Live validation
+========================= */
+function validateEmail() {
+  const val = emailInput.value.trim().toLowerCase();
+  const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+  ok ? setValid(emailInput) : setInvalid(emailInput);
+  return ok;
+}
+
+function validatePassword() {
+  const ok = passwordInput.value.length >= 6;
+  ok ? setValid(passwordInput) : setInvalid(passwordInput);
+  return ok;
+}
+
+emailInput.addEventListener("input", validateEmail);
+passwordInput.addEventListener("input", validatePassword);
+
+/* =========================
+   Firebase error mapping
+========================= */
+function mapAuthError(err) {
+  switch (err.code) {
+    case "auth/invalid-email":
+    case "auth/user-not-found":
+    case "auth/wrong-password":
+      return "Wrong email or password.";
+    case "auth/too-many-requests":
+      return "Too many attempts. Try again later.";
+    default:
+      return "Login failed. Please try again.";
+  }
+}
+
+/* =========================
+   LOGIN
+========================= */
 loginBtn.addEventListener("click", async () => {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
   msgElem.textContent = "";
 
-  if (!email || !password) {
-    msgElem.textContent = "Please fill in all fields!";
+  const email = emailInput.value.trim().toLowerCase();
+  const password = passwordInput.value;
+
+  const valid =
+    validateEmail() &
+    validatePassword();
+
+  if (!valid) {
+    msgElem.textContent = "Please fix the highlighted fields.";
     return;
   }
 
-  console.log("Login button clicked");
-
   loginBtn.disabled = true;
   spinner.style.display = "block";
-  loginBtn.textContent = "Logging in...";
+  document.getElementById("btnText").textContent = "Logging in...";
 
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -68,17 +121,14 @@ loginBtn.addEventListener("click", async () => {
     const userSnap = await getDoc(userRef);
 
     if (userSnap.exists()) {
-  const currentUserData = userSnap.data();
-  if (currentUserData.banned === true) {
-    // Sätt sessionStorage-flaggan och skicka användaren till login-sidan
-    sessionStorage.setItem('banned', 'true');
-    await auth.signOut();
-    window.location.href = "login.html"; // eller din login-sida
-    return;
-  }
-}
-
-    if (!userSnap.exists()) {
+      const data = userSnap.data();
+      if (data.banned === true) {
+        sessionStorage.setItem("banned", "true");
+        await signOut(auth);
+        window.location.href = "login.html";
+        return;
+      }
+    } else {
       await setDoc(userRef, {
         email: user.email,
         name: user.displayName || "Anonymous",
@@ -90,22 +140,20 @@ loginBtn.addEventListener("click", async () => {
 
   } catch (err) {
     console.error(err);
-    if (err.code === "auth/user-not-found") msgElem.textContent = "No user found with this email.";
-    else if (err.code === "auth/wrong-password") msgElem.textContent = "Incorrect password.";
-    else msgElem.textContent = "Login failed: " + err.message;
+    msgElem.textContent = mapAuthError(err);
+    setInvalid(passwordInput);
   } finally {
     loginBtn.disabled = false;
     spinner.style.display = "none";
-    loginBtn.textContent = "Login";
+    document.getElementById("btnText").textContent = "Login";
   }
 });
 
-// ===== REGISTER / ENTER APP =====
+/* =========================
+   Go to register
+========================= */
 if (goRegisterBtn) {
   goRegisterBtn.addEventListener("click", () => {
     window.location.href = "register.html";
   });
 }
-
-
-
