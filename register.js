@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   // Ny namnvalidering: endast bokstäver, min 5, max 15
-  const isValidName = (name) => /^[a-zA-Z]{5,15}$/.test(name);
+  const isValidName = (name) => /^[a-zA-Z0-9]{5,15}$/.test(name);
 
   const hasUppercaseAndNumber = (pw) => /[A-Z]/.test(pw) && /[0-9]/.test(pw);
 
@@ -215,3 +215,4 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "login.html";
   });
 });
+
