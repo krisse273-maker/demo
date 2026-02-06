@@ -57,7 +57,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   { country: "Armenia", cities: ["Yerevan", "Gyumri", "Vanadzor", "Vagharshapat", "Hrazdan"] },
   { country: "Australia", cities: ["Canberra", "Sydney", "Melbourne", "Brisbane", "Perth"] },
   { country: "Austria", cities: ["Vienna", "Graz", "Linz", "Salzburg", "Innsbruck"] },
-  { country: "Azerbaijan", cities: ["Baku", "Ganja", "Sumqayit", "Mingachevir", "Shaki"] }
+  { country: "Azerbaijan", cities: ["Baku", "Ganja", "Sumqayit", "Mingachevir", "Shaki"] },
 
   // --- B-länder ---
   { country: "Bahamas", cities: ["Nassau", "Freeport", "West End", "Coopers Town", "Marsh Harbour"] },
@@ -76,7 +76,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   { country: "Brunei", cities: ["Bandar Seri Begawan", "Kuala Belait", "Seria", "Tutong", "Bangar"] },
   { country: "Bulgaria", cities: ["Sofia", "Plovdiv", "Varna", "Burgas", "Ruse"] },
   { country: "Burkina Faso", cities: ["Ouagadougou", "Bobo-Dioulasso", "Koudougou", "Banfora", "Ouahigouya"] },
-  { country: "Burundi", cities: ["Gitega", "Bujumbura", "Ngozi", "Muyinga", "Rutana"] }
+  { country: "Burundi", cities: ["Gitega", "Bujumbura", "Ngozi", "Muyinga", "Rutana"] },
 
   // --- C-länder ---
   { country: "Cabo Verde", cities: ["Praia", "Mindelo", "Santa Maria", "Assomada", "São Filipe"] },
@@ -102,7 +102,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   { country: "Denmark", cities: ["Copenhagen", "Aarhus", "Odense", "Aalborg", "Esbjerg"] },
   { country: "Djibouti", cities: ["Djibouti", "Ali Sabieh", "Tadjoura", "Obock", "Dikhil"] },
   { country: "Dominica", cities: ["Roseau", "Portsmouth", "Marigot", "Castle Bruce", "Grand Bay"] },
-  { country: "Dominican Republic", cities: ["Santo Domingo", "Santiago de los Caballeros", "La Romana", "San Pedro de Macorís", "Puerto Plata"] }
+  { country: "Dominican Republic", cities: ["Santo Domingo", "Santiago de los Caballeros", "La Romana", "San Pedro de Macorís", "Puerto Plata"] },
 
     // --- E-H länder ---
 { country: "Ecuador", cities: ["Quito", "Guayaquil", "Cuenca", "Santo Domingo", "Machala"] },
@@ -129,7 +129,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 { country: "Guyana", cities: ["Georgetown", "Linden", "New Amsterdam", "Bartica", "Anna Regina"] },
 { country: "Haiti", cities: ["Port-au-Prince", "Cap-Haïtien", "Gonaïves", "Les Cayes", "Petion-Ville"] },
 { country: "Honduras", cities: ["Tegucigalpa", "San Pedro Sula", "Choloma", "La Ceiba", "El Progreso"] },
-{ country: "Hungary", cities: ["Budapest", "Debrecen", "Szeged", "Miskolc", "Pécs"] }
+{ country: "Hungary", cities: ["Budapest", "Debrecen", "Szeged", "Miskolc", "Pécs"] },
 
 ];
 
