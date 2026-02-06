@@ -39,19 +39,18 @@
 
     /* ===== NY HEADER-RUTA ===== */
     .header-nav {
-  background-color: #4caf50;
-  display: flex;
-  justify-content: center;
-  gap: 4rem;
-  padding: 0.4rem 4rem; /* lite högre än tidigare 0.1rem */
-  border-radius: 8px;
-  margin: 0.5rem auto 0 auto;
-  width: 95%;
-  border: 2px solid black;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-  box-sizing: border-box;
-}
-
+      background-color: #4caf50;
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      padding: 0.3rem 4rem; /* tunnare höjd */
+      border-radius: 8px;
+      margin: 0.5rem auto 0 auto;
+      width: 95%;
+      border: 2px solid black;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      box-sizing: border-box;
+    }
 
     .header-nav a {
       color: white;
@@ -60,8 +59,8 @@
       font-size: 1rem;
       transition: color 0.2s;
       cursor: pointer;
-      padding: 0;           /* tar bort extra padding */
-      line-height: 1.2rem;  /* gör texten kompakt */
+      padding: 0;
+      line-height: 1.2rem;
     }
 
     .header-nav a:hover {
@@ -150,8 +149,8 @@
 
   <!-- ===== HEADER NAV RUTA ===== -->
   <div class="header-nav">
-    <a id="myFoodLink">My Food List</a>
-    <a id="logoutLink">Log Out</a>
+    <a id="myFoodLink" href="#">My Food List</a>
+    <a id="logoutLink" href="#">Log Out</a>
   </div>
 </header>
 
@@ -191,14 +190,23 @@
 </div>
 
 <script>
-  // Koppla länkarna till funktioner som tidigare var knappar
-  document.getElementById("logoutLink").onclick = () => {
-    firebase.auth().signOut().then(() => window.location.href = "login.html");
-  };
+  // Vänta tills DOM är färdig innan vi sätter onclick
+  document.addEventListener("DOMContentLoaded", () => {
+    const logoutLink = document.getElementById("logoutLink");
+    const myFoodLink = document.getElementById("myFoodLink");
 
-  document.getElementById("myFoodLink").onclick = () => {
-    window.location.href = "myfood.html";
-  };
+    if (logoutLink) {
+      logoutLink.onclick = () => {
+        firebase.auth().signOut().then(() => window.location.href = "login.html");
+      };
+    }
+
+    if (myFoodLink) {
+      myFoodLink.onclick = () => {
+        window.location.href = "myfood.html";
+      };
+    }
+  });
 </script>
 
 </body>
