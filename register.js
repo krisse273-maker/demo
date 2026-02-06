@@ -34,21 +34,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const passwordLengthError = document.getElementById("passwordLengthError");
   const uppercaseNumberError = document.getElementById("uppercaseNumberError");
 
-  // ===== Spinner & Button Text =====
   const spinner = registerBtn.querySelector(".spinner");
   const btnText = registerBtn.querySelector("#btnText");
 
   // ===== Validation helpers =====
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const isValidName = (name) => /^[a-zA-Z0-9]{1,15}$/.test(name);
+  const isValidName = (name) => /^[a-zA-Z0-9]{1,15}$/.test(name); // max 15 tecken
   const hasUppercaseAndNumber = (pw) => /[A-Z]/.test(pw) && /[0-9]/.test(pw);
 
-  // ===== Toggle password visibility (👁️ / 🙈) =====
+  // ===== Toggle password visibility =====
   togglePasswordBtn.addEventListener("click", () => {
-    const isVisible = passwordInput.type === "text";
-    passwordInput.type = isVisible ? "password" : "text";
-    confirmPasswordInput.type = isVisible ? "password" : "text";
-    togglePasswordBtn.textContent = isVisible ? "👁️" : "🙈";
+    const type = passwordInput.type === "password" ? "text" : "password";
+    passwordInput.type = type;
+    confirmPasswordInput.type = type;
+    togglePasswordBtn.textContent = type === "password" ? "👁️" : "🙈";
   });
 
   // ===== Clear errors on input =====
@@ -138,6 +137,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (password !== confirmPassword) {
       passwordInput.style.borderColor = "red";
       confirmPasswordInput.style.borderColor = "red";
+      passwordLengthError.textContent = "Passwords do not match";
+      passwordLengthError.style.display = "block";
       hasError = true;
     }
 
@@ -168,9 +169,9 @@ document.addEventListener("DOMContentLoaded", () => {
         publicName: name.toLowerCase(),
         email: email,
         createdAt: serverTimestamp(),
-        admin: false,      // needed for rules
-        banned: false,     // needed for rules
-        muteUntil: null    // needed for rules
+        admin: false,
+        banned: false,
+        muteUntil: null
       });
 
       // Public users
