@@ -26,39 +26,43 @@
   <script src="app.js" defer></script>
 
   <style>
-    /* Navbar styling */
+    /* HEADER STYLING */
     header {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-      background-color: #f8f8f8;
-      border-bottom: 1px solid #ddd;
       font-family: 'Poppins', sans-serif;
+      background-color: #f8f8f8;
+      border-bottom: 2px solid #ccc;
+      padding: 10px 20px;
     }
 
     header h1 {
       margin: 0;
       font-size: 2rem;
+      display: inline-block;
     }
 
-    header p#welcomeMsg {
-      margin: 5px 0 15px 0;
-      font-size: 1rem;
+    #welcomeMsg {
+      display: inline-block;
+      margin-left: 20px;
       color: #555;
+      font-weight: 400;
     }
 
+    /* NAVBAR STYLING */
     nav.navbar {
+      margin-top: 10px;
       display: flex;
-      gap: 20px;
-      font-weight: 600;
+      border-top: 2px solid #333;
+      border-bottom: 2px solid #333;
+      background-color: #fff;
+      justify-content: flex-start;
     }
 
     nav.navbar a {
       text-decoration: none;
       color: #333;
-      padding: 8px 12px;
-      border-radius: 5px;
+      padding: 12px 20px;
+      display: block;
+      font-weight: 600;
       transition: background 0.2s, color 0.2s;
     }
 
@@ -75,7 +79,7 @@
   <h1>🌍 Global Food Share</h1>
   <p id="welcomeMsg">Welcome!</p>
 
-  <!-- Navbar -->
+  <!-- NAVIGATION BAR -->
   <nav class="navbar">
     <a href="#" id="myFoodBtn">My Food List</a>
     <a href="#" id="logoutBtn">Log Out</a>
