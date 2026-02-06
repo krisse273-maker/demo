@@ -3,7 +3,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebas
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-
 const firebaseConfig = {
   apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
   authDomain: "global-food-share.firebaseapp.com",
@@ -40,7 +39,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ===== Validation helpers =====
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const isValidName = (name) => /^[a-zA-Z0-9]{1,15}$/.test(name); // max 15 tecken
+
+  // Ny namnvalidering: endast bokstäver, min 5, max 15
+  const isValidName = (name) => /^[a-zA-Z]{5,15}$/.test(name);
+
   const hasUppercaseAndNumber = (pw) => /[A-Z]/.test(pw) && /[0-9]/.test(pw);
 
   // ===== Toggle password visibility =====
@@ -102,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
       nameInput.style.borderColor = "red";
       hasError = true;
     } else if (!isValidName(name)) {
-      nameError.textContent = "Name must be 1-15 letters or numbers";
+      nameError.textContent = "Name must be 5-15 letters only";
       nameError.classList.add('show');
       nameInput.style.borderColor = "red";
       hasError = true;
@@ -187,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Registration error:", error);
       emailInput.style.borderColor = "red";
 
-      // ===== Specifik felhantering =====
+      // ===== Specific error handling =====
       if (error.code === "auth/email-already-in-use") {
         emailError.textContent = "This email already exists";
       } else if (error.code === "auth/invalid-email") {
@@ -213,4 +215,3 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "login.html";
   });
 });
-
