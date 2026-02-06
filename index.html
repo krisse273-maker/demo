@@ -1,18 +1,6 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta http-equiv="Content-Security-Policy" content="
-    default-src 'self';
-    script-src 'self' https://www.gstatic.com;
-    style-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;
-    font-src 'self' https://fonts.gstatic.com;
-    connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://countriesnow.space;
-    img-src 'self' data: https://firebasestorage.googleapis.com;
-    object-src 'none';
-    media-src 'self';
-    base-uri 'self';
-    form-action 'self';
-  ">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Global Food Share</title>
@@ -26,162 +14,167 @@
   <script src="app.js" defer></script>
 
   <style>
-    /* HEADER */
+    body {
+      background-color: #4caf50;
+      color: #cfd8dc;
+      font-family: 'Poppins', sans-serif;
+    }
+
     header {
-      background-color: #111;
-      color: white;
-      padding: 1rem;
+      background-color: #262d37;
       text-align: center;
+      padding: 1rem;
+      position: relative;
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 2rem;
-    }
+    header h1 { color: #4caf50; }
 
-    header p#welcomeMsg {
-      margin: 0.5rem 0 0.5rem;
-      font-size: 1rem;
-    }
+    #welcomeMsg { color: #cfd8dc; }
 
-    /* NAVBAR INUTI HEADER */
-    nav.navbar {
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      flex-wrap: wrap;
-      margin-top: 0.5rem;
-      border: 2px solid #2e7d32; /* grön border */
-      border-radius: 8px;
+    #logoutBtn {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
       padding: 0.5rem 1rem;
-    }
-
-    nav.navbar a {
-      color: #2e7d32; /* grön text */
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 1rem;
-      transition: color 0.2s;
-    }
-
-    nav.navbar a:hover {
-      color: #1b5e20; /* mörkare grön vid hover */
-    }
-
-    /* Filter-sektion */
-    section.filters {
-      text-align: center;
-      margin: 1rem 0;
-    }
-
-    section.filters select,
-    section.filters button {
-      margin: 0.25rem;
-      padding: 0.4rem 0.8rem;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-size: 0.9rem;
-    }
-
-    /* Global food list */
-    section.food-list {
-      margin: 1rem auto;
-      max-width: 800px;
-    }
-    .global-food-list .food-item {
-      background: #f5f5f5;
-      padding: 0.5rem;
-      margin: 0.5rem 0;
-      border-radius: 5px;
-    }
-
-    /* Footer */
-    footer {
-      text-align: center;
-      margin-top: 2rem;
-      padding: 1rem;
-      background: #111;
-      color: white;
-    }
-
-    /* CUSTOM MUTE ALERT */
-    .alert-backdrop {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-    .alert-backdrop.hidden { display: none; }
-    .alert-box {
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      max-width: 400px;
-      text-align: center;
-    }
-    .alert-box h3 { margin-top: 0; }
-    .alert-box button {
-      background: #2e7d32;
-      color: white;
+      border-radius: 6px;
       border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
+      background-color: #f44336;
+      color: #fff;
       cursor: pointer;
       font-weight: 600;
-      margin-top: 1rem;
     }
-    .alert-box button:hover { background: #1b5e20; }
+
+    #myFoodBtn {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: none;
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    #adminPanel {
+      display: none;
+      max-width: 500px;
+      margin: 15px auto;
+    }
+
+    #adminPanel a {
+      display: block;
+      text-align: center;
+      padding: 16px;
+      background: #ff9800;
+      color: #1c222b;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 10px;
+      transition: 0.2s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    #adminPanel a:hover {
+      background: #fb8c00;
+      transform: translateY(-2px);
+    }
+
+    section.filters {
+      background-color: #262d37;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      margin: 1rem auto;
+      max-width: 500px;
+    }
+
+    select {
+      background-color: #2b3340;
+      color: #cfd8dc;
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      border-radius: 6px;
+    }
+
+    #filterBtn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: none;
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .global-food-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .food-item {
+      background-color: #2b3340;
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #262d37;
+    }
   </style>
 </head>
 
 <body>
-  <header>
-    <h1>🌍 Global Food Share</h1>
-    <p id="welcomeMsg">Welcome!</p>
 
-    <!-- NAVBAR INUTI HEADER -->
-    <nav class="navbar">
-      <a href="#" id="homeBtn">Home</a>
-      <a href="#" id="myFoodBtn">My Food List</a>
-      <a href="#" id="loginBtn">Login</a>
-      <a href="#" id="logoutBtn" style="display:none;">Logout</a>
-      <a id="adminLink" href="Admin/admin.html" style="display: none;">🔐 Admin Panel</a>
-    </nav>
-  </header>
-
-  <section class="filters">
-    <h2>Filter by Location</h2>
-    <select id="country">
-      <option value="">Select country</option>
-    </select>
-
-    <select id="city" disabled>
-      <option value="">Select city</option>
-    </select>
-
-    <button id="filterBtn">Search</button>
-  </section>
-
-  <section class="food-list">
-    <h2 id="foodTitle">Shared Meals</h2>
-    <div class="global-food-list"></div>
-  </section>
-
-  <footer>
-    <p>&copy; 2026 Global Food Share</p>
-  </footer>
-
-  <!-- CUSTOM MUTE ALERT -->
-  <div id="customAlertBackdrop" class="alert-backdrop hidden">
-    <div class="alert-box">
-      <h3>⚠️ You are muted</h3>
-      <p id="alertMessage"></p>
-      <button id="alertOkBtn">OK</button>
-    </div>
+<header>
+  <h1>🌍 Global Food Share</h1>
+  <p id="welcomeMsg">Welcome!</p>
+  <button id="logoutBtn">Log Out</button>
+  <div>
+    <button id="myFoodBtn">My Food List</button>
   </div>
+</header>
+
+<div id="adminPanel">
+  <a href="Admin/admin.html">🔐 Go to Admin Panel</a>
+</div>
+
+<section class="filters">
+  <h2>Filter by Location</h2>
+  <select id="country">
+    <option value="">Select country</option>
+  </select>
+
+  <select id="city" disabled>
+    <option value="">Select city</option>
+  </select>
+
+  <button id="filterBtn">Search</button>
+</section>
+
+<section class="food-list">
+  <h2 id="foodTitle">Shared Meals</h2>
+  <div class="global-food-list"></div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Global Food Share</p>
+</footer>
+
+<!-- CUSTOM MUTE ALERT -->
+<div id="customAlertBackdrop" class="alert-backdrop hidden">
+  <div class="alert-box">
+    <h3>⚠️ You are muted</h3>
+    <p id="alertMessage"></p>
+    <button id="alertOkBtn">OK</button>
+  </div>
+</div>
+
 </body>
 </html>
