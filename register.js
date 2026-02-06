@@ -54,24 +54,26 @@ document.addEventListener("DOMContentLoaded", () => {
   [nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(input => {
     input.addEventListener("input", () => {
       input.style.borderColor = "";
-      nameError.style.display = "none";
-      emailError.style.display = "none";
-      passwordLengthError.style.display = "none";
-      uppercaseNumberError.style.display = "none";
+      nameError.classList.remove('show');
+      emailError.classList.remove('show');
+      passwordLengthError.classList.remove('show');
+      uppercaseNumberError.classList.remove('show');
     });
   });
 
   genderSelect.addEventListener("change", () => {
-    genderError.style.display = "none";
+    genderError.classList.remove('show');
     genderSelect.style.borderColor = "";
   });
 
   // ===== Show password error =====
   const showPasswordError = (type) => {
-    passwordLengthError.style.display = "none";
-    uppercaseNumberError.style.display = "none";
-    if (type === "length") passwordLengthError.style.display = "block";
-    if (type === "uppercaseNumber") uppercaseNumberError.style.display = "block";
+    passwordLengthError.classList.remove('show');
+    uppercaseNumberError.classList.remove('show');
+
+    if (type === "length") passwordLengthError.classList.add('show');
+    if (type === "uppercaseNumber") uppercaseNumberError.classList.add('show');
+
     passwordInput.style.borderColor = "red";
     confirmPasswordInput.style.borderColor = "red";
   };
@@ -87,21 +89,21 @@ document.addEventListener("DOMContentLoaded", () => {
     let hasError = false;
 
     // Clear previous errors
-    [nameError, emailError, genderError].forEach(el => el.style.display = "none");
-    passwordLengthError.style.display = "none";
-    uppercaseNumberError.style.display = "none";
+    [nameError, emailError, genderError].forEach(el => el.classList.remove('show'));
+    passwordLengthError.classList.remove('show');
+    uppercaseNumberError.classList.remove('show');
     [nameInput, emailInput, passwordInput, confirmPasswordInput, genderSelect]
       .forEach(el => el.style.borderColor = "");
 
     // ===== Name validation =====
     if (!name) {
       nameError.textContent = "Name is required";
-      nameError.style.display = "block";
+      nameError.classList.add('show');
       nameInput.style.borderColor = "red";
       hasError = true;
     } else if (!isValidName(name)) {
       nameError.textContent = "Name must be 1-15 letters or numbers";
-      nameError.style.display = "block";
+      nameError.classList.add('show');
       nameInput.style.borderColor = "red";
       hasError = true;
     }
@@ -109,12 +111,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // ===== Email validation =====
     if (!email) {
       emailError.textContent = "Email is required";
-      emailError.style.display = "block";
+      emailError.classList.add('show');
       emailInput.style.borderColor = "red";
       hasError = true;
     } else if (!isValidEmail(email) || email.length > 100) {
       emailError.textContent = "Please enter a valid email";
-      emailError.style.display = "block";
+      emailError.classList.add('show');
       emailInput.style.borderColor = "red";
       hasError = true;
     }
@@ -122,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ===== Gender validation =====
     if (!gender) {
       genderError.textContent = "You need to choose Gender";
-      genderError.style.display = "block";
+      genderError.classList.add('show');
       genderSelect.style.borderColor = "red";
       hasError = true;
     }
@@ -138,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
       passwordInput.style.borderColor = "red";
       confirmPasswordInput.style.borderColor = "red";
       passwordLengthError.textContent = "Passwords do not match";
-      passwordLengthError.style.display = "block";
+      passwordLengthError.classList.add('show');
       hasError = true;
     }
 
@@ -169,9 +171,9 @@ document.addEventListener("DOMContentLoaded", () => {
         publicName: name.toLowerCase(),
         email: email,
         createdAt: serverTimestamp(),
-        admin: false,
-        banned: false,
-        muteUntil: null
+        admin: false,      // obligatoriskt enligt reglerna
+        banned: false,     // obligatoriskt enligt reglerna
+        muteUntil: null    // obligatoriskt enligt reglerna
       });
 
       // Public users
@@ -185,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Registration error:", error);
       emailInput.style.borderColor = "red";
       emailError.textContent = "Registration failed. Check email or password";
-      emailError.style.display = "block";
+      emailError.classList.add('show');
     } finally {
       registerBtn.disabled = false;
       spinner.style.display = "none";
