@@ -26,23 +26,71 @@
   <script src="app.js" defer></script>
 
   <style>
+    /* NAVBAR */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #00c853; /* Mörkgrön som matchar temat */
+      padding: 0.75rem 1rem;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      flex-wrap: wrap;
+    }
+
+    .navbar h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .navbar .nav-links {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .navbar button, .navbar a {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      padding: 0.5rem 0.75rem;
+      color: white;
+      font-weight: 600;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .navbar button:hover, .navbar a:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .navbar .nav-links {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
   </style>
 </head>
 
 <body>
 
-<header>
+<!-- NAVBAR -->
+<header class="navbar">
   <h1>🌍 Global Food Share</h1>
-  <p id="welcomeMsg">Welcome!</p>
-  <button id="logoutBtn">Log Out</button>
-  <div>
+  <div class="nav-links">
+    <p id="welcomeMsg">Welcome!</p>
     <button id="myFoodBtn">My Food List</button>
+    <button id="logoutBtn">Log Out</button>
+    <a href="Admin/admin.html" id="adminPanel">🔐 Admin Panel</a>
   </div>
 </header>
-
-<div id="adminPanel">
-  <a href="Admin/admin.html">🔐 Go to Admin Panel</a>
-</div>
 
 <section class="filters">
   <h2>Filter by Location</h2>
@@ -77,5 +125,3 @@
 
 </body>
 </html>
-
-
