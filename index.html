@@ -26,9 +26,9 @@
   <script src="app.js" defer></script>
 
   <style>
-    /* HEADER + NAVBAR */
+    /* HEADER */
     header {
-      background-color: #111; /* mörk bakgrund */
+      background-color: #111;
       color: white;
       padding: 1rem;
       text-align: center;
@@ -40,41 +40,32 @@
     }
 
     header p#welcomeMsg {
-      margin: 0.5rem 0 1rem;
+      margin: 0.5rem 0 0.5rem;
       font-size: 1rem;
     }
 
-    /* Navbar inuti header */
-    header nav.navbar {
+    /* NAVBAR INUTI HEADER */
+    nav.navbar {
       display: flex;
       justify-content: center;
-      gap: 1rem;
+      gap: 2rem;
       flex-wrap: wrap;
       margin-top: 0.5rem;
+      border: 2px solid #2e7d32; /* grön border */
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
     }
 
-    header nav.navbar button,
-    header nav.navbar a {
-      background-color: #2e7d32; /* grön knapp */
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      cursor: pointer;
+    nav.navbar a {
+      color: #2e7d32; /* grön text */
       text-decoration: none;
       font-weight: 600;
-      transition: background-color 0.2s;
+      font-size: 1rem;
+      transition: color 0.2s;
     }
 
-    header nav.navbar button:hover,
-    header nav.navbar a:hover {
-      background-color: #1b5e20; /* mörkare grön på hover */
-    }
-
-    /* Admin-panel (kan tas bort om du inte vill visa extra info här) */
-    #adminPanel {
-      text-align: center;
-      margin: 1rem 0;
+    nav.navbar a:hover {
+      color: #1b5e20; /* mörkare grön vid hover */
     }
 
     /* Filter-sektion */
@@ -154,16 +145,13 @@
 
     <!-- NAVBAR INUTI HEADER -->
     <nav class="navbar">
-      <button id="homeBtn">Home</button>
-      <button id="myFoodBtn">My Food List</button>
-      <button id="logoutBtn">Log Out</button>
+      <a href="#" id="homeBtn">Home</a>
+      <a href="#" id="myFoodBtn">My Food List</a>
+      <a href="#" id="loginBtn">Login</a>
+      <a href="#" id="logoutBtn" style="display:none;">Logout</a>
       <a id="adminLink" href="Admin/admin.html" style="display: none;">🔐 Admin Panel</a>
     </nav>
   </header>
-
-  <div id="adminPanel">
-    <!-- extra info om admin -->
-  </div>
 
   <section class="filters">
     <h2>Filter by Location</h2>
