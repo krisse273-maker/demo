@@ -58,10 +58,12 @@ window.addEventListener("DOMContentLoaded", async () => {
   { country: "Australia", cities: ["Canberra", "Sydney", "Melbourne", "Brisbane", "Perth"] },
   { country: "Austria", cities: ["Vienna", "Graz", "Linz", "Salzburg", "Innsbruck"] },
   { country: "Azerbaijan", cities: ["Baku", "Ganja", "Sumqayit", "Mingachevir", "Shaki"] },
-  { country: "Bahamas", cities: ["Nassau"] },
-  { country: "Bahrain", cities: ["Manama"] },
+
+  // --- B-länder ---
+  { country: "Bahamas", cities: ["Nassau", "Freeport", "West End", "Coopers Town", "Marsh Harbour"] },
+  { country: "Bahrain", cities: ["Manama", "Riffa", "Muharraq", "Isa Town", "Sitra"] },
   { country: "Bangladesh", cities: ["Dhaka", "Chittagong", "Khulna", "Rajshahi", "Sylhet"] },
-  { country: "Barbados", cities: ["Bridgetown"] },
+  { country: "Barbados", cities: ["Bridgetown", "Speightstown", "Oistins", "Saint Michael", "Holetown"] },
   { country: "Belarus", cities: ["Minsk", "Gomel", "Mogilev", "Vitebsk", "Hrodna"] },
   { country: "Belgium", cities: ["Brussels", "Antwerp", "Ghent", "Charleroi", "Liège"] },
   { country: "Belize", cities: ["Belmopan", "San Ignacio", "Orange Walk", "Dangriga", "Corozal"] },
@@ -71,10 +73,12 @@ window.addEventListener("DOMContentLoaded", async () => {
   { country: "Bosnia & Herzegovina", cities: ["Sarajevo", "Banja Luka", "Tuzla", "Zenica", "Mostar"] },
   { country: "Botswana", cities: ["Gaborone", "Francistown", "Molepolole", "Maun", "Selebi-Phikwe"] },
   { country: "Brazil", cities: ["Brasília", "São Paulo", "Rio de Janeiro", "Salvador", "Fortaleza"] },
-  { country: "Brunei", cities: ["Bandar Seri Begawan"] },
+  { country: "Brunei", cities: ["Bandar Seri Begawan", "Kuala Belait", "Seria", "Tutong", "Bangar"] },
   { country: "Bulgaria", cities: ["Sofia", "Plovdiv", "Varna", "Burgas", "Ruse"] },
   { country: "Burkina Faso", cities: ["Ouagadougou", "Bobo-Dioulasso", "Koudougou", "Banfora", "Ouahigouya"] },
-  { country: "Burundi", cities: ["Gitega", "Bujumbura", "Ngozi", "Muyinga", "Rutana"] }
+  { country: "Burundi", cities: ["Gitega", "Bujumbura", "Ngozi", "Muyinga", "Rutana"] },
+
+  // --- C-länder ---
   { country: "Cabo Verde", cities: ["Praia", "Mindelo", "Santa Maria", "Assomada", "São Filipe"] },
   { country: "Cambodia", cities: ["Phnom Penh", "Siem Reap", "Sihanoukville", "Battambang", "Ta Khmau"] },
   { country: "Cameroon", cities: ["Yaoundé", "Douala", "Garoua", "Bamenda", "Maroua"] },
@@ -93,13 +97,13 @@ window.addEventListener("DOMContentLoaded", async () => {
   { country: "Cuba", cities: ["Havana", "Santiago de Cuba", "Camagüey", "Holguín", "Santa Clara"] },
   { country: "Cyprus", cities: ["Nicosia", "Limassol", "Larnaca", "Famagusta", "Paphos"] },
   { country: "Czechia", cities: ["Prague", "Brno", "Ostrava", "Plzeň", "Liberec"] },
+
   // --- D-länder ---
   { country: "Denmark", cities: ["Copenhagen", "Aarhus", "Odense", "Aalborg", "Esbjerg"] },
   { country: "Djibouti", cities: ["Djibouti", "Ali Sabieh", "Tadjoura", "Obock", "Dikhil"] },
   { country: "Dominica", cities: ["Roseau", "Portsmouth", "Marigot", "Castle Bruce", "Grand Bay"] },
   { country: "Dominican Republic", cities: ["Santo Domingo", "Santiago de los Caballeros", "La Romana", "San Pedro de Macorís", "Puerto Plata"] }
 ];
-
 
 
   // --- Flaggar för vissa länder (valfritt) ---
@@ -352,4 +356,5 @@ window.addEventListener("DOMContentLoaded", async () => {
     return emojiRegex.test(emoji);
   }
 });
+
 
