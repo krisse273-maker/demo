@@ -1,6 +1,18 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' https://www.gstatic.com;
+    style-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;
+    font-src 'self' https://fonts.gstatic.com;
+    connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://countriesnow.space;
+    img-src 'self' data: https://firebasestorage.googleapis.com;
+    object-src 'none';
+    media-src 'self';
+    base-uri 'self';
+    form-action 'self';
+  ">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Global Food Share</title>
@@ -11,133 +23,9 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script defer src="myfood.js?v=9"></script>
+  <script src="app.js" defer></script>
 
   <style>
-    body {
-      background-color: #4caf50;
-      color: #cfd8dc;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    header {
-      background-color: #262d37;
-      text-align: center;
-      padding: 1rem 0;
-      position: relative;
-    }
-
-    header h1 { 
-      color: #4caf50; 
-      margin: 0;
-    }
-
-    #welcomeMsg { 
-      color: #cfd8dc; 
-      margin: 0.25rem 0 0.5rem 0;
-    }
-
-    /* ===== NY HEADER-RUTA ===== */
-    .header-nav {
-      background-color: #4caf50;
-      display: flex;
-      justify-content: center;
-      gap: 4rem;
-      padding: 0.3rem 4rem; /* tunnare höjd */
-      border-radius: 8px;
-      margin: 0.5rem auto 0 auto;
-      width: 95%;
-      border: 2px solid black;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-      box-sizing: border-box;
-    }
-
-    .header-nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 1rem;
-      transition: color 0.2s;
-      cursor: pointer;
-      padding: 0;
-      line-height: 1.2rem;
-    }
-
-    .header-nav a:hover {
-      color: #d4f1c5;
-    }
-
-    #adminPanel {
-      display: none;
-      max-width: 500px;
-      margin: 15px auto;
-    }
-
-    #adminPanel a {
-      display: block;
-      text-align: center;
-      padding: 16px;
-      background: #ff9800;
-      color: #1c222b;
-      font-weight: 600;
-      text-decoration: none;
-      border-radius: 10px;
-      transition: 0.2s;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-
-    #adminPanel a:hover {
-      background: #fb8c00;
-      transform: translateY(-2px);
-    }
-
-    section.filters {
-      background-color: #262d37;
-      border-radius: 12px;
-      padding: 1.5rem;
-      text-align: center;
-      margin: 1rem auto;
-      max-width: 500px;
-    }
-
-    select {
-      background-color: #2b3340;
-      color: #cfd8dc;
-      width: 100%;
-      padding: 0.5rem;
-      margin: 0.5rem 0;
-      border-radius: 6px;
-    }
-
-    #filterBtn {
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      border: none;
-      background-color: #4caf50;
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .global-food-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-      padding: 1rem;
-    }
-
-    .food-item {
-      background-color: #2b3340;
-      border-radius: 10px;
-      padding: 1rem;
-      text-align: center;
-    }
-
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background-color: #262d37;
-    }
   </style>
 </head>
 
@@ -146,11 +34,9 @@
 <header>
   <h1>🌍 Global Food Share</h1>
   <p id="welcomeMsg">Welcome!</p>
-
-  <!-- ===== HEADER NAV RUTA ===== -->
-  <div class="header-nav">
-    <a id="myFoodLink" href="#">My Food List</a>
-    <a id="logoutLink" href="#">Log Out</a>
+  <button id="logoutBtn">Log Out</button>
+  <div>
+    <button id="myFoodBtn">My Food List</button>
   </div>
 </header>
 
@@ -189,26 +75,7 @@
   </div>
 </div>
 
-<script>
-  // Vänta tills DOM är färdig innan vi sätter onclick
-  document.addEventListener("DOMContentLoaded", () => {
-    const logoutLink = document.getElementById("logoutLink");
-    const myFoodLink = document.getElementById("myFoodLink");
-
-    if (logoutLink) {
-      logoutLink.onclick = () => {
-        firebase.auth().signOut().then(() => window.location.href = "login.html");
-      };
-    }
-
-    if (myFoodLink) {
-      myFoodLink.onclick = () => {
-        window.location.href = "myfood.html";
-      };
-    }
-  });
-</script>
-
 </body>
 </html>
+
 
