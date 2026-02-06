@@ -26,59 +26,6 @@
   <script src="app.js" defer></script>
 
   <style>
-    /* HEADER STYLING */
-    header {
-      font-family: 'Poppins', sans-serif;
-      background-color: #f8f8f8;
-      border-bottom: 2px solid #ccc;
-      padding: 15px 20px;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 2rem;
-      display: inline-block;
-      vertical-align: middle;
-    }
-
-    #welcomeMsg {
-      display: inline-block;
-      margin-left: 20px;
-      color: #555;
-      font-weight: 400;
-      vertical-align: middle;
-    }
-
-    /* NAVBAR STYLING */
-    nav.navbar {
-      margin-top: 15px;
-      display: flex;
-      justify-content: flex-start;
-      border: 2px solid #333;
-      border-radius: 8px;
-      background-color: #fff;
-      overflow: hidden;
-      width: fit-content;
-    }
-
-    nav.navbar a {
-      text-decoration: none;
-      color: #333;
-      padding: 12px 25px;
-      display: block;
-      font-weight: 600;
-      transition: background 0.2s, color 0.2s;
-      border-right: 1px solid #ccc;
-    }
-
-    nav.navbar a:last-child {
-      border-right: none;
-    }
-
-    nav.navbar a:hover {
-      background-color: #333;
-      color: #fff;
-    }
   </style>
 </head>
 
@@ -87,12 +34,10 @@
 <header>
   <h1>🌍 Global Food Share</h1>
   <p id="welcomeMsg">Welcome!</p>
-
-  <!-- NAVIGATION BAR -->
-  <nav class="navbar">
-    <a href="#" id="myFoodBtn">My Food List</a>
-    <a href="#" id="logoutBtn">Log Out</a>
-  </nav>
+  <button id="logoutBtn">Log Out</button>
+  <div>
+    <button id="myFoodBtn">My Food List</button>
+  </div>
 </header>
 
 <div id="adminPanel">
@@ -132,3 +77,5 @@
 
 </body>
 </html>
+
+
