@@ -26,34 +26,35 @@
   <script src="app.js" defer></script>
 
   <style>
-    /* Header och välkomsttext */
+    /* HEADER + NAVBAR */
     header {
-      background-color: #111; 
+      background-color: #111; /* mörk bakgrund */
       color: white;
       padding: 1rem;
       text-align: center;
     }
+
     header h1 {
       margin: 0;
       font-size: 2rem;
     }
+
     header p#welcomeMsg {
-      margin: 0.5rem 0 0;
+      margin: 0.5rem 0 1rem;
       font-size: 1rem;
     }
 
-    /* Navbar under välkomsttext */
-    nav.navbar {
+    /* Navbar inuti header */
+    header nav.navbar {
       display: flex;
       justify-content: center;
-      background-color: #222; /* mörk bakgrund */
-      padding: 0.5rem 0;
       gap: 1rem;
       flex-wrap: wrap;
+      margin-top: 0.5rem;
     }
 
-    nav.navbar button,
-    nav.navbar a {
+    header nav.navbar button,
+    header nav.navbar a {
       background-color: #2e7d32; /* grön knapp */
       color: white;
       border: none;
@@ -65,12 +66,12 @@
       transition: background-color 0.2s;
     }
 
-    nav.navbar button:hover,
-    nav.navbar a:hover {
+    header nav.navbar button:hover,
+    header nav.navbar a:hover {
       background-color: #1b5e20; /* mörkare grön på hover */
     }
 
-    /* Admin-panel */
+    /* Admin-panel (kan tas bort om du inte vill visa extra info här) */
     #adminPanel {
       text-align: center;
       margin: 1rem 0;
@@ -150,18 +151,18 @@
   <header>
     <h1>🌍 Global Food Share</h1>
     <p id="welcomeMsg">Welcome!</p>
+
+    <!-- NAVBAR INUTI HEADER -->
+    <nav class="navbar">
+      <button id="homeBtn">Home</button>
+      <button id="myFoodBtn">My Food List</button>
+      <button id="logoutBtn">Log Out</button>
+      <a id="adminLink" href="Admin/admin.html" style="display: none;">🔐 Admin Panel</a>
+    </nav>
   </header>
 
-  <!-- NAVBAR UNDER WELCOME -->
-  <nav class="navbar">
-    <button id="homeBtn">Home</button>
-    <button id="myFoodBtn">My Food List</button>
-    <button id="logoutBtn">Log Out</button>
-    <a id="adminLink" href="Admin/admin.html" style="display: none;">🔐 Admin Panel</a>
-  </nav>
-
   <div id="adminPanel">
-    <!-- valfri extra admin-panel info -->
+    <!-- extra info om admin -->
   </div>
 
   <section class="filters">
