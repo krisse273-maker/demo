@@ -26,6 +26,12 @@
   <script src="app.js" defer></script>
 
   <style>
+    /* Placera knapparna bredvid varandra med litet mellanrum */
+    .button-group {
+      display: flex;
+      gap: 10px; /* mellanrum mellan knapparna */
+      margin-top: 10px;
+    }
   </style>
 </head>
 
@@ -34,9 +40,10 @@
 <header>
   <h1>🌍 Global Food Share</h1>
   <p id="welcomeMsg">Welcome!</p>
-  <button id="logoutBtn">Log Out</button>
-  <div>
+  
+  <div class="button-group">
     <button id="myFoodBtn">My Food List</button>
+    <button id="logoutBtn">Log Out</button>
   </div>
 </header>
 
@@ -77,5 +84,3 @@
 
 </body>
 </html>
-
-
