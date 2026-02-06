@@ -25,6 +25,11 @@ const publicFoodListContainer = document.querySelector(".public-food-list");
 const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
 
+// ===== Custom Alert Elements =====
+const customAlertBackdrop = document.getElementById("customAlertBackdrop");
+const alertMessage = document.getElementById("alertMessage");
+const alertOkBtn = document.getElementById("alertOkBtn");
+
 const titleError = document.getElementById("titleError");
 const emojiError = document.getElementById("emojiError");
 const countryError = document.getElementById("countryError");
@@ -33,28 +38,12 @@ const cityError = document.getElementById("cityError");
 // ===== Styling for validation (JS only) =====
 titleError.style.color = "red";
 
-// inject CSS
 const style = document.createElement("style");
 style.textContent = `
-  .valid-title {
-    border: 2px solid #00c853 !important;
-  }
-
-  .error-title {
-    border: 2px solid red !important;
-  }
-
-  .shake {
-    animation: shake 0.25s;
-  }
-
-  @keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-4px); }
-    50% { transform: translateX(4px); }
-    75% { transform: translateX(-4px); }
-    100% { transform: translateX(0); }
-  }
+  .valid-title { border: 2px solid #00c853 !important; }
+  .error-title { border: 2px solid red !important; }
+  .shake { animation: shake 0.25s; }
+  @keyframes shake { 0%{transform:translateX(0);}25%{transform:translateX(-4px);}50%{transform:translateX(4px);}75%{transform:translateX(-4px);}100%{transform:translateX(0);} }
 `;
 document.head.appendChild(style);
 
@@ -75,7 +64,6 @@ emojiPickerBtn.onclick = () => {
   emojiPicker.style.display =
     emojiPicker.style.display === "flex" ? "none" : "flex";
 };
-
 emojiPicker.querySelectorAll("span").forEach(span => {
   span.onclick = () => {
     selectedEmoji = span.textContent;
@@ -99,27 +87,22 @@ async function loadCountries() {
     foodCountry.appendChild(opt);
   });
 }
-
 foodCountry.onchange = () => {
   foodCity.innerHTML = `<option value="">Select City</option>`;
   foodCity.disabled = true;
-
   const c = countriesData.find(c => c.country === foodCountry.value);
   if (!c || !c.cities) return;
-
   c.cities.forEach(city => {
     const opt = document.createElement("option");
     opt.value = city;
     opt.textContent = city;
     foodCity.appendChild(opt);
   });
-
   foodCity.disabled = false;
 };
-
 loadCountries();
 
-// ===== User listener with mute alert =====
+// ===== User listener + Mute check =====
 function setupUserListener() {
   const user = auth.currentUser;
   if (!user) return;
@@ -128,23 +111,29 @@ function setupUserListener() {
   userDocUnsubscribe = db.collection("users").doc(user.uid)
     .onSnapshot(doc => {
       currentUserData = doc.data();
-
-      // Banned check
       if (currentUserData?.banned) {
-        alert("You are banned.");
+        showCustomAlert("You are banned.");
         auth.signOut().then(() => window.location.href = "../index.html");
       }
-
-      // Mute check in real time
       if (currentUserData?.muteUntil) {
-        const now = new Date();
-        const muteUntil = currentUserData.muteUntil.toDate();
-        if (now < muteUntil) {
-          alert(`You are muted until ${muteUntil.toLocaleString()}`);
+        const muteUntilDate = currentUserData.muteUntil.toDate();
+        if (muteUntilDate > new Date()) {
+          showCustomAlert(`You are muted until ${muteUntilDate.toLocaleString()}`);
         }
       }
     });
 }
+
+// ===== Custom Alert Function =====
+function showCustomAlert(msg) {
+  if (!customAlertBackdrop || !alertMessage) return;
+  alertMessage.textContent = msg;
+  customAlertBackdrop.classList.remove("hidden");
+}
+
+alertOkBtn?.addEventListener("click", () => {
+  customAlertBackdrop.classList.add("hidden");
+});
 
 // ===== Validation =====
 function validateTitle(title) {
@@ -156,17 +145,14 @@ function validateTitle(title) {
   return null;
 }
 
-// ===== LIVE VALIDATION (Food Name only) =====
+// ===== LIVE VALIDATION =====
 foodTitle.addEventListener("input", () => {
   const title = foodTitle.value.trim();
   const error = validateTitle(title);
-
   foodTitle.classList.remove("valid-title", "error-title", "shake");
-
   if (error) {
     titleError.textContent = error;
     foodTitle.classList.add("error-title");
-
     void foodTitle.offsetWidth;
     foodTitle.classList.add("shake");
   } else if (title.length > 0) {
@@ -177,21 +163,17 @@ foodTitle.addEventListener("input", () => {
   }
 });
 
-// ===== Add Food with mute check =====
+// ===== Add Food =====
 addFoodForm.onsubmit = async e => {
   e.preventDefault();
-
   const user = auth.currentUser;
   if (!user) return;
 
-  // Check if muted
-  if (currentUserData?.muteUntil) {
-    const now = new Date();
-    const muteUntil = currentUserData.muteUntil.toDate();
-    if (now < muteUntil) {
-      alert(`You are muted until ${muteUntil.toLocaleString()}`);
-      return; // Stop posting
-    }
+  // Check mute before posting
+  if (currentUserData?.muteUntil && currentUserData.muteUntil.toDate() > new Date()) {
+    const muteUntilDate = currentUserData.muteUntil.toDate();
+    showCustomAlert(`You are muted until ${muteUntilDate.toLocaleString()}`);
+    return; // Block post
   }
 
   titleError.textContent = "";
@@ -201,38 +183,28 @@ addFoodForm.onsubmit = async e => {
 
   const title = foodTitle.value.trim();
   let hasError = false;
-
   const titleErr = validateTitle(title);
   if (titleErr) {
     titleError.textContent = titleErr;
     foodTitle.classList.add("error-title", "shake");
     hasError = true;
   }
-
   if (!selectedEmoji) {
     emojiError.style.display = "block";
     hasError = true;
   }
-
   if (!foodCountry.value) {
     countryError.textContent = "Please select a country";
     hasError = true;
   }
-
   if (!foodCity.value) {
     cityError.textContent = "Please select a city";
     hasError = true;
   }
-
   if (hasError) return;
 
-  const foodRef = db.collection("foods")
-    .doc(user.uid)
-    .collection("items")
-    .doc();
-
+  const foodRef = db.collection("foods").doc(user.uid).collection("items").doc();
   const foodId = foodRef.id;
-
   const foodData = {
     title,
     emoji: selectedEmoji,
@@ -263,42 +235,21 @@ addFoodForm.onsubmit = async e => {
 async function loadFoodList() {
   const user = auth.currentUser;
   if (!user) return;
-
   foodListContainer.innerHTML = "";
-  const snap = await db
-    .collection("foods")
-    .doc(user.uid)
-    .collection("items")
-    .orderBy("createdAt", "desc")
-    .get();
-
+  const snap = await db.collection("foods").doc(user.uid).collection("items").orderBy("createdAt", "desc").get();
   snap.forEach(docSnap => {
     const data = docSnap.data();
     const div = document.createElement("div");
     div.className = "food-item";
-
     const del = document.createElement("span");
     del.textContent = "×";
     del.className = "delete-icon";
-
     del.onclick = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-
-      await db.collection("foods")
-        .doc(user.uid)
-        .collection("items")
-        .doc(docSnap.id)
-        .delete();
-
-      await db.collection("publicFoods")
-        .doc(docSnap.id)
-        .delete();
-
+      await db.collection("foods").doc(user.uid).collection("items").doc(docSnap.id).delete();
+      await db.collection("publicFoods").doc(docSnap.id).delete();
       loadFoodList();
       loadPublicFoods();
     };
-
     div.textContent = `${data.emoji} ${data.title}`;
     div.appendChild(del);
     foodListContainer.appendChild(div);
@@ -309,12 +260,7 @@ async function loadFoodList() {
 async function loadPublicFoods() {
   if (!publicFoodListContainer) return;
   publicFoodListContainer.innerHTML = "";
-
-  const snap = await db
-    .collection("publicFoods")
-    .orderBy("publishedAt", "desc")
-    .get();
-
+  const snap = await db.collection("publicFoods").orderBy("publishedAt", "desc").get();
   snap.forEach(doc => {
     const d = doc.data();
     const div = document.createElement("div");
