@@ -42,9 +42,25 @@ window.addEventListener("DOMContentLoaded", async () => {
   const foodTitle = document.getElementById("foodTitle");
   const adminPanel = document.getElementById("adminPanel");
 
-  let countriesData = [];
   let allFoods = [];
 
+  // --- Hårdkodad lista av länder och städer (börjar med A, kan fyllas på med resten) ---
+  const countriesData = [
+  { country: "Afghanistan", cities: ["Kabul", "Kandahar", "Herat", "Mazar-i-Sharif", "Jalalabad"] },
+  { country: "Albania", cities: ["Tirana", "Durrës", "Vlorë", "Shkodër", "Fier"] },
+  { country: "Algeria", cities: ["Algiers", "Oran", "Constantine", "Annaba", "Blida"] },
+  { country: "Andorra", cities: ["Andorra la Vella", "Escaldes-Engordany", "Encamp", "La Massana", "Sant Julià de Lòria"] },
+  { country: "Angola", cities: ["Luanda", "N’dalatando", "Huambo", "Lobito", "Benguela"] },
+  { country: "Antigua & Barbuda", cities: ["Saint John's", "All Saints", "Liberta", "Potters Village", "Parham"] },
+  { country: "Argentina", cities: ["Buenos Aires", "Córdoba", "Rosario", "Mendoza", "La Plata"] },
+  { country: "Armenia", cities: ["Yerevan", "Gyumri", "Vanadzor", "Vagharshapat", "Hrazdan"] },
+  { country: "Australia", cities: ["Canberra", "Sydney", "Melbourne", "Brisbane", "Perth"] },
+  { country: "Austria", cities: ["Vienna", "Graz", "Linz", "Salzburg", "Innsbruck"] },
+  { country: "Azerbaijan", cities: ["Baku", "Ganja", "Sumqayit", "Mingachevir", "Shaki"] }
+];
+
+
+  // --- Flaggar för vissa länder (valfritt) ---
   const countryFlags = {
     Sweden: "🇸🇪",
     "United States": "🇺🇸",
@@ -59,17 +75,13 @@ window.addEventListener("DOMContentLoaded", async () => {
     India: "🇮🇳"
   };
 
+  // Logout och myFood-knappar
   logoutBtn.onclick = () =>
     auth.signOut().then(() => (window.location.href = "login.html"));
-
   myFoodBtn.onclick = () => (window.location.href = "myfood.html");
 
-  async function loadCountries() {
-    const res = await fetch("https://countriesnow.space/api/v0.1/countries");
-    const data = await res.json();
-    countriesData = data.data;
-
-    // Rensa countrySelect och lägg till default
+  // --- Ladda hårdkodade länder till dropdown ---
+  function loadCountries() {
     countrySelect.innerHTML = "";
     const defaultOption = document.createElement("option");
     defaultOption.value = "";
@@ -85,7 +97,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   countrySelect.onchange = () => {
-    // Rensa och lägg till default för city
     citySelect.innerHTML = "";
     const defaultCity = document.createElement("option");
     defaultCity.value = "";
@@ -125,7 +136,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       adminPanel.style.display = "block";
     }
 
-    await loadCountries();
+    loadCountries();
     loadGlobalFood(user);
     watchMute(user);
   });
@@ -154,7 +165,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   function renderFoodItems(items) {
-    // Rensa listan
     foodList.innerHTML = "";
 
     if (!items.length) {
@@ -176,7 +186,6 @@ window.addEventListener("DOMContentLoaded", async () => {
       const div = document.createElement("div");
       div.className = "food-item";
 
-      // Skapa header-div
       const headerDiv = document.createElement("div");
       headerDiv.className = "food-header";
 
@@ -190,33 +199,26 @@ window.addEventListener("DOMContentLoaded", async () => {
       headerDiv.appendChild(emojiSpan);
       headerDiv.appendChild(h3);
 
-      // Skapa detaljer-div
       const detailsDiv = document.createElement("div");
       detailsDiv.className = "food-details";
 
-      // Lägg till plats
       const locationP = document.createElement("p");
       locationP.textContent = `📍 ${item.city}, ${item.country}`;
 
-      // Lägg till publicerare
       const userP = document.createElement("p");
       userP.textContent = `👤 ${item.user}`;
 
       detailsDiv.appendChild(locationP);
       detailsDiv.appendChild(userP);
 
-      // Lägg till datum om finns
       if (dateStr) {
         const dateP = document.createElement("p");
         dateP.textContent = `📅 ${dateStr}`;
         detailsDiv.appendChild(dateP);
       }
 
-      // Lägg till header och details i huvuddiven
       div.appendChild(headerDiv);
       div.appendChild(detailsDiv);
-
-      // Lägg till i listan
       foodList.appendChild(div);
     });
   }
@@ -244,11 +246,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     };
   }
 
-  // Här kan du lägga till funktionen för att skapa en ny matpost
-  // Exempel: ett formulär eller knapp
-  // Jag visar ett exempel på hur du kan använda valideringen:
-
-  // Antag du har ett formulär med id "addFoodForm"
   document.getElementById("addFoodForm")?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -266,7 +263,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     try {
       const validatedData = validateFoodData(newFood);
-      // Lägg till i Firestore
       await db.collection("publicFoods").add({
         ...validatedData,
         ownerId: auth.currentUser.uid,
@@ -279,46 +275,36 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // Valideringsfunktion samt sanitization
   function validateFoodData(data) {
-    // Kontrollera att titel inte är tom eller innehåller farliga tecken
     if (!data.title || data.title.trim() === "") {
       throw new Error("Titel är obligatoriskt");
     }
-    // Sanera titel
     data.title = sanitizeString(data.title);
 
-    // Kontrollera att country är vald
     if (!data.country || data.country.trim() === "") {
       throw new Error("Välj ett land");
     }
     data.country = sanitizeString(data.country);
 
-    // Kontrollera att city är vald
     if (!data.city || data.city.trim() === "") {
       throw new Error("Välj en stad");
     }
     data.city = sanitizeString(data.city);
 
-    // Validera emoji (enkel check)
     if (!isValidEmoji(data.emoji)) {
-      // Om inte giltig, sätt till standard
       data.emoji = "🍽️";
     }
-    // Sanera emoji
     data.emoji = sanitizeString(data.emoji);
 
     return data;
   }
 
-  // Funktion för att sanera strängar
   function sanitizeString(str) {
     const temp = document.createElement("div");
     temp.textContent = str;
     return temp.innerText;
   }
 
-  // Enkel emoji-validering
   function isValidEmoji(emoji) {
     const emojiRegex = /[\p{Emoji}]/u;
     return emojiRegex.test(emoji);
