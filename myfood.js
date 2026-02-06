@@ -30,6 +30,9 @@ const emojiError = document.getElementById("emojiError");
 const countryError = document.getElementById("countryError");
 const cityError = document.getElementById("cityError");
 
+// ✅ NYTT: gör Food Name-validering röd
+titleError.style.color = "red";
+
 let selectedEmoji = "";
 let countriesData = [];
 let currentUserData = null;
@@ -44,8 +47,10 @@ homeBtn.onclick = () => window.location.href = "../index.html";
 
 // ===== Emoji picker =====
 emojiPickerBtn.onclick = () => {
-  emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
+  emojiPicker.style.display =
+    emojiPicker.style.display === "flex" ? "none" : "flex";
 };
+
 emojiPicker.querySelectorAll("span").forEach(span => {
   span.onclick = () => {
     selectedEmoji = span.textContent;
@@ -110,7 +115,8 @@ function validateTitle(title) {
   if (!title || title.trim() === "") return "Title cannot be empty";
   if (title.length < 5) return "Title must be at least 5 characters long";
   if (title.length > 15) return "Title cannot be longer than 15 characters";
-  if (/[<>\/()=]/.test(title)) return "Title contains invalid characters: < > / ( ) =";
+  if (/[<>\/()=]/.test(title))
+    return "Title contains invalid characters: < > / ( ) =";
   return null;
 }
 
@@ -125,20 +131,39 @@ addFoodForm.onsubmit = async e => {
   cityError.textContent = "";
 
   const title = foodTitle.value.trim();
-
   let hasError = false;
+
   const titleErr = validateTitle(title);
-  if (titleErr) { titleError.textContent = titleErr; hasError = true; }
-  if (!selectedEmoji) { emojiError.style.display = "block"; hasError = true; }
-  if (!foodCountry.value) { countryError.textContent = "Please select a country"; hasError = true; }
-  if (!foodCity.value) { cityError.textContent = "Please select a city"; hasError = true; }
+  if (titleErr) {
+    titleError.textContent = titleErr;
+    hasError = true;
+  }
+
+  if (!selectedEmoji) {
+    emojiError.style.display = "block";
+    hasError = true;
+  }
+
+  if (!foodCountry.value) {
+    countryError.textContent = "Please select a country";
+    hasError = true;
+  }
+
+  if (!foodCity.value) {
+    cityError.textContent = "Please select a city";
+    hasError = true;
+  }
 
   if (hasError) return;
 
   const user = auth.currentUser;
   if (!user) return;
 
-  const foodRef = db.collection("foods").doc(user.uid).collection("items").doc();
+  const foodRef = db.collection("foods")
+    .doc(user.uid)
+    .collection("items")
+    .doc();
+
   const foodId = foodRef.id;
 
   const foodData = {
@@ -172,7 +197,12 @@ async function loadFoodList() {
   if (!user) return;
 
   foodListContainer.innerHTML = "";
-  const snap = await db.collection("foods").doc(user.uid).collection("items").orderBy("createdAt", "desc").get();
+  const snap = await db
+    .collection("foods")
+    .doc(user.uid)
+    .collection("items")
+    .orderBy("createdAt", "desc")
+    .get();
 
   snap.forEach(docSnap => {
     const data = docSnap.data();
@@ -183,13 +213,19 @@ async function loadFoodList() {
     del.textContent = "×";
     del.className = "delete-icon";
 
-    // === Ändrat: Ta bort confirm popup ===
     del.onclick = async () => {
       const user = auth.currentUser;
       if (!user) return;
 
-      await db.collection("foods").doc(user.uid).collection("items").doc(docSnap.id).delete();
-      await db.collection("publicFoods").doc(docSnap.id).delete();
+      await db.collection("foods")
+        .doc(user.uid)
+        .collection("items")
+        .doc(docSnap.id)
+        .delete();
+
+      await db.collection("publicFoods")
+        .doc(docSnap.id)
+        .delete();
 
       loadFoodList();
       loadPublicFoods();
@@ -206,7 +242,11 @@ async function loadPublicFoods() {
   if (!publicFoodListContainer) return;
   publicFoodListContainer.innerHTML = "";
 
-  const snap = await db.collection("publicFoods").orderBy("publishedAt", "desc").get();
+  const snap = await db
+    .collection("publicFoods")
+    .orderBy("publishedAt", "desc")
+    .get();
+
   snap.forEach(doc => {
     const d = doc.data();
     const div = document.createElement("div");
