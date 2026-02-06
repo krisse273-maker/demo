@@ -289,7 +289,6 @@ foodCountry.onchange = () => {
   });
   foodCity.disabled = false;
 };
-loadCountries();
 
 // ===== User listener + Mute check =====
 function setupUserListener() {
