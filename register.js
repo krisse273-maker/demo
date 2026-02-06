@@ -1,7 +1,7 @@
 // ===== Firebase setup =====
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js?v=2";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js?v=2";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js?v=2";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
@@ -92,8 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
     [nameError, emailError, genderError].forEach(el => el.classList.remove('show'));
     passwordLengthError.classList.remove('show');
     uppercaseNumberError.classList.remove('show');
-    [nameInput, emailInput, passwordInput, confirmPasswordInput, genderSelect]
-      .forEach(el => el.style.borderColor = "");
+    [nameInput, emailInput, passwordInput, confirmPasswordInput, genderSelect].forEach(el => el.style.borderColor = "");
 
     // ===== Name validation =====
     if (!name) {
@@ -171,9 +170,9 @@ document.addEventListener("DOMContentLoaded", () => {
         publicName: name.toLowerCase(),
         email: email,
         createdAt: serverTimestamp(),
-        admin: false,      // obligatoriskt enligt reglerna
-        banned: false,     // obligatoriskt enligt reglerna
-        muteUntil: null    // obligatoriskt enligt reglerna
+        admin: false,
+        banned: false,
+        muteUntil: null
       });
 
       // Public users
@@ -186,7 +185,20 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Registration error:", error);
       emailInput.style.borderColor = "red";
-      emailError.textContent = "Registration failed. Check email or password";
+
+      // ===== Specifik felhantering =====
+      if (error.code === "auth/email-already-in-use") {
+        emailError.textContent = "This email already exists";
+      } else if (error.code === "auth/invalid-email") {
+        emailError.textContent = "Invalid email format";
+      } else if (error.code === "auth/weak-password") {
+        passwordLengthError.textContent = "Password is too weak (min 6 characters)";
+        passwordLengthError.classList.add('show');
+        emailError.textContent = "";
+      } else {
+        emailError.textContent = "Registration failed. Check email or password";
+      }
+
       emailError.classList.add('show');
     } finally {
       registerBtn.disabled = false;
