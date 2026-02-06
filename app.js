@@ -46,6 +46,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // --- Hårdkodad lista av länder och städer (börjar med A, kan fyllas på med resten) ---
   const countriesData = [
+  // --- A-länder ---
   { country: "Afghanistan", cities: ["Kabul", "Kandahar", "Herat", "Mazar-i-Sharif", "Jalalabad"] },
   { country: "Albania", cities: ["Tirana", "Durrës", "Vlorë", "Shkodër", "Fier"] },
   { country: "Algeria", cities: ["Algiers", "Oran", "Constantine", "Annaba", "Blida"] },
@@ -56,8 +57,49 @@ window.addEventListener("DOMContentLoaded", async () => {
   { country: "Armenia", cities: ["Yerevan", "Gyumri", "Vanadzor", "Vagharshapat", "Hrazdan"] },
   { country: "Australia", cities: ["Canberra", "Sydney", "Melbourne", "Brisbane", "Perth"] },
   { country: "Austria", cities: ["Vienna", "Graz", "Linz", "Salzburg", "Innsbruck"] },
-  { country: "Azerbaijan", cities: ["Baku", "Ganja", "Sumqayit", "Mingachevir", "Shaki"] }
+  { country: "Azerbaijan", cities: ["Baku", "Ganja", "Sumqayit", "Mingachevir", "Shaki"] },
+  { country: "Bahamas", cities: ["Nassau"] },
+  { country: "Bahrain", cities: ["Manama"] },
+  { country: "Bangladesh", cities: ["Dhaka", "Chittagong", "Khulna", "Rajshahi", "Sylhet"] },
+  { country: "Barbados", cities: ["Bridgetown"] },
+  { country: "Belarus", cities: ["Minsk", "Gomel", "Mogilev", "Vitebsk", "Hrodna"] },
+  { country: "Belgium", cities: ["Brussels", "Antwerp", "Ghent", "Charleroi", "Liège"] },
+  { country: "Belize", cities: ["Belmopan", "San Ignacio", "Orange Walk", "Dangriga", "Corozal"] },
+  { country: "Benin", cities: ["Porto-Novo", "Cotonou", "Parakou", "Djougou", "Bohicon"] },
+  { country: "Bhutan", cities: ["Thimphu", "Phuntsholing", "Punakha", "Trongsa", "Jakar"] },
+  { country: "Bolivia", cities: ["Sucre", "La Paz", "Santa Cruz", "Cochabamba", "Oruro"] },
+  { country: "Bosnia & Herzegovina", cities: ["Sarajevo", "Banja Luka", "Tuzla", "Zenica", "Mostar"] },
+  { country: "Botswana", cities: ["Gaborone", "Francistown", "Molepolole", "Maun", "Selebi-Phikwe"] },
+  { country: "Brazil", cities: ["Brasília", "São Paulo", "Rio de Janeiro", "Salvador", "Fortaleza"] },
+  { country: "Brunei", cities: ["Bandar Seri Begawan"] },
+  { country: "Bulgaria", cities: ["Sofia", "Plovdiv", "Varna", "Burgas", "Ruse"] },
+  { country: "Burkina Faso", cities: ["Ouagadougou", "Bobo-Dioulasso", "Koudougou", "Banfora", "Ouahigouya"] },
+  { country: "Burundi", cities: ["Gitega", "Bujumbura", "Ngozi", "Muyinga", "Rutana"] }
+  { country: "Cabo Verde", cities: ["Praia", "Mindelo", "Santa Maria", "Assomada", "São Filipe"] },
+  { country: "Cambodia", cities: ["Phnom Penh", "Siem Reap", "Sihanoukville", "Battambang", "Ta Khmau"] },
+  { country: "Cameroon", cities: ["Yaoundé", "Douala", "Garoua", "Bamenda", "Maroua"] },
+  { country: "Canada", cities: ["Ottawa", "Toronto", "Montreal", "Vancouver", "Calgary"] },
+  { country: "Central African Republic", cities: ["Bangui", "Bimbo", "Berbérati", "Carnot", "Bossangoa"] },
+  { country: "Chad", cities: ["N'Djamena", "Moundou", "Sarh", "Abéché", "Kélo"] },
+  { country: "Chile", cities: ["Santiago", "Valparaíso", "Concepción", "La Serena", "Antofagasta"] },
+  { country: "China", cities: ["Beijing", "Shanghai", "Guangzhou", "Shenzhen", "Chengdu"] },
+  { country: "Colombia", cities: ["Bogotá", "Medellín", "Cali", "Barranquilla", "Cartagena"] },
+  { country: "Comoros", cities: ["Moroni", "Moutsamoudou", "Fomboni", "Domoni", "Itsandra"] },
+  { country: "Congo, Democratic Republic of the", cities: ["Kinshasa", "Lubumbashi", "Mbuji-Mayi", "Kananga", "Kisangani"] },
+  { country: "Congo, Republic of the", cities: ["Brazzaville", "Pointe-Noire", "Dolisie", "Nkayi", "Owando"] },
+  { country: "Costa Rica", cities: ["San José", "Alajuela", "Cartago", "Heredia", "Liberia"] },
+  { country: "Côte d'Ivoire", cities: ["Yamoussoukro", "Abidjan", "Bouaké", "Daloa", "San Pedro"] },
+  { country: "Croatia", cities: ["Zagreb", "Split", "Rijeka", "Osijek", "Zadar"] },
+  { country: "Cuba", cities: ["Havana", "Santiago de Cuba", "Camagüey", "Holguín", "Santa Clara"] },
+  { country: "Cyprus", cities: ["Nicosia", "Limassol", "Larnaca", "Famagusta", "Paphos"] },
+  { country: "Czechia", cities: ["Prague", "Brno", "Ostrava", "Plzeň", "Liberec"] },
+  // --- D-länder ---
+  { country: "Denmark", cities: ["Copenhagen", "Aarhus", "Odense", "Aalborg", "Esbjerg"] },
+  { country: "Djibouti", cities: ["Djibouti", "Ali Sabieh", "Tadjoura", "Obock", "Dikhil"] },
+  { country: "Dominica", cities: ["Roseau", "Portsmouth", "Marigot", "Castle Bruce", "Grand Bay"] },
+  { country: "Dominican Republic", cities: ["Santo Domingo", "Santiago de los Caballeros", "La Romana", "San Pedro de Macorís", "Puerto Plata"] }
 ];
+
 
 
   // --- Flaggar för vissa länder (valfritt) ---
@@ -310,3 +352,4 @@ window.addEventListener("DOMContentLoaded", async () => {
     return emojiRegex.test(emoji);
   }
 });
+
