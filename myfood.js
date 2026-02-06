@@ -411,7 +411,7 @@ addFoodForm.onsubmit = async e => {
     emoji: selectedEmoji,
     country: foodCountry.value,
     city: foodCity.value,
-    type: "meal",
+    type: "food",
     ownerId: user.uid,
     userName: user.displayName || user.email,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
