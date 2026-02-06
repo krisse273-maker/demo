@@ -82,48 +82,47 @@
       outline: none;
     }
 
-    /* ===== PASSWORD WRAPPER ===== */
-  .password-wrapper {
-  display: flex;
-  width: 100%;
-}
+    .password-wrapper {
+      display: flex;
+      width: 100%;
+    }
 
-.password-wrapper input {
-  flex: 1;
-  height: 45px;             /* exakt höjd på input */
-  padding: 0 10px;          /* padding inuti input */
-  font-size: 1rem;
-  border-radius: 10px;
-  border: 1px solid #1c222b;
-  background-color: #2b3340;
-  color: #cfd8dc;
-}
+    .password-wrapper input {
+      flex: 1;
+      height: 45px;
+      padding: 0 10px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid #1c222b;
+      background-color: #2b3340;
+      color: #cfd8dc;
+    }
 
-.password-wrapper button {
-  width: 45px;              /* samma som input höjd */
-  height: 45px;             /* samma som input höjd */
-  margin-left: 5px;
-  border: none;
-  border-radius: 10px;
-  background-color: #4caf50;
-  cursor: pointer;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #1c222b;
-  transition: background-color 0.2s;
-}
+    .password-wrapper button {
+      width: 45px;
+      height: 45px;
+      margin-left: 5px;
+      border: none;
+      border-radius: 10px;
+      background-color: #4caf50;
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1c222b;
+      transition: background-color 0.2s;
+    }
 
-.password-wrapper button:hover {
-  background-color: #388e3c;
-}
+    .password-wrapper button:hover {
+      background-color: #388e3c;
+    }
 
     .password-error {
       color: red;
       font-size: 0.85rem;
       margin-bottom: 0.5rem;
-      display: none; /* Dolda som standard */
+      display: none;
       visibility: hidden;
     }
 
@@ -225,196 +224,8 @@
   <p>&copy; 2026 Global Food Share</p>
 </footer>
 
-<script type="module">
-  // Firebase setup
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+<!-- ===== Load register.js with cache-busting ===== -->
+<script type="module" src="register.js?v=1"></script>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
-    authDomain: "global-food-share.firebaseapp.com",
-    projectId: "global-food-share",
-    storageBucket: "global-food-share.firebasestorage.app",
-    messagingSenderId: "902107453892",
-    appId: "1:902107453892:web:dd9625974b8744cc94ac91",
-    measurementId: "G-S1G7JY0TH5",
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const registerBtn = document.getElementById("registerBtn");
-    const togglePasswordBtn = document.getElementById("togglePassword");
-    const goLoginBtn = document.getElementById("goLoginBtn");
-    const nameInput = document.getElementById("name");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const confirmPasswordInput = document.getElementById("confirmPassword");
-    const genderSelect = document.getElementById("gender");
-
-    const nameError = document.getElementById("nameError");
-    const emailError = document.getElementById("emailError");
-    const genderError = document.getElementById("genderError");
-    const passwordLengthError = document.getElementById("passwordLengthError");
-    const uppercaseNumberError = document.getElementById("uppercaseNumberError");
-
-    const spinner = registerBtn.querySelector(".spinner");
-    const btnText = registerBtn.querySelector("#btnText");
-
-    const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    const isValidName = (name) => /^[a-zA-Z0-9]{1,15}$/.test(name);
-    const hasUppercaseAndNumber = (pw) => /[A-Z]/.test(pw) && /[0-9]/.test(pw);
-
-    // Clear errors on input change
-    [nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(input => {
-      input.addEventListener("input", () => {
-        input.style.borderColor = "";
-        nameError.classList.remove('show');
-        emailError.classList.remove('show');
-        passwordLengthError.classList.remove('show');
-        uppercaseNumberError.classList.remove('show');
-      });
-    });
-
-    genderSelect.addEventListener("change", () => {
-      genderError.classList.remove('show');
-      genderSelect.style.borderColor = "";
-    });
-
-    const showPasswordError = (type) => {
-      passwordLengthError.classList.remove('show');
-      uppercaseNumberError.classList.remove('show');
-
-      if (type === "length") passwordLengthError.classList.add('show');
-      if (type === "uppercaseNumber") uppercaseNumberError.classList.add('show');
-
-      passwordInput.style.borderColor = "red";
-      confirmPasswordInput.style.borderColor = "red";
-    };
-
-    // Toggle password visibility
-    togglePasswordBtn.addEventListener("click", () => {
-      const type = passwordInput.type === "password" ? "text" : "password";
-      passwordInput.type = type;
-      confirmPasswordInput.type = type;
-      togglePasswordBtn.textContent = type === "password" ? "👁️" : "🙈";
-    });
-
-    registerBtn.addEventListener("click", async () => {
-      const name = nameInput.value.trim();
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
-      const confirmPassword = confirmPasswordInput.value;
-      const gender = genderSelect.value;
-
-      let hasError = false;
-
-      [nameError, emailError, genderError].forEach(el => el.classList.remove('show'));
-      passwordLengthError.classList.remove('show');
-      uppercaseNumberError.classList.remove('show');
-      [nameInput, emailInput, passwordInput, confirmPasswordInput, genderSelect].forEach(el => el.style.borderColor = "");
-
-      // Validation
-      if (!name) {
-        nameError.textContent = "Name is required";
-        nameError.classList.add('show');
-        nameInput.style.borderColor = "red";
-        hasError = true;
-      } else if (!isValidName(name)) {
-        nameError.textContent = "Name must be 1-15 letters or numbers";
-        nameError.classList.add('show');
-        nameInput.style.borderColor = "red";
-        hasError = true;
-      }
-
-      if (!email) {
-        emailError.textContent = "Email is required";
-        emailError.classList.add('show');
-        emailInput.style.borderColor = "red";
-        hasError = true;
-      } else if (!isValidEmail(email) || email.length > 100) {
-        emailError.textContent = "Please enter a valid email";
-        emailError.classList.add('show');
-        emailInput.style.borderColor = "red";
-        hasError = true;
-      }
-
-      if (!gender) {
-        genderError.textContent = "You need to choose Gender";
-        genderError.classList.add('show');
-        genderSelect.style.borderColor = "red";
-        hasError = true;
-      }
-
-      if (!password || !confirmPassword) {
-        if (!password) passwordInput.style.borderColor = "red";
-        if (!confirmPassword) confirmPasswordInput.style.borderColor = "red";
-        hasError = true;
-      }
-
-      if (password !== confirmPassword) {
-        passwordInput.style.borderColor = "red";
-        confirmPasswordInput.style.borderColor = "red";
-        passwordLengthError.textContent = "Passwords do not match";
-        passwordLengthError.classList.add('show');
-        hasError = true;
-      }
-
-      if (!hasUppercaseAndNumber(password)) {
-        showPasswordError("uppercaseNumber");
-        hasError = true;
-      } else if (password.length < 6) {
-        showPasswordError("length");
-        hasError = true;
-      }
-
-      if (hasError) return;
-
-      // Spinner & Button Text
-      registerBtn.disabled = true;
-      spinner.style.display = "inline-block";
-      btnText.textContent = "Registering...";
-
-      // Firebase registration
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        await updateProfile(user, { displayName: name });
-
-        await setDoc(doc(db, "users", user.uid), {
-          name: name,
-          publicName: name.toLowerCase(),
-          email: email,
-          createdAt: serverTimestamp()
-        });
-
-        await setDoc(doc(db, "publicUsers", user.uid), {
-          name: name,
-          gender: gender
-        });
-
-        window.location.href = "index.html";
-      } catch (error) {
-        console.error("Registration error:", error);
-        emailInput.style.borderColor = "red";
-        emailError.textContent = "Registration failed. Check email or password";
-        emailError.classList.add('show');
-      } finally {
-        registerBtn.disabled = false;
-        spinner.style.display = "none";
-        btnText.textContent = "Register";
-      }
-    });
-
-    // Redirect to login page
-    goLoginBtn.addEventListener("click", () => {
-      window.location.href = "login.html";
-    });
-  });
-</script>
 </body>
 </html>
