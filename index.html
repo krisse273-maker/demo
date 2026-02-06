@@ -18,37 +18,36 @@
       background-color: #4caf50;
       color: #cfd8dc;
       font-family: 'Poppins', sans-serif;
-      margin: 0;
     }
 
     header {
       background-color: #262d37;
-      padding: 1rem;
-      color: #cfd8dc;
       text-align: center;
+      padding: 1rem 0;
       position: relative;
     }
 
-    header h1 {
+    header h1 { 
+      color: #4caf50; 
       margin: 0;
-      color: #4caf50;
     }
 
-    #welcomeMsg {
-      margin: 0.2rem 0 0.5rem 0;
+    #welcomeMsg { 
+      color: #cfd8dc; 
+      margin: 0.25rem 0 0.5rem 0;
     }
 
-    /* GRÖN RUTA I HEADER - UPPDATERAD */
+    /* ===== NY HEADER-RUTA ===== */
     .header-nav {
-      background-color: #4caf50; /* grön */
+      background-color: #4caf50;
       display: flex;
       justify-content: center;
       gap: 4rem;
-      padding: 0.05rem 4rem; /* smalare höjd (tjocklek) */
+      padding: 0.1rem 4rem; /* smal höjd */
       border-radius: 8px;
       margin: 0.5rem auto 0 auto;
-      width: 95%; /* nästan hela headern */
-      border: 2px solid black; /* svart outline */
+      width: 95%;
+      border: 2px solid black;
       box-shadow: 0 4px 8px rgba(0,0,0,0.4);
       box-sizing: border-box;
     }
@@ -60,11 +59,36 @@
       font-size: 1rem;
       transition: color 0.2s;
       cursor: pointer;
-      padding: 0.2rem 0; /* liten padding så texten inte klibbar */
+      padding: 0;           /* tar bort extra padding */
+      line-height: 1.2rem;  /* gör texten kompakt */
     }
 
     .header-nav a:hover {
-      color: #e0f2f1;
+      color: #d4f1c5;
+    }
+
+    #adminPanel {
+      display: none;
+      max-width: 500px;
+      margin: 15px auto;
+    }
+
+    #adminPanel a {
+      display: block;
+      text-align: center;
+      padding: 16px;
+      background: #ff9800;
+      color: #1c222b;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 10px;
+      transition: 0.2s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    #adminPanel a:hover {
+      background: #fb8c00;
+      transform: translateY(-2px);
     }
 
     section.filters {
@@ -83,7 +107,6 @@
       padding: 0.5rem;
       margin: 0.5rem 0;
       border-radius: 6px;
-      border: none;
     }
 
     #filterBtn {
@@ -114,46 +137,7 @@
       text-align: center;
       padding: 1rem;
       background-color: #262d37;
-      color: #cfd8dc;
     }
-
-    /* CUSTOM MUTE ALERT */
-    .alert-backdrop {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-
-    .alert-backdrop.hidden { display: none; }
-
-    .alert-box {
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      max-width: 400px;
-      text-align: center;
-    }
-
-    .alert-box h3 { margin-top: 0; }
-
-    .alert-box button {
-      background: #2e7d32;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: 600;
-      margin-top: 1rem;
-    }
-
-    .alert-box button:hover { background: #1b5e20; }
-
   </style>
 </head>
 
@@ -163,10 +147,10 @@
   <h1>🌍 Global Food Share</h1>
   <p id="welcomeMsg">Welcome!</p>
 
-  <!-- GRÖN RUTA I HEADER -->
+  <!-- ===== HEADER NAV RUTA ===== -->
   <div class="header-nav">
-    <a href="#" id="myFoodBtn">My Food List</a>
-    <a href="#" id="logoutBtn">Log Out</a>
+    <a id="myFoodLink">My Food List</a>
+    <a id="logoutLink">Log Out</a>
   </div>
 </header>
 
@@ -204,6 +188,17 @@
     <button id="alertOkBtn">OK</button>
   </div>
 </div>
+
+<script>
+  // Koppla länkarna till funktioner som tidigare var knappar
+  document.getElementById("logoutLink").onclick = () => {
+    firebase.auth().signOut().then(() => window.location.href = "login.html");
+  };
+
+  document.getElementById("myFoodLink").onclick = () => {
+    window.location.href = "myfood.html";
+  };
+</script>
 
 </body>
 </html>
