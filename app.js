@@ -103,6 +103,34 @@ window.addEventListener("DOMContentLoaded", async () => {
   { country: "Djibouti", cities: ["Djibouti", "Ali Sabieh", "Tadjoura", "Obock", "Dikhil"] },
   { country: "Dominica", cities: ["Roseau", "Portsmouth", "Marigot", "Castle Bruce", "Grand Bay"] },
   { country: "Dominican Republic", cities: ["Santo Domingo", "Santiago de los Caballeros", "La Romana", "San Pedro de Macorís", "Puerto Plata"] }
+
+    // --- E-H länder ---
+{ country: "Ecuador", cities: ["Quito", "Guayaquil", "Cuenca", "Santo Domingo", "Machala"] },
+{ country: "Egypt", cities: ["Cairo", "Alexandria", "Giza", "Shubra El-Kheima", "Port Said"] },
+{ country: "El Salvador", cities: ["San Salvador", "Santa Ana", "San Miguel", "Soyapango", "Mejicanos"] },
+{ country: "Equatorial Guinea", cities: ["Malabo", "Bata", "Ebebiyín", "Mongomo", "Luba"] },
+{ country: "Eritrea", cities: ["Asmara", "Keren", "Massawa", "Assab", "Mendefera"] },
+{ country: "Estonia", cities: ["Tallinn", "Tartu", "Narva", "Pärnu", "Kohtla-Järve"] },
+{ country: "Eswatini", cities: ["Mbabane", "Manzini", "Big Bend", "Lobamba", "Siteki"] },
+{ country: "Ethiopia", cities: ["Addis Ababa", "Dire Dawa", "Mek'ele", "Gondar", "Bahir Dar"] },
+{ country: "Fiji", cities: ["Suva", "Nadi", "Lautoka", "Labasa", "Sigatoka"] },
+{ country: "Finland", cities: ["Helsinki", "Espoo", "Tampere", "Vantaa", "Oulu"] },
+{ country: "France", cities: ["Paris", "Marseille", "Lyon", "Toulouse", "Nice"] },
+{ country: "Gabon", cities: ["Libreville", "Port-Gentil", "Franceville", "Oyem", "Moanda"] },
+{ country: "Gambia", cities: ["Banjul", "Serekunda", "Brikama", "Bakau", "Farafenni"] },
+{ country: "Georgia", cities: ["Tbilisi", "Batumi", "Kutaisi", "Rustavi", "Zugdidi"] },
+{ country: "Germany", cities: ["Berlin", "Hamburg", "Munich", "Cologne", "Frankfurt"] },
+{ country: "Ghana", cities: ["Accra", "Kumasi", "Tamale", "Sekondi-Takoradi", "Obuasi"] },
+{ country: "Greece", cities: ["Athens", "Thessaloniki", "Patras", "Heraklion", "Larissa"] },
+{ country: "Grenada", cities: ["St. George's", "Gouyave", "Grenville", "Victoria", "Hillsborough"] },
+{ country: "Guatemala", cities: ["Guatemala City", "Mixco", "Villa Nueva", "Quetzaltenango", "Escuintla"] },
+{ country: "Guinea", cities: ["Conakry", "Nzérékoré", "Kankan", "Kindia", "Labé"] },
+{ country: "Guinea-Bissau", cities: ["Bissau", "Bafatá", "Gabú", "Bissorã", "Bolama"] },
+{ country: "Guyana", cities: ["Georgetown", "Linden", "New Amsterdam", "Bartica", "Anna Regina"] },
+{ country: "Haiti", cities: ["Port-au-Prince", "Cap-Haïtien", "Gonaïves", "Les Cayes", "Petion-Ville"] },
+{ country: "Honduras", cities: ["Tegucigalpa", "San Pedro Sula", "Choloma", "La Ceiba", "El Progreso"] },
+{ country: "Hungary", cities: ["Budapest", "Debrecen", "Szeged", "Miskolc", "Pécs"] }
+
 ];
 
 
@@ -356,5 +384,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     return emojiRegex.test(emoji);
   }
 });
+
 
 
