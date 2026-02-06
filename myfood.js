@@ -365,6 +365,14 @@ foodTitle.addEventListener("input", () => {
 });
 
 // ===== Add Food =====
+function validateCountryAndCity(country, city) {
+  const countryObj = countriesData.find(c => c.country === country);
+  if (!countryObj) return "Invalid country selected";
+  if (!countryObj.cities.includes(city)) return "Invalid city selected";
+  return null;
+}
+
+
 addFoodForm.onsubmit = async e => {
   e.preventDefault();
   const user = auth.currentUser;
@@ -402,6 +410,7 @@ addFoodForm.onsubmit = async e => {
     cityError.textContent = "Please select a city";
     hasError = true;
   }
+
   if (hasError) return;
 
   const foodRef = db.collection("foods").doc(user.uid).collection("items").doc();
@@ -470,6 +479,83 @@ async function loadPublicFoods() {
   });
 }
 
+// ===== Form submit =====
+addFoodForm.onsubmit = async e => {
+  e.preventDefault();
+  const user = auth.currentUser;
+  if (!user) return;
+
+  // Reset errors
+  titleError.textContent = "";
+  emojiError.style.display = "none";
+  countryError.textContent = "";
+  cityError.textContent = "";
+
+  const title = foodTitle.value.trim();
+  let hasError = false;
+
+  // Title validation
+  const titleErr = validateTitle(title);
+  if (titleErr) {
+    titleError.textContent = titleErr;
+    foodTitle.classList.add("error-title", "shake");
+    hasError = true;
+  }
+
+  // Emoji validation
+  if (!selectedEmoji) {
+    emojiError.style.display = "block";
+    hasError = true;
+  }
+
+  // Country/City validation
+  if (!foodCountry.value) {
+    countryError.textContent = "Please select a country";
+    hasError = true;
+  }
+  if (!foodCity.value) {
+    cityError.textContent = "Please select a city";
+    hasError = true;
+  }
+
+  const countryCityError = validateCountryAndCity(foodCountry.value, foodCity.value);
+  if (countryCityError) {
+    if (countryCityError.includes("country")) countryError.textContent = countryCityError;
+    if (countryCityError.includes("city")) cityError.textContent = countryCityError;
+    hasError = true;
+  }
+
+  if (hasError) return;
+
+  // Save to Firestore
+  const foodRef = db.collection("foods").doc(user.uid).collection("items").doc();
+  const foodId = foodRef.id;
+  const foodData = {
+    title,
+    emoji: selectedEmoji,
+    country: foodCountry.value,
+    city: foodCity.value,
+    type: "food",
+    ownerId: user.uid,
+    userName: user.displayName || user.email,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  };
+
+  await foodRef.set(foodData);
+  await db.collection("publicFoods").doc(foodId).set({
+    ...foodData,
+    publishedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  addFoodForm.reset();
+  foodTitle.classList.remove("valid-title", "error-title", "shake");
+  emojiPickerBtn.textContent = "Select your food Emoji";
+  selectedEmoji = "";
+
+  loadFoodList();
+  loadPublicFoods();
+};
+
 // ===== Init =====
 auth.onAuthStateChanged(user => {
   if (user) {
@@ -478,3 +564,4 @@ auth.onAuthStateChanged(user => {
     loadPublicFoods();
   }
 });
+
