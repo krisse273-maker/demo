@@ -38,18 +38,19 @@
       margin: 0.2rem 0 0.5rem 0;
     }
 
-    /* GRÖN RUTA I HEADER */
+    /* GRÖN RUTA I HEADER - UPPDATERAD */
     .header-nav {
       background-color: #4caf50; /* grön */
       display: flex;
       justify-content: center;
-      gap: 4rem; /* lite mer avstånd mellan länkar */
-      padding: 0.15rem 4rem; /* ännu smalare vertikalt, bredare horisontellt */
+      gap: 4rem;
+      padding: 0.05rem 4rem; /* smalare höjd (tjocklek) */
       border-radius: 8px;
-      margin: 0 auto;
-      max-width: 600px; /* bredare */
+      margin: 0.5rem auto 0 auto;
+      width: 95%; /* nästan hela headern */
       border: 2px solid black; /* svart outline */
       box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      box-sizing: border-box;
     }
 
     .header-nav a {
@@ -59,6 +60,7 @@
       font-size: 1rem;
       transition: color 0.2s;
       cursor: pointer;
+      padding: 0.2rem 0; /* liten padding så texten inte klibbar */
     }
 
     .header-nav a:hover {
