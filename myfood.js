@@ -119,7 +119,7 @@ foodCountry.onchange = () => {
 
 loadCountries();
 
-// ===== User listener =====
+// ===== User listener with mute alert =====
 function setupUserListener() {
   const user = auth.currentUser;
   if (!user) return;
@@ -128,9 +128,20 @@ function setupUserListener() {
   userDocUnsubscribe = db.collection("users").doc(user.uid)
     .onSnapshot(doc => {
       currentUserData = doc.data();
+
+      // Banned check
       if (currentUserData?.banned) {
         alert("You are banned.");
         auth.signOut().then(() => window.location.href = "../index.html");
+      }
+
+      // Mute check in real time
+      if (currentUserData?.muteUntil) {
+        const now = new Date();
+        const muteUntil = currentUserData.muteUntil.toDate();
+        if (now < muteUntil) {
+          alert(`You are muted until ${muteUntil.toLocaleString()}`);
+        }
       }
     });
 }
@@ -156,7 +167,6 @@ foodTitle.addEventListener("input", () => {
     titleError.textContent = error;
     foodTitle.classList.add("error-title");
 
-    // retrigger shake
     void foodTitle.offsetWidth;
     foodTitle.classList.add("shake");
   } else if (title.length > 0) {
@@ -167,9 +177,22 @@ foodTitle.addEventListener("input", () => {
   }
 });
 
-// ===== Add Food =====
+// ===== Add Food with mute check =====
 addFoodForm.onsubmit = async e => {
   e.preventDefault();
+
+  const user = auth.currentUser;
+  if (!user) return;
+
+  // Check if muted
+  if (currentUserData?.muteUntil) {
+    const now = new Date();
+    const muteUntil = currentUserData.muteUntil.toDate();
+    if (now < muteUntil) {
+      alert(`You are muted until ${muteUntil.toLocaleString()}`);
+      return; // Stop posting
+    }
+  }
 
   titleError.textContent = "";
   emojiError.style.display = "none";
@@ -202,9 +225,6 @@ addFoodForm.onsubmit = async e => {
   }
 
   if (hasError) return;
-
-  const user = auth.currentUser;
-  if (!user) return;
 
   const foodRef = db.collection("foods")
     .doc(user.uid)
