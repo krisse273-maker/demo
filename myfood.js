@@ -30,8 +30,33 @@ const emojiError = document.getElementById("emojiError");
 const countryError = document.getElementById("countryError");
 const cityError = document.getElementById("cityError");
 
-// ✅ NYTT: gör Food Name-validering röd
+// ===== Styling for validation (JS only) =====
 titleError.style.color = "red";
+
+// inject CSS
+const style = document.createElement("style");
+style.textContent = `
+  .valid-title {
+    border: 2px solid #00c853 !important;
+  }
+
+  .error-title {
+    border: 2px solid red !important;
+  }
+
+  .shake {
+    animation: shake 0.25s;
+  }
+
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    50% { transform: translateX(4px); }
+    75% { transform: translateX(-4px); }
+    100% { transform: translateX(0); }
+  }
+`;
+document.head.appendChild(style);
 
 let selectedEmoji = "";
 let countriesData = [];
@@ -120,11 +145,32 @@ function validateTitle(title) {
   return null;
 }
 
+// ===== LIVE VALIDATION (Food Name only) =====
+foodTitle.addEventListener("input", () => {
+  const title = foodTitle.value.trim();
+  const error = validateTitle(title);
+
+  foodTitle.classList.remove("valid-title", "error-title", "shake");
+
+  if (error) {
+    titleError.textContent = error;
+    foodTitle.classList.add("error-title");
+
+    // retrigger shake
+    void foodTitle.offsetWidth;
+    foodTitle.classList.add("shake");
+  } else if (title.length > 0) {
+    titleError.textContent = "";
+    foodTitle.classList.add("valid-title");
+  } else {
+    titleError.textContent = "";
+  }
+});
+
 // ===== Add Food =====
 addFoodForm.onsubmit = async e => {
   e.preventDefault();
 
-  // Reset errors
   titleError.textContent = "";
   emojiError.style.display = "none";
   countryError.textContent = "";
@@ -136,6 +182,7 @@ addFoodForm.onsubmit = async e => {
   const titleErr = validateTitle(title);
   if (titleErr) {
     titleError.textContent = titleErr;
+    foodTitle.classList.add("error-title", "shake");
     hasError = true;
   }
 
@@ -184,6 +231,7 @@ addFoodForm.onsubmit = async e => {
   });
 
   addFoodForm.reset();
+  foodTitle.classList.remove("valid-title", "error-title", "shake");
   emojiPickerBtn.textContent = "Select your food Emoji";
   selectedEmoji = "";
 
