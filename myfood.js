@@ -43,6 +43,12 @@ style.textContent = `
   .error-title { border: 2px solid red !important; }
   .shake { animation: shake 0.25s; }
   @keyframes shake { 0%{transform:translateX(0);}25%{transform:translateX(-4px);}50%{transform:translateX(4px);}75%{transform:translateX(-4px);}100%{transform:translateX(0);} }
+  /* Stil för flaggorna i dropdown */
+  select option[data-flag] {
+    background-repeat: no-repeat;
+    background-size: 20px 15px;
+    padding-left: 25px;
+  }
 `;
 document.head.appendChild(style);
 
@@ -85,7 +91,7 @@ async function setupTestCountry() {
   }
 }
 
-// ===== Load countries + cities från countriesnow.space API =====
+// ===== Load countries + cities med flaggor från countriesnow.space API =====
 async function loadCountries() {
   // Rensa dropdowns
   foodCountry.textContent = "";
@@ -104,15 +110,30 @@ async function loadCountries() {
   foodCity.appendChild(defaultCity);
 
   try {
-    const res = await fetch("https://countriesnow.space/api/v0.1/countries");
-    const data = await res.json();
-    countriesData = data.data; // Spara globalt för validering
+    // Hämta länder + städer
+    const resCountries = await fetch("https://countriesnow.space/api/v0.1/countries");
+    const dataCountries = await resCountries.json();
 
-    // Lägg till länder i dropdown
+    // Hämta flaggor
+    const resFlags = await fetch("https://countriesnow.space/api/v0.1/countries/flag/images");
+    const dataFlags = await resFlags.json();
+
+    // Kombinera länder, städer och flaggor
+    countriesData = dataCountries.data.map(c => {
+      const flagObj = dataFlags.data.find(f => f.name === c.country);
+      return {
+        country: c.country,
+        cities: c.cities,
+        flag: flagObj ? flagObj.flag : ""
+      };
+    });
+
+    // Lägg till länder i dropdown med flagga
     countriesData.forEach(c => {
       const opt = document.createElement("option");
       opt.value = c.country;
       opt.textContent = c.country;
+      if (c.flag) opt.setAttribute("data-flag", c.flag);
       foodCountry.appendChild(opt);
     });
 
@@ -142,7 +163,7 @@ async function loadCountries() {
       foodCity.disabled = false;
     };
   } catch (err) {
-    console.error("Failed to load countries:", err);
+    console.error("Failed to load countries or flags:", err);
   }
 }
 
