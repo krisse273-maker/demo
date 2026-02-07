@@ -258,8 +258,8 @@ addFoodForm.onsubmit = async e => {
   const foodData = {
     title,
     emoji: selectedEmoji,
-    country: foodCountry.value,
-    city: foodCity.value,
+    country: foodCountry.value.trim(),
+    city: foodCity.value.trim(),
     type: "food",
     ownerId: user.uid,
     userName: user.displayName || user.email,
