@@ -85,7 +85,7 @@ async function setupTestCountry() {
   }
 }
 
-// ===== Load countries from Firestore (med debug) =====
+// ===== Load countries from Firestore =====
 async function loadCountries() {
   foodCountry.innerHTML = `<option value="">Select Country</option>`;
   foodCity.innerHTML = `<option value="">Select City</option>`;
@@ -93,21 +93,8 @@ async function loadCountries() {
 
   try {
     const snap = await db.collection("countries").orderBy("country").get();
-
-    // DEBUG
-    console.log("Firestore snapshot object:", snap);
-    console.log("Number of docs in snapshot:", snap.size);
-    console.log("Docs array:", snap.docs);
-    if (snap.empty) {
-      console.warn("⚠️ No documents found in 'countries' collection!");
-    }
-
     countriesData = [];
-    snap.forEach(doc => {
-      console.log("Document ID:", doc.id, "Data:", doc.data());
-      countriesData.push(doc.data());
-    });
-    console.log("countriesData array:", countriesData);
+    snap.forEach(doc => countriesData.push(doc.data()));
 
     countriesData.forEach(c => {
       const opt = document.createElement("option");
@@ -117,11 +104,9 @@ async function loadCountries() {
     });
 
     foodCountry.onchange = () => {
-      console.log("Selected country:", foodCountry.value);
       foodCity.innerHTML = `<option value="">Select City</option>`;
       foodCity.disabled = true;
       const c = countriesData.find(c => c.country === foodCountry.value);
-      console.log("Matched country object:", c);
       if (!c || !c.cities) return;
       c.cities.forEach(city => {
         const opt = document.createElement("option");
@@ -256,10 +241,8 @@ addFoodForm.onsubmit = async e => {
   const foodRef = db.collection("foods").doc(user.uid).collection("items").doc();
   const foodId = foodRef.id;
 
-  //riktig timestamp
   const now = firebase.firestore.Timestamp.now();
 
-  
   const foodData = {
     title,
     emoji: selectedEmoji,
@@ -268,7 +251,7 @@ addFoodForm.onsubmit = async e => {
     type: "food",
     ownerId: user.uid,
     userName: user.displayName || user.email,
-    createdAt: now, 
+    createdAt: now,
   };
 
   await foodRef.set(foodData);
@@ -291,20 +274,35 @@ async function loadFoodList() {
   const user = auth.currentUser;
   if (!user) return;
   foodListContainer.innerHTML = "";
-  const snap = await db.collection("foods").doc(user.uid).collection("items").orderBy("createdAt", "desc").get();
+
+  const snap = await db.collection("foods")
+                       .doc(user.uid)
+                       .collection("items")
+                       .orderBy("createdAt", "desc")
+                       .get();
+
   snap.forEach(docSnap => {
     const data = docSnap.data();
     const div = document.createElement("div");
     div.className = "food-item";
+
     const del = document.createElement("span");
     del.textContent = "×";
     del.className = "delete-icon";
+
     del.onclick = async () => {
-      await db.collection("foods").doc(user.uid).collection("items").doc(docSnap.id).delete();
-      await db.collection("publicFoods").doc(docSnap.id).delete();
-      loadFoodList();
-      loadPublicFoods();
+      try {
+        const foodDocId = docSnap.id;
+        await db.collection("foods").doc(user.uid).collection("items").doc(foodDocId).delete();
+        await db.collection("publicFoods").doc(foodDocId).delete();
+        loadFoodList();
+        loadPublicFoods();
+      } catch (err) {
+        console.error("Failed to delete food:", err);
+        showCustomAlert("Could not delete this food. Try again.");
+      }
     };
+
     div.textContent = `${data.emoji} ${data.title}`;
     div.appendChild(del);
     foodListContainer.appendChild(div);
@@ -315,7 +313,9 @@ async function loadFoodList() {
 async function loadPublicFoods() {
   if (!publicFoodListContainer) return;
   publicFoodListContainer.innerHTML = "";
+
   const snap = await db.collection("publicFoods").orderBy("publishedAt", "desc").get();
+
   snap.forEach(doc => {
     const d = doc.data();
     const div = document.createElement("div");
@@ -330,8 +330,8 @@ auth.onAuthStateChanged(user => {
     setupUserListener();
 
     (async () => {
-      await setupTestCountry(); // Skapa test-country i Firestore
-      await loadCountries();    // Ladda countries dynamiskt
+      await setupTestCountry();
+      await loadCountries();
       loadFoodList();
       loadPublicFoods();
     })();
