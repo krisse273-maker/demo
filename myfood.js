@@ -85,7 +85,7 @@ async function setupTestCountry() {
   }
 }
 
-// ===== Load countries from Firestore =====
+// ===== Load countries from Firestore (med debug) =====
 async function loadCountries() {
   foodCountry.innerHTML = `<option value="">Select Country</option>`;
   foodCity.innerHTML = `<option value="">Select City</option>`;
@@ -93,8 +93,11 @@ async function loadCountries() {
 
   try {
     const snap = await db.collection("countries").orderBy("country").get();
+    console.log("Firestore snapshot:", snap.docs.map(d => d.data())); // DEBUG
+
     countriesData = [];
     snap.forEach(doc => countriesData.push(doc.data()));
+    console.log("countriesData array:", countriesData); // DEBUG
 
     countriesData.forEach(c => {
       const opt = document.createElement("option");
@@ -103,11 +106,13 @@ async function loadCountries() {
       foodCountry.appendChild(opt);
     });
 
-    // Country onchange
+    // Country onchange med debug
     foodCountry.onchange = () => {
+      console.log("Selected country:", foodCountry.value); // DEBUG
       foodCity.innerHTML = `<option value="">Select City</option>`;
       foodCity.disabled = true;
       const c = countriesData.find(c => c.country === foodCountry.value);
+      console.log("Matched country object:", c); // DEBUG
       if (!c || !c.cities) return;
       c.cities.forEach(city => {
         const opt = document.createElement("option");
@@ -310,7 +315,6 @@ auth.onAuthStateChanged(user => {
   if (user) {
     setupUserListener();
 
-    // wrap async iife för await
     (async () => {
       await setupTestCountry(); // Skapa test-country i Firestore
       await loadCountries();    // Ladda countries dynamiskt
