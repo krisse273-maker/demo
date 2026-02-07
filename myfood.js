@@ -382,11 +382,12 @@ auth.onAuthStateChanged(user => {
   if (user) {
     setupUserListener();
 
-    (async () => {
-      await setupTestCountry();
-      await loadCountries();
-      loadFoodList();
-      loadPublicFoods();
-    })();
+   (async () => {
+  // await setupTestCountry(); // <-- Kommentera bort detta!
+  await loadCountries();
+  loadFoodList();
+  loadPublicFoods();
+})();
+
   }
 });
