@@ -85,21 +85,6 @@ async function setupTestCountry() {
   }
 }
 
-  try {
-    const docRef = db.collection("countries").doc(testCountry.country);
-    const docSnap = await docRef.get();
-
-    if (!docSnap.exists) {
-      await docRef.set(testCountry);
-      console.log("Test country created in Firestore!");
-    } else {
-      console.log("Test country already exists.");
-    }
-  } catch (err) {
-    console.error("Failed to create test country:", err);
-  }
-}
-
 // ===== Load countries from Firestore =====
 async function loadCountries() {
   foodCountry.innerHTML = `<option value="">Select Country</option>`;
@@ -210,7 +195,6 @@ addFoodForm.onsubmit = async e => {
   const user = auth.currentUser;
   if (!user) return;
 
-  // Reset errors
   titleError.textContent = "";
   emojiError.style.display = "none";
   countryError.textContent = "";
@@ -247,11 +231,10 @@ addFoodForm.onsubmit = async e => {
     hasError = true;
   }
 
-  // Check mute before posting
   if (currentUserData?.muteUntil && currentUserData.muteUntil.toDate() > new Date()) {
     const muteUntilDate = currentUserData.muteUntil.toDate();
     showCustomAlert(`You are muted until ${muteUntilDate.toLocaleString()}`);
-    return; // Block post
+    return;
   }
 
   if (hasError) return;
@@ -323,12 +306,16 @@ async function loadPublicFoods() {
 }
 
 // ===== Init =====
-auth.onAuthStateChanged(async user => {
+auth.onAuthStateChanged(user => {
   if (user) {
     setupUserListener();
-    await setupTestCountry(); // Skapa test-country i Firestore
-    await loadCountries();    // Ladda countries dynamiskt
-    loadFoodList();
-    loadPublicFoods();
+
+    // wrap async iife för await
+    (async () => {
+      await setupTestCountry(); // Skapa test-country i Firestore
+      await loadCountries();    // Ladda countries dynamiskt
+      loadFoodList();
+      loadPublicFoods();
+    })();
   }
 });
