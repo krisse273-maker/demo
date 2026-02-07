@@ -275,7 +275,7 @@ addFoodForm.onsubmit = async e => {
     type: "food",
     ownerId: user.uid,
     userName: user.displayName || user.email,
-    createdAt: now, 
+    createdAt: now,
   };
 
   // Lägg till i privat lista
