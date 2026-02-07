@@ -93,11 +93,21 @@ async function loadCountries() {
 
   try {
     const snap = await db.collection("countries").orderBy("country").get();
-    console.log("Firestore snapshot:", snap.docs.map(d => d.data())); // DEBUG
+
+    // DEBUG
+    console.log("Firestore snapshot object:", snap);
+    console.log("Number of docs in snapshot:", snap.size);
+    console.log("Docs array:", snap.docs);
+    if (snap.empty) {
+      console.warn("⚠️ No documents found in 'countries' collection!");
+    }
 
     countriesData = [];
-    snap.forEach(doc => countriesData.push(doc.data()));
-    console.log("countriesData array:", countriesData); // DEBUG
+    snap.forEach(doc => {
+      console.log("Document ID:", doc.id, "Data:", doc.data());
+      countriesData.push(doc.data());
+    });
+    console.log("countriesData array:", countriesData);
 
     countriesData.forEach(c => {
       const opt = document.createElement("option");
@@ -106,13 +116,12 @@ async function loadCountries() {
       foodCountry.appendChild(opt);
     });
 
-    // Country onchange med debug
     foodCountry.onchange = () => {
-      console.log("Selected country:", foodCountry.value); // DEBUG
+      console.log("Selected country:", foodCountry.value);
       foodCity.innerHTML = `<option value="">Select City</option>`;
       foodCity.disabled = true;
       const c = countriesData.find(c => c.country === foodCountry.value);
-      console.log("Matched country object:", c); // DEBUG
+      console.log("Matched country object:", c);
       if (!c || !c.cities) return;
       c.cities.forEach(city => {
         const opt = document.createElement("option");
