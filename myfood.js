@@ -149,7 +149,6 @@ function showCustomAlert(msg) {
   alertMessage.textContent = msg;
   customAlertBackdrop.classList.remove("hidden");
 }
-
 alertOkBtn?.addEventListener("click", () => {
   customAlertBackdrop.classList.add("hidden");
 });
@@ -251,10 +250,12 @@ addFoodForm.onsubmit = async e => {
     type: "food",
     ownerId: user.uid,
     userName: user.displayName || user.email,
-    createdAt: now,
+    createdAt: now, 
   };
 
+  // Lägg till i privat lista
   await foodRef.set(foodData);
+  // Lägg till i publicFoods
   await db.collection("publicFoods").doc(foodId).set({
     ...foodData,
     publishedAt: now,
@@ -273,13 +274,9 @@ addFoodForm.onsubmit = async e => {
 async function loadFoodList() {
   const user = auth.currentUser;
   if (!user) return;
-  foodListContainer.innerHTML = "";
 
-  const snap = await db.collection("foods")
-                       .doc(user.uid)
-                       .collection("items")
-                       .orderBy("createdAt", "desc")
-                       .get();
+  foodListContainer.innerHTML = "";
+  const snap = await db.collection("foods").doc(user.uid).collection("items").orderBy("createdAt", "desc").get();
 
   snap.forEach(docSnap => {
     const data = docSnap.data();
@@ -293,8 +290,13 @@ async function loadFoodList() {
     del.onclick = async () => {
       try {
         const foodDocId = docSnap.id;
+
+        // Ta bort från privatlista
         await db.collection("foods").doc(user.uid).collection("items").doc(foodDocId).delete();
+
+        // Ta bort från publicFoods — rules tillåter bara ägaren
         await db.collection("publicFoods").doc(foodDocId).delete();
+
         loadFoodList();
         loadPublicFoods();
       } catch (err) {
@@ -312,8 +314,8 @@ async function loadFoodList() {
 // ===== Load Public Foods =====
 async function loadPublicFoods() {
   if (!publicFoodListContainer) return;
-  publicFoodListContainer.innerHTML = "";
 
+  publicFoodListContainer.innerHTML = "";
   const snap = await db.collection("publicFoods").orderBy("publishedAt", "desc").get();
 
   snap.forEach(doc => {
