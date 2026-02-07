@@ -72,12 +72,18 @@ emojiPicker.querySelectorAll("span").forEach(span => {
   };
 });
 
-// ===== SETUP TEST COUNTRY =====
+// ===== TEST: Skapa ett land i Firestore om det inte finns =====
 async function setupTestCountry() {
-  const testCountry = {
-    country: "Afghanistan",
-    cities: ["Kabul", "Kandahar", "Herat", "Mazar-i-Sharif", "Jalalabad"]
-  };
+  const countryRef = db.collection("countries").doc("Afghanistan");
+  const doc = await countryRef.get();
+  if (!doc.exists) {
+    await countryRef.set({
+      country: "Afghanistan",
+      cities: ["Kabul", "Kandahar", "Herat", "Mazar-i-Sharif", "Jalalabad"]
+    });
+    console.log("Test country 'Afghanistan' skapad!");
+  }
+}
 
   try {
     const docRef = db.collection("countries").doc(testCountry.country);
