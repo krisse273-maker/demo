@@ -43,12 +43,6 @@ style.textContent = `
   .error-title { border: 2px solid red !important; }
   .shake { animation: shake 0.25s; }
   @keyframes shake { 0%{transform:translateX(0);}25%{transform:translateX(-4px);}50%{transform:translateX(4px);}75%{transform:translateX(-4px);}100%{transform:translateX(0);} }
-  /* Stil för flaggorna i dropdown */
-  select option[data-flag] {
-    background-repeat: no-repeat;
-    background-size: 20px 15px;
-    padding-left: 25px;
-  }
 `;
 document.head.appendChild(style);
 
@@ -128,17 +122,16 @@ async function loadCountries() {
       };
     });
 
-    // Lägg till länder i dropdown med flagga
+    // Lägg till länder i dropdown
     countriesData.forEach(c => {
       const opt = document.createElement("option");
       opt.value = c.country;
       opt.textContent = c.country;
-      if (c.flag) opt.setAttribute("data-flag", c.flag);
       foodCountry.appendChild(opt);
     });
 
-    // När man väljer ett land
-    foodCountry.onchange = () => {
+    // När ett land väljs: fyll city och visa flagga
+    foodCountry.addEventListener('change', () => {
       const selectedCountry = countriesData.find(c => c.country === foodCountry.value);
 
       // Rensa city-dropdown
@@ -150,18 +143,30 @@ async function loadCountries() {
 
       if (!selectedCountry) {
         foodCity.disabled = true;
+        foodCountry.style.backgroundImage = 'none';
         return;
       }
 
+      // Fyll cities
       selectedCountry.cities.forEach(city => {
         const opt = document.createElement("option");
         opt.value = city;
         opt.textContent = city;
         foodCity.appendChild(opt);
       });
-
       foodCity.disabled = false;
-    };
+
+      // Visa flagga i select
+      if (selectedCountry.flag) {
+        foodCountry.style.backgroundImage = `url(${selectedCountry.flag})`;
+        foodCountry.style.backgroundSize = '20px 15px';
+        foodCountry.style.backgroundRepeat = 'no-repeat';
+        foodCountry.style.backgroundPosition = '5px center';
+      } else {
+        foodCountry.style.backgroundImage = 'none';
+      }
+    });
+
   } catch (err) {
     console.error("Failed to load countries or flags:", err);
   }
