@@ -255,6 +255,11 @@ addFoodForm.onsubmit = async e => {
 
   const foodRef = db.collection("foods").doc(user.uid).collection("items").doc();
   const foodId = foodRef.id;
+
+  //riktig timestamp
+  const now = firebase.firestore.Timestamp.now();
+
+  
   const foodData = {
     title,
     emoji: selectedEmoji,
@@ -263,13 +268,13 @@ addFoodForm.onsubmit = async e => {
     type: "food",
     ownerId: user.uid,
     userName: user.displayName || user.email,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    createdAt: now, 
   };
 
   await foodRef.set(foodData);
   await db.collection("publicFoods").doc(foodId).set({
     ...foodData,
-    publishedAt: firebase.firestore.FieldValue.serverTimestamp()
+    publishedAt: now,
   });
 
   addFoodForm.reset();
