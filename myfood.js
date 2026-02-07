@@ -86,16 +86,30 @@ async function setupTestCountry() {
 }
 
 // ===== Load countries from Firestore =====
+// ===== Load countries from Firestore (säkert) =====
 async function loadCountries() {
-  foodCountry.innerHTML = `<option value="">Select Country</option>`;
-  foodCity.innerHTML = `<option value="">Select City</option>`;
+  // Rensa dropdowner
+  foodCountry.textContent = "";
+  foodCity.textContent = "";
   foodCity.disabled = true;
+
+  // Lägg till default-optioner
+  const defaultCountry = document.createElement("option");
+  defaultCountry.value = "";
+  defaultCountry.textContent = "Select Country";
+  foodCountry.appendChild(defaultCountry);
+
+  const defaultCity = document.createElement("option");
+  defaultCity.value = "";
+  defaultCity.textContent = "Select City";
+  foodCity.appendChild(defaultCity);
 
   try {
     const snap = await db.collection("countries").orderBy("country").get();
     countriesData = [];
     snap.forEach(doc => countriesData.push(doc.data()));
 
+    // Lägg till länder i dropdown
     countriesData.forEach(c => {
       const opt = document.createElement("option");
       opt.value = c.country;
@@ -103,23 +117,34 @@ async function loadCountries() {
       foodCountry.appendChild(opt);
     });
 
+    // När man väljer ett land
     foodCountry.onchange = () => {
-      foodCity.innerHTML = `<option value="">Select City</option>`;
+      // Rensa city-dropdownen
+      foodCity.textContent = "";
+      const defaultCityOption = document.createElement("option");
+      defaultCityOption.value = "";
+      defaultCityOption.textContent = "Select City";
+      foodCity.appendChild(defaultCityOption);
+
       foodCity.disabled = true;
-      const c = countriesData.find(c => c.country === foodCountry.value);
-      if (!c || !c.cities) return;
-      c.cities.forEach(city => {
+
+      const selectedCountry = countriesData.find(c => c.country === foodCountry.value);
+      if (!selectedCountry || !selectedCountry.cities) return;
+
+      selectedCountry.cities.forEach(city => {
         const opt = document.createElement("option");
         opt.value = city;
         opt.textContent = city;
         foodCity.appendChild(opt);
       });
+
       foodCity.disabled = false;
     };
   } catch (err) {
     console.error("Failed to load countries:", err);
   }
 }
+
 
 // ===== User listener + Mute check =====
 function setupUserListener() {
