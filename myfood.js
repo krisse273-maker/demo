@@ -72,6 +72,28 @@ emojiPicker.querySelectorAll("span").forEach(span => {
   };
 });
 
+// ===== SETUP TEST COUNTRY =====
+async function setupTestCountry() {
+  const testCountry = {
+    country: "Afghanistan",
+    cities: ["Kabul", "Kandahar", "Herat", "Mazar-i-Sharif", "Jalalabad"]
+  };
+
+  try {
+    const docRef = db.collection("countries").doc(testCountry.country);
+    const docSnap = await docRef.get();
+
+    if (!docSnap.exists) {
+      await docRef.set(testCountry);
+      console.log("Test country created in Firestore!");
+    } else {
+      console.log("Test country already exists.");
+    }
+  } catch (err) {
+    console.error("Failed to create test country:", err);
+  }
+}
+
 // ===== Load countries from Firestore =====
 async function loadCountries() {
   foodCountry.innerHTML = `<option value="">Select Country</option>`;
@@ -298,7 +320,8 @@ async function loadPublicFoods() {
 auth.onAuthStateChanged(async user => {
   if (user) {
     setupUserListener();
-    await loadCountries(); // Dynamiskt länder/städer
+    await setupTestCountry(); // Skapa test-country i Firestore
+    await loadCountries();    // Ladda countries dynamiskt
     loadFoodList();
     loadPublicFoods();
   }
