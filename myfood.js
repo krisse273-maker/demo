@@ -85,10 +85,9 @@ async function setupTestCountry() {
   }
 }
 
-// ===== Load countries from Firestore =====
-// ===== Load countries from Firestore (säkert) =====
+// ===== Load countries + cities från countriesnow.space API =====
 async function loadCountries() {
-  // Rensa dropdowner
+  // Rensa dropdowns
   foodCountry.textContent = "";
   foodCity.textContent = "";
   foodCity.disabled = true;
@@ -105,9 +104,9 @@ async function loadCountries() {
   foodCity.appendChild(defaultCity);
 
   try {
-    const snap = await db.collection("countries").orderBy("country").get();
-    countriesData = [];
-    snap.forEach(doc => countriesData.push(doc.data()));
+    const res = await fetch("https://countriesnow.space/api/v0.1/countries");
+    const data = await res.json();
+    countriesData = data.data; // Spara globalt för validering
 
     // Lägg till länder i dropdown
     countriesData.forEach(c => {
@@ -119,17 +118,19 @@ async function loadCountries() {
 
     // När man väljer ett land
     foodCountry.onchange = () => {
-      // Rensa city-dropdownen
+      const selectedCountry = countriesData.find(c => c.country === foodCountry.value);
+
+      // Rensa city-dropdown
       foodCity.textContent = "";
       const defaultCityOption = document.createElement("option");
       defaultCityOption.value = "";
       defaultCityOption.textContent = "Select City";
       foodCity.appendChild(defaultCityOption);
 
-      foodCity.disabled = true;
-
-      const selectedCountry = countriesData.find(c => c.country === foodCountry.value);
-      if (!selectedCountry || !selectedCountry.cities) return;
+      if (!selectedCountry) {
+        foodCity.disabled = true;
+        return;
+      }
 
       selectedCountry.cities.forEach(city => {
         const opt = document.createElement("option");
@@ -144,7 +145,6 @@ async function loadCountries() {
     console.error("Failed to load countries:", err);
   }
 }
-
 
 // ===== User listener + Mute check =====
 function setupUserListener() {
