@@ -99,7 +99,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   { country: "Czechia", cities: ["Prague", "Brno", "Ostrava", "Plzeň", "Liberec"] },
 
   // --- D-länder ---
-  { country: "Denmark", cities: ["Copenhagen", "Aarhus", "Odense", "Aalborg", "Esbjerg"] },
+  { country: "Denmark", cities: ["Copenhagen", "Aarhus", "Odense", "Aalborg", "Esbjerg", "Randers", "Kolding", "Horsens", "Vejle", "Roskilde", "Herning", "Helsingør", "Næstved", "Fredericia", "Silkeborg", "Hjørring", "Holstebro", "Taastrup", "Slagelse", "Hørsholm", "Nykøbing Falster", "Sønderborg", "Holbæk", "Svendborg", "Thisted", "Skive", "Rønne", "Ballerup", "Ringsted", "Grindsted", "Viborg", "Frederikshavn", "Ikast", "Brønderslev", "Nykøbing Mors", "Kalundborg", "Hillerød", "Aabenraa", "Tønder", "Struer", "Løgstør", "Maribo", "Frederikssund", "Billund", "Faaborg", "Haderslev", "Hobro", "Hørsholm", "Sæby", "Nakskov", "Skanderborg", "Frederiksværk"] },
   { country: "Djibouti", cities: ["Djibouti", "Ali Sabieh", "Tadjoura", "Obock", "Dikhil"] },
   { country: "Dominica", cities: ["Roseau", "Portsmouth", "Marigot", "Castle Bruce", "Grand Bay"] },
   { country: "Dominican Republic", cities: ["Santo Domingo", "Santiago de los Caballeros", "La Romana", "San Pedro de Macorís", "Puerto Plata"] },
