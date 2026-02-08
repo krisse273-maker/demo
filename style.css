@@ -458,20 +458,21 @@ footer {
   animation: spin 1s linear infinite;
 }
 
-/* Bara för myfood.html */
-body header .header-buttons {
-  display: flex;
-  justify-content: center; /* centrera knapparna */
-  gap: 1rem;               /* mellanrum mellan knappar */
-  margin-top: 2rem;        /* mer luft under välkomstmeddelandet */
-}
-
 /* Container för knapparna under välkomsttext */
 header .header-buttons {
   display: flex;
   justify-content: center; /* centrera knapparna */
   gap: 1rem;               /* mellanrum mellan Home och Logout */
   margin-top: 2rem;        /* lite luft under välkomstmeddelandet */
+}
+
+/* ===== HEADER ===== */
+header {
+  background-color: #262d37;
+  color: #cfd8dc;
+  text-align: center;
+  padding: 2rem 1rem;
+  position: relative;
 }
 
 .spinner.hidden { display: none; }
@@ -487,6 +488,7 @@ header .header-buttons {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
 
 
 
