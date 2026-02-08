@@ -17,9 +17,9 @@ body {
 header {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center; /* Centrerar horisontellt */
+  justify-content: center;
   gap: 10px;
-  margin-bottom: 20px;
   background-color: #262d37;
   color: #cfd8dc;
   padding: 2rem 1rem;
@@ -40,36 +40,45 @@ header p {
 }
 
 /* Header-knappar */
-#logoutBtn {
+#logoutBtn, #homeBtn, #myFoodBtn {
   position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
   padding: 0.5rem 1rem;
   border-radius: 6px;
   border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* Placering */
+#logoutBtn {
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
   background-color: #f44336;
   color: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
 }
 
 #logoutBtn:hover { background-color: #e53935; }
 
-#myFoodBtn, #homeBtn {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
+#homeBtn {
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
   background-color: #4caf50;
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
+  color: #fff;
 }
 
-#myFoodBtn:hover, #homeBtn:hover { background-color: #388e3c; }
+#homeBtn:hover { background-color: #388e3c; }
+
+#myFoodBtn {
+  bottom: -2rem; /* ligger under header */
+  position: relative;
+  background-color: #4caf50;
+  color: white;
+}
+
+#myFoodBtn:hover { background-color: #388e3c; }
 
 /* ===== FILTERS SECTION ===== */
 section.filters {
@@ -142,9 +151,7 @@ section.filters {
   box-shadow: 0 8px 12px rgba(0,0,0,0.4);
 }
 
-.food-info {
-  flex: 1;
-}
+.food-info { flex: 1; }
 
 .delete-icon {
   cursor: pointer;
@@ -166,14 +173,9 @@ input, select {
   border-radius: 6px;
 }
 
-input::placeholder {
-  color: #90a4ae;
-}
+input::placeholder { color: #90a4ae; }
 
-input:focus, select:focus {
-  outline: none;
-  border-color: #4caf50;
-}
+input:focus, select:focus { outline: none; border-color: #4caf50; }
 
 /* ===== BUTTONS ===== */
 button {
@@ -281,9 +283,7 @@ footer {
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-.shake {
-  animation: shake 0.25s;
-}
+.shake { animation: shake 0.25s; }
 
 @keyframes shake {
   0% { transform: translateX(0); }
