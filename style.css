@@ -65,43 +65,11 @@ header p {
 
 #homeBtn:hover { background-color: #388e3c; }
 
-#myFoodBtn {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
-  background-color: #4caf50;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
-}
-
-#myFoodBtn:hover { background-color: #388e3c; }
-
 /* ===== ADMIN PANEL ===== */
 #adminPanel {
   display: none;
   max-width: 500px;
   margin: 15px auto;
-}
-
-#adminPanel a {
-  display: block;
-  text-align: center;
-  padding: 16px;
-  background: #ff9800;
-  color: #1c222b;
-  font-weight: 600;
-  text-decoration: none;
-  border-radius: 10px;
-  transition: 0.2s;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-
-#adminPanel a:hover {
-  background: #fb8c00;
-  transform: translateY(-2px);
 }
 
 /* ===== FILTERS SECTION ===== */
@@ -116,38 +84,7 @@ section.filters {
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
-.filter-group {
-  margin-bottom: 1rem;
-}
-
-.filter-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-.filter-group select,
-.filter-group input {
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 2px solid #1c222b;
-  background-color: #2b3340;
-  color: #cfd8dc;
-}
-
-#filterBtn {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
-  background-color: #4caf50;
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-#filterBtn:hover { background-color: #388e3c; }
-
-/* ===== FOOD LISTS & CONTAINERS ===== */
+/* ===== FOOD LISTS ===== */
 .container, 
 .global-food-list, 
 .my-food-list, 
@@ -159,73 +96,7 @@ section.filters {
   padding: 1rem;
 }
 
-/* ===== MYFOOD.HTML SPECIFIC ===== */
-.my-food-list, #addFoodFormWrapper {
-  background-color: #262d37;
-  border: 2px solid #1c222b;
-  border-radius: 12px;
-  padding: 1.5rem;
-  max-width: 450px;
-  width: 100%;
-  margin: 2rem auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
-}
-
-#addFoodFormWrapper form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.my-food-list .filters,
-#addFoodFormWrapper .filters {
-  background-color: #262d37;
-  border: 2px solid #1c222b;
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.my-food-list .filters label,
-#addFoodFormWrapper .filters label {
-  display: block;
-  margin-bottom: 0.5rem;
-  text-align: left;
-}
-
-.my-food-list .filters select,
-.my-food-list .filters input,
-#addFoodFormWrapper .filters select,
-#addFoodFormWrapper .filters input {
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 2px solid #1c222b;
-  background-color: #2b3340;
-  color: #cfd8dc;
-}
-
-.my-food-list .filters #filterBtn,
-#addFoodFormWrapper .filters #filterBtn {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
-  background-color: #4caf50;
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.my-food-list .filters #filterBtn:hover,
-#addFoodFormWrapper .filters #filterBtn:hover {
-  background-color: #388e3c;
-}
-
-/* ===== FOOD ITEM ===== */
+/* ===== MY FOOD CARD (ORIGINAL – LÄMNAD ORÖRD) ===== */
 .food-item {
   flex-direction: column;
   display: flex;
@@ -262,131 +133,38 @@ section.filters {
 
 .delete-icon:hover { transform: scale(1.5); }
 
-/* ===== INPUT & SELECT ===== */
-input, select {
-  background-color: #2b3340;
-  color: #cfd8dc;
-  border: 2px solid #1c222b;
-  padding: 0.6rem 0.8rem;
-  border-radius: 6px;
-}
+/* =====================================================
+   ✅ OVERRIDE – KOMPAKT LISTA ENDAST FÖR MY FOOD LIST
+   ===================================================== */
 
-input::placeholder { color: #90a4ae; }
-
-input:focus, select:focus { outline: none; border-color: #4caf50; }
-
-/* ===== BUTTONS ===== */
-button {
-  padding: 0.6rem 1rem;
-  border-radius: 6px;
-  border: none;
-  background-color: #4caf50;
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
-}
-
-button:hover { background-color: #388e3c; }
-
-/* ===== EMOJI PICKER ===== */
-#emojiPicker {
-  display: none;
-  background-color: #262d37;
-  border: 2px solid #1c222b;
-  border-radius: 10px;
-  padding: 0.5rem;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-#emojiPicker.show { display: flex; }
-
-#emojiPicker span {
-  cursor: pointer;
-  font-size: 1.8rem;
-  transition: transform 0.1s;
-}
-
-#emojiPicker span:hover { transform: scale(1.4); }
-
-#emojiError { color: #f44336; font-size: 0.9rem; margin: 0.25rem 0; }
-
-/* ===== ALERT BOX ===== */
-.alert-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: none;
-  justify-content: center;
+.my-food-list .food-item {
+  flex-direction: row;
   align-items: center;
-  z-index: 1000;
-}
+  justify-content: space-between;
 
-.alert-backdrop.show { display: flex; }
-
-.alert-box {
-  background: #262d37;
-  color: #cfd8dc;
-  padding: 2rem;
-  border-radius: 12px;
-  border: 2px solid #1c222b;
-  max-width: 400px;
-  width: 100%;
-  text-align: center;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
-}
-
-#alertOkBtn {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  border: none;
+  padding: 0.45rem 0.6rem;
   border-radius: 6px;
-  background-color: #4caf50;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
+  margin: 0;
+
+  box-shadow: none;
+  transform: none;
 }
 
-#alertOkBtn:hover { background-color: #388e3c; }
-
-/* ===== FOOTER ===== */
-footer {
-  text-align: center;
-  padding: 1rem;
-  background-color: #262d37;
-  color: #cfd8dc;
+.my-food-list .food-item:hover {
+  transform: none;
+  box-shadow: none;
+  background-color: #323b49;
 }
 
-/* ===== MISC ===== */
-.no-food {
-  color: #90a4ae;
-  text-align: center;
-  font-style: italic;
+.my-food-list .food-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: auto;
+  text-align: left;
 }
 
-.spinner {
-  border: 3px solid #cfd8dc;
-  border-top: 3px solid #4caf50;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  animation: spin 1s linear infinite;
-}
-
-.spinner.hidden { display: none; }
-
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-.shake { animation: shake 0.25s; }
-
-@keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  50% { transform: translateX(4px); }
-  75% { transform: translateX(-4px); }
-  100% { transform: translateX(0); }
+.my-food-list .delete-icon {
+  margin: 0;
+  font-size: 1.2rem;
 }
