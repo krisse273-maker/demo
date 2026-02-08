@@ -454,7 +454,7 @@ header .header-buttons {
   display: flex;
   justify-content: center; /* centrera knapparna */
   gap: 1rem;               /* mellanrum mellan Home och Logout */
-  margin-top: 1.5rem;        /* lite luft under välkomstmeddelandet */
+  margin-top: 3rem;        /* lite luft under välkomstmeddelandet */
 }
 
 .spinner {
@@ -479,6 +479,7 @@ header .header-buttons {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
 
 
 
