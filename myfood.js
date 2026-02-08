@@ -60,8 +60,7 @@ homeBtn.onclick = () => window.location.href = "../index.html";
 
 // ===== Emoji picker =====
 emojiPickerBtn.onclick = () => {
-  emojiPicker.style.display =
-    emojiPicker.style.display === "flex" ? "none" : "flex";
+  emojiPicker.classList.toggle("show");
 };
 emojiPicker.querySelectorAll("span").forEach(span => {
   span.onclick = () => {
