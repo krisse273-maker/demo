@@ -7,18 +7,21 @@
 }
 
 body {
+  font-family: 'Poppins', sans-serif;
   font-size: 1rem;
   color: #cfd8dc;
   background-color: #4caf50; 
 }
 
-button, .food-item {
-  font-weight: 600;
-}
-
 h1, h2 {
   font-weight: 700;
   color: #4caf50;
+}
+
+button, .food-item {
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 /* ===== HEADER ===== */
@@ -40,6 +43,7 @@ header p {
   font-size: 1.2rem;
 }
 
+/* ===== HEADER BUTTONS ===== */
 header .header-buttons {
   display: flex;
   justify-content: center;
@@ -47,42 +51,19 @@ header .header-buttons {
   margin-top: 2rem;
 }
 
-.header-buttons button {
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.2;
+header .header-buttons button {
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  font-weight: 600;
 }
 
-/* ===== HEADER BUTTONS SPECIFIC ===== */
-#logoutBtn {
-  background-color: #f44336;
-  color: white;
-}
-
+/* Specifika knappar */
+#logoutBtn { background-color: #f44336; color: white; }
 #logoutBtn:hover { background-color: #e53935; }
 
-#homeBtn {
-  background-color: #4caf50;
-  color: white;
-}
-
-#homeBtn:hover { background-color: #388e3c; }
-
-#myFoodBtn {
-  margin-top: 1rem;
-  border: none;
-  background-color: #4caf50;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
-}
-
-#myFoodBtn:hover { background-color: #388e3c; }
+#homeBtn, #myFoodBtn { background-color: #4caf50; color: white; }
+#homeBtn:hover, #myFoodBtn:hover { background-color: #388e3c; }
 
 /* ===== ADMIN PANEL ===== */
 #adminPanel {
@@ -146,8 +127,6 @@ section.filters {
   border: none;
   background-color: #4caf50;
   color: white;
-  cursor: pointer;
-  font-weight: 600;
 }
 
 #filterBtn:hover { background-color: #388e3c; }
@@ -168,7 +147,7 @@ section.filters {
 .my-food-list, #addFoodFormWrapper {
   background-color: #262d37;
   border: 2px solid #1c222b;
-  border-radius: 12px;
+  border-radius: 15px;
   padding: 1.5rem;
   max-width: 450px;
   width: 100%;
@@ -179,28 +158,17 @@ section.filters {
   box-shadow: 0 8px 16px rgba(0,0,0,0.4);
 }
 
-.my-food-list {
-  border-radius: 15px;
-  padding: 1rem;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 0.4rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease;
-}
-
 .my-food-list .food-item {
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
   width: 100%;
+  padding: 0.5rem 1rem;
   background-color: #2b3340;
   border-radius: 12px;
+  gap: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .my-food-list .food-item:hover {
@@ -212,9 +180,8 @@ section.filters {
 .my-food-list .food-item .food-info {
   flex: 1;
   min-width: 0;
-  white-space: normal;
   overflow-wrap: break-word;
-  text-overflow: ellipsis;
+  white-space: normal;
 }
 
 .my-food-list .food-item .delete-icon {
@@ -229,101 +196,6 @@ section.filters {
   transform: scale(1.5);
 }
 
-/* ===== FORMS ===== */
-#addFoodFormWrapper form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.my-food-list .filters,
-#addFoodFormWrapper .filters {
-  background-color: #2b3340;
-  border-radius: 12px;
-  padding: 1.2rem 1.5rem;
-  text-align: left;
-  border: 2px solid #1c222b;
-}
-
-.my-food-list .filters label,
-#addFoodFormWrapper .filters label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.my-food-list .filters select,
-.my-food-list .filters input,
-#addFoodFormWrapper .filters select,
-#addFoodFormWrapper .filters input {
-  width: 100%;
-  padding: 0.8rem;
-  border-radius: 8px;
-  border: 2px solid #1c222b;
-  background-color: #262d37;
-  color: #cfd8dc;
-  transition: border-color 0.3s ease;
-}
-
-#addFoodFormWrapper .filters select:focus,
-#addFoodFormWrapper .filters input:focus {
-  border-color: #4caf50;
-}
-
-#addFoodFormWrapper button {
-  padding: 0.8rem 1.2rem;
-  background-color: #4caf50;
-  color: white;
-  border-radius: 10px;
-  border: none;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
-}
-
-#addFoodFormWrapper button:hover {
-  background-color: #388e3c;
-}
-
-/* ===== FOOD ITEM GLOBAL ===== */
-.food-item {
-  flex-direction: column;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  background-color: #2b3340;
-  color: #cfd8dc;
-  border-radius: 10px;
-  border: 2px solid #1c222b;
-  padding: 0.75rem 1rem;
-  text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.food-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 12px rgba(0,0,0,0.4);
-  background-color: #3b4450;
-}
-
-.food-info {
-  width: auto;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.delete-icon {
-  cursor: pointer;
-  color: #f44336;
-  font-weight: bold;
-  font-size: 1.4rem;
-  margin-top: 0.5rem;
-  transition: transform 0.15s;
-}
-
-.delete-icon:hover { transform: scale(1.5); }
-
 /* ===== INPUT & SELECT ===== */
 input, select {
   background-color: #2b3340;
@@ -334,19 +206,15 @@ input, select {
 }
 
 input::placeholder { color: #90a4ae; }
-
 input:focus, select:focus { outline: none; border-color: #4caf50; }
 
-/* ===== BUTTONS GLOBAL ===== */
+/* ===== BUTTONS ===== */
 button {
   padding: 0.6rem 1rem;
   border-radius: 6px;
   border: none;
   background-color: #4caf50;
   color: white;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
 }
 
 button:hover { background-color: #388e3c; }
@@ -371,14 +239,12 @@ button:hover { background-color: #388e3c; }
 }
 
 #emojiPicker span:hover { transform: scale(1.4); }
-
 #emojiError { color: #f44336; font-size: 0.9rem; margin: 0.25rem 0; }
 
 /* ===== ALERT BOX ===== */
 .alert-backdrop {
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.5);
@@ -409,8 +275,6 @@ button:hover { background-color: #388e3c; }
   border-radius: 6px;
   background-color: #4caf50;
   color: #fff;
-  cursor: pointer;
-  font-weight: 600;
 }
 
 #alertOkBtn:hover { background-color: #388e3c; }
@@ -444,7 +308,6 @@ footer {
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 .shake { animation: shake 0.25s; }
-
 @keyframes shake {
   0% { transform: translateX(0); }
   25% { transform: translateX(-4px); }
