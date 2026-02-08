@@ -165,6 +165,7 @@ section.filters {
   border-radius: 12px;
   padding: 1rem;
   width: 250px;
+  border: 2px solid black; /* <-- svart outline */
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -421,6 +422,7 @@ footer {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
 
 
 
