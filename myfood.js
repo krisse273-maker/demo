@@ -30,12 +30,12 @@ const customAlertBackdrop = document.getElementById("customAlertBackdrop");
 const alertMessage = document.getElementById("alertMessage");
 const alertOkBtn = document.getElementById("alertOkBtn");
 
+// ===== Styling for validation =====
 const titleError = document.getElementById("titleError");
 const emojiError = document.getElementById("emojiError");
 const countryError = document.getElementById("countryError");
 const cityError = document.getElementById("cityError");
 
-// ===== Styling for validation =====
 titleError.style.color = "red";
 const style = document.createElement("style");
 style.textContent = `
@@ -72,14 +72,14 @@ emojiPicker.querySelectorAll("span").forEach(span => {
   };
 });
 
-// ===== Load countries + cities från Firestore =====
+// ===== Load countries + cities + flag from Firestore =====
 async function loadCountries() {
   // Rensa dropdowns
   foodCountry.textContent = "";
   foodCity.textContent = "";
   foodCity.disabled = true;
 
-  // Lägg till default-optioner
+  // Default-optioner
   const defaultCountry = document.createElement("option");
   defaultCountry.value = "";
   defaultCountry.textContent = "Select Country";
@@ -91,11 +91,11 @@ async function loadCountries() {
   foodCity.appendChild(defaultCity);
 
   try {
-    // Hämta alla countries-documents från Firestore
+    // Hämta countries collection
     const snap = await db.collection("countries").orderBy("country").get();
     countriesData = snap.docs.map(doc => doc.data());
 
-    // Lägg till länder i dropdown
+    // Fyll country dropdown
     countriesData.forEach(c => {
       const opt = document.createElement("option");
       opt.value = c.country;
@@ -103,11 +103,11 @@ async function loadCountries() {
       foodCountry.appendChild(opt);
     });
 
-    // När ett land väljs: fyll city
+    // När ett land väljs, fyll city dropdown och visa flagga
     foodCountry.addEventListener('change', () => {
       const selectedCountry = countriesData.find(c => c.country === foodCountry.value);
 
-      // Rensa city-dropdown
+      // Rensa city
       foodCity.textContent = "";
       const defaultCityOption = document.createElement("option");
       defaultCityOption.value = "";
@@ -116,10 +116,10 @@ async function loadCountries() {
 
       if (!selectedCountry) {
         foodCity.disabled = true;
+        foodCountry.style.backgroundImage = 'none';
         return;
       }
 
-      // Fyll cities
       selectedCountry.cities.forEach(city => {
         const opt = document.createElement("option");
         opt.value = city;
@@ -127,6 +127,16 @@ async function loadCountries() {
         foodCity.appendChild(opt);
       });
       foodCity.disabled = false;
+
+      // Visa flagga
+      if (selectedCountry.flag) {
+        foodCountry.style.backgroundImage = `url(${selectedCountry.flag})`;
+        foodCountry.style.backgroundSize = '20px 15px';
+        foodCountry.style.backgroundRepeat = 'no-repeat';
+        foodCountry.style.backgroundPosition = '5px center';
+      } else {
+        foodCountry.style.backgroundImage = 'none';
+      }
     });
 
   } catch (err) {
@@ -134,64 +144,14 @@ async function loadCountries() {
   }
 }
 
-// ===== User listener + Mute check =====
-function setupUserListener() {
-  const user = auth.currentUser;
-  if (!user) return;
-  if (userDocUnsubscribe) userDocUnsubscribe();
-
-  userDocUnsubscribe = db.collection("users").doc(user.uid)
-    .onSnapshot(doc => {
-      currentUserData = doc.data();
-      if (currentUserData?.banned) {
-        showCustomAlert("You are banned.");
-        auth.signOut().then(() => window.location.href = "../index.html");
-      }
-      if (currentUserData?.muteUntil) {
-        const muteUntilDate = currentUserData.muteUntil.toDate();
-        if (muteUntilDate > new Date()) {
-          showCustomAlert(`You are muted until ${muteUntilDate.toLocaleString()}`);
-        }
-      }
-    });
-}
-
-// ===== Custom Alert Function =====
-function showCustomAlert(msg) {
-  if (!customAlertBackdrop || !alertMessage) return;
-  alertMessage.textContent = msg;
-  customAlertBackdrop.classList.remove("hidden");
-}
-alertOkBtn?.addEventListener("click", () => {
-  customAlertBackdrop.classList.add("hidden");
-});
-
 // ===== Validation =====
 function validateTitle(title) {
   if (!title || title.trim() === "") return "Title cannot be empty";
   if (title.length < 5) return "Title must be at least 5 characters long";
   if (title.length > 15) return "Title cannot be longer than 15 characters";
-  if (/[<>\/()=]/.test(title))
-    return "Title contains invalid characters: < > / ( ) =";
+  if (/[<>\/()=]/.test(title)) return "Title contains invalid characters: < > / ( ) =";
   return null;
 }
-
-foodTitle.addEventListener("input", () => {
-  const title = foodTitle.value.trim();
-  const error = validateTitle(title);
-  foodTitle.classList.remove("valid-title", "error-title", "shake");
-  if (error) {
-    titleError.textContent = error;
-    foodTitle.classList.add("error-title");
-    void foodTitle.offsetWidth;
-    foodTitle.classList.add("shake");
-  } else if (title.length > 0) {
-    titleError.textContent = "";
-    foodTitle.classList.add("valid-title");
-  } else {
-    titleError.textContent = "";
-  }
-});
 
 function validateCountryAndCity(country, city) {
   const countryObj = countriesData.find(c => c.country === country);
@@ -252,7 +212,6 @@ addFoodForm.onsubmit = async e => {
 
   const foodRef = db.collection("foods").doc(user.uid).collection("items").doc();
   const foodId = foodRef.id;
-
   const now = firebase.firestore.Timestamp.now();
 
   const foodData = {
@@ -266,9 +225,7 @@ addFoodForm.onsubmit = async e => {
     createdAt: now,
   };
 
-  // Lägg till i privat lista
   await foodRef.set(foodData);
-  // Lägg till i publicFoods
   await db.collection("publicFoods").doc(foodId).set({
     ...foodData,
     publishedAt: now,
@@ -283,70 +240,12 @@ addFoodForm.onsubmit = async e => {
   loadPublicFoods();
 };
 
-// ===== Load Private Foods =====
-async function loadFoodList() {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  foodListContainer.innerHTML = "";
-  const snap = await db.collection("foods").doc(user.uid).collection("items").orderBy("createdAt", "desc").get();
-
-  snap.forEach(docSnap => {
-    const data = docSnap.data();
-    const div = document.createElement("div");
-    div.className = "food-item";
-
-    const del = document.createElement("span");
-    del.textContent = "×";
-    del.className = "delete-icon";
-
-    del.onclick = async () => {
-      try {
-        const foodDocId = docSnap.id;
-
-        // Ta bort från privatlista
-        await db.collection("foods").doc(user.uid).collection("items").doc(foodDocId).delete();
-
-        // Ta bort från publicFoods — rules tillåter bara ägaren
-        await db.collection("publicFoods").doc(foodDocId).delete();
-
-        loadFoodList();
-        loadPublicFoods();
-      } catch (err) {
-        console.error("Failed to delete food:", err);
-        showCustomAlert("Could not delete this food. Try again.");
-      }
-    };
-
-    div.textContent = `${data.emoji} ${data.title}`;
-    div.appendChild(del);
-    foodListContainer.appendChild(div);
-  });
-}
-
-// ===== Load Public Foods =====
-async function loadPublicFoods() {
-  if (!publicFoodListContainer) return;
-
-  publicFoodListContainer.innerHTML = "";
-  const snap = await db.collection("publicFoods").orderBy("publishedAt", "desc").get();
-
-  snap.forEach(doc => {
-    const d = doc.data();
-    const div = document.createElement("div");
-    div.textContent = `${d.emoji} ${d.title} by ${d.userName}`;
-    publicFoodListContainer.appendChild(div);
-  });
-}
-
 // ===== Init =====
 auth.onAuthStateChanged(user => {
   if (user) {
     setupUserListener();
-    (async () => {
-      await loadCountries(); // ✅ Läs alltid länder + städer från Firestore
-      loadFoodList();
-      loadPublicFoods();
-    })();
+    loadCountries();
+    loadFoodList();
+    loadPublicFoods();
   }
 });
