@@ -104,45 +104,29 @@ header p {
   transform: translateY(-2px);
 }
 
-/* ===== MYFOOD LIST & FILTERS ===== */
-.my-food-list {
-  background-color: #262d37; /* mörk bakgrund */
-  border: 2px solid #1c222b; /* kant */
+/* ===== FILTERS SECTION ===== */
+section.filters {
+  background-color: #262d37;
   border-radius: 12px;
   padding: 1.5rem;
-  max-width: 450px;
-  width: 100%;
-  margin: 2rem auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-height: 75vh;
-  overflow-y: auto;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
-}
-
-/* Filter-sektion inuti myfood */
-.my-food-list .filters {
-  background-color: #262d37;
-  border: 2px solid #1c222b;
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1rem;
   text-align: center;
+  margin: 2rem auto;
+  max-width: 500px;
+  border: 2px solid black;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
-.my-food-list .filters .filter-group {
+.filter-group {
   margin-bottom: 1rem;
 }
 
-.my-food-list .filters label {
+.filter-group label {
   display: block;
   margin-bottom: 0.5rem;
-  text-align: left;
 }
 
-.my-food-list .filters select,
-.my-food-list .filters input {
+.filter-group select,
+.filter-group input {
   width: 100%;
   padding: 0.5rem;
   border-radius: 6px;
@@ -151,7 +135,7 @@ header p {
   color: #cfd8dc;
 }
 
-.my-food-list .filters #filterBtn {
+#filterBtn {
   padding: 0.5rem 1rem;
   border-radius: 6px;
   border: none;
@@ -161,23 +145,32 @@ header p {
   font-weight: 600;
 }
 
-.my-food-list .filters #filterBtn:hover {
-  background-color: #388e3c;
+#filterBtn:hover { background-color: #388e3c; }
+
+/* ===== FOOD LISTS ===== */
+.container, 
+.global-food-list, 
+.my-food-list, 
+.food-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
 }
 
-/* ===== FOOD ITEMS ===== */
 .food-item {
+  background-color: #2b3340;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  border: 2px solid #1c222b;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
   align-items: center;
   gap: 0.75rem;
   flex-direction: column;
-  background-color: #2b3340;
-  color: #cfd8dc;
-  border-radius: 10px;
-  border: 2px solid #1c222b;
-  padding: 0.75rem 1rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  text-align: center;
 }
 
 .food-item:hover {
@@ -188,7 +181,6 @@ header p {
 
 .food-info {
   flex: 1;
-  width: 100%;
 }
 
 .delete-icon {
@@ -329,4 +321,102 @@ footer {
   50% { transform: translateX(4px); }
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
+}
+
+/* ===== MYFOOD.HTML SPECIFIK ===== */
+.my-food-list {
+  background-color: #262d37;
+  border: 2px solid #1c222b;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 450px;
+  width: 100%;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 75vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+}
+
+.my-food-list .filters {
+  background-color: #262d37;
+  border: 2px solid #1c222b;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.my-food-list .filters .filter-group {
+  margin-bottom: 1rem;
+}
+
+.my-food-list .filters label {
+  display: block;
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+.my-food-list .filters select,
+.my-food-list .filters input {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 2px solid #1c222b;
+  background-color: #2b3340;
+  color: #cfd8dc;
+}
+
+.my-food-list .filters #filterBtn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.my-food-list .filters #filterBtn:hover {
+  background-color: #388e3c;
+}
+
+.my-food-list .food-item {
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: #2b3340;
+  color: #cfd8dc;
+  border-radius: 10px;
+  border: 2px solid #1c222b;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.my-food-list .food-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 12px rgba(0,0,0,0.4);
+  background-color: #3b4450;
+}
+
+.my-food-list .food-info {
+  flex: 1;
+  width: 100%;
+}
+
+.my-food-list .delete-icon {
+  cursor: pointer;
+  color: #f44336;
+  font-weight: bold;
+  font-size: 1.4rem;
+  margin-top: 0.5rem;
+  transition: transform 0.15s;
+}
+
+.my-food-list .delete-icon:hover {
+  transform: scale(1.5);
 }
