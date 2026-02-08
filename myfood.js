@@ -307,7 +307,13 @@ info.textContent = `${data.emoji} ${data.title}`;
 
 div.appendChild(info);
 div.appendChild(del);
-foodListContainer.appendChild(div);
+
+const card = document.createElement("div");
+card.className = "food-card";
+
+card.appendChild(div);
+foodListContainer.appendChild(card);
+
 
   });
 }
