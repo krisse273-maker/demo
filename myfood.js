@@ -98,11 +98,13 @@ function setupUserListener() {
 function showCustomAlert(msg) {
   if (!customAlertBackdrop || !alertMessage) return;
   alertMessage.textContent = msg;
-  customAlertBackdrop.classList.remove("hidden");
+  customAlertBackdrop.classList.add("show");    // ✅ visa med CSS-klass
 }
+
 alertOkBtn?.addEventListener("click", () => {
-  customAlertBackdrop.classList.add("hidden");
+  customAlertBackdrop.classList.remove("show"); // ✅ göm med CSS-klass
 });
+
 
 // ===== Load countries + cities + flag from Firestore =====
 async function loadCountries() {
