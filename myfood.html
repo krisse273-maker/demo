@@ -77,40 +77,18 @@ form-action 'self';
   </div>
 
   <!-- CUSTOM MUTE ALERT -->
-  <div id="customAlertBackdrop" class="alert-backdrop hidden" style="
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-  ">
-    <div class="alert-box" style="
-        background: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        min-width: 250px;
-        text-align: center;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    ">
-      <h3>⚠️ You are muted</h3>
-      <p id="alertMessage"></p>
-      <button id="alertOkBtn" style="
-          padding: 5px 15px;
-          border: none;
-          border-radius: 5px;
-          background-color: #00c853;
-          color: white;
-          cursor: pointer;
-      ">OK</button>
-    </div>
+  <!-- CUSTOM MUTE ALERT -->
+<div id="customAlertBackdrop" class="alert-backdrop">
+  <div class="alert-box">
+    <h3>⚠️ You are muted</h3>
+    <p id="alertMessage"></p>
+    <button id="alertOkBtn">OK</button>
   </div>
+</div>
+
 </body>
 </html>
+
 
 
 
