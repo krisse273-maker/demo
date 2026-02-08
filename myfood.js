@@ -301,12 +301,18 @@ async function loadFoodList() {
       }
     };
 
-    div.textContent = `${data.emoji} ${data.title}`;
-    div.appendChild(del);
-    foodListContainer.appendChild(div);
+const info = document.createElement("div");
+info.className = "food-info";
+info.textContent = `${data.emoji} ${data.title}`;
+
+div.appendChild(info);
+div.appendChild(del);
+foodListContainer.appendChild(div);
+
   });
 }
 
+// ===== Load Public Foods =====
 // ===== Load Public Foods =====
 async function loadPublicFoods() {
   if (!publicFoodListContainer) return;
@@ -316,11 +322,19 @@ async function loadPublicFoods() {
 
   snap.forEach(doc => {
     const d = doc.data();
+
     const div = document.createElement("div");
-    div.textContent = `${d.emoji} ${d.title} by ${d.userName}`;
+    div.className = "food-item";
+
+    const info = document.createElement("div");
+    info.className = "food-info";
+    info.textContent = `${d.emoji} ${d.title} by ${d.userName}`;
+
+    div.appendChild(info);
     publicFoodListContainer.appendChild(div);
   });
 }
+
 
 // ===== Init =====
 auth.onAuthStateChanged(user => {
