@@ -96,10 +96,19 @@ alertOkBtn?.addEventListener("click", () => {
 });
 
 // ===== Load countries + cities + flag from Firestore =====
+// ===== Load countries + cities + flag from Firestore (med spinner) =====
 async function loadCountries() {
+  // ✅ Hitta spinnern
+  const spinner = document.getElementById("countrySpinner");
+
+  // ✅ Visa spinner och disable dropdown medan vi laddar
+  spinner.classList.remove("hidden");
+  foodCountry.disabled = true;
+  foodCity.disabled = true;
+
+  // ✅ Töm dropdowns och lägg till default-options
   foodCountry.textContent = "";
   foodCity.textContent = "";
-  foodCity.disabled = true;
 
   const defaultCountry = document.createElement("option");
   defaultCountry.value = "";
@@ -112,6 +121,7 @@ async function loadCountries() {
   foodCity.appendChild(defaultCity);
 
   try {
+    // ✅ Hämta länder från Firestore
     const snap = await db.collection("countries").orderBy("country").get();
     countriesData = snap.docs.map(doc => doc.data());
 
@@ -122,6 +132,13 @@ async function loadCountries() {
       foodCountry.appendChild(opt);
     });
 
+    // ✅ Enable dropdown nu när data är laddad
+    foodCountry.disabled = false;
+
+    // ✅ När länderna är laddade, göm spinnern
+    spinner.classList.add("hidden");
+
+    // ===== Country change event =====
     foodCountry.addEventListener('change', () => {
       const selectedCountry = countriesData.find(c => c.country === foodCountry.value);
 
@@ -148,8 +165,12 @@ async function loadCountries() {
 
   } catch (err) {
     console.error("Failed to load countries from Firestore:", err);
+
+    // ✅ Om något går fel, göm spinner ändå
+    spinner.classList.add("hidden");
   }
 }
+
 
 // ===== Validation =====
 function validateTitle(title) {
