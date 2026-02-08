@@ -50,14 +50,15 @@ homeBtn.onclick = () => window.location.href = "../index.html";
 
 // ===== Emoji picker =====
 emojiPickerBtn.onclick = () => {
-  emojiPicker.classList.toggle("show");
+  emojiPicker.classList.toggle("show"); // ✅ använd klass, inte style.display
 };
+
 emojiPicker.querySelectorAll("span").forEach(span => {
   span.onclick = () => {
     selectedEmoji = span.textContent;
     emojiPickerBtn.textContent = selectedEmoji;
-    emojiPicker.style.display = "none";
-    emojiError.style.display = "none";
+    emojiPicker.classList.remove("show");      // ✅ göm pickern med klass
+    emojiError.classList.add("hidden");        // ✅ göm valideringsfel med klass
   };
 });
 
@@ -93,7 +94,6 @@ function showCustomAlert(msg) {
 alertOkBtn?.addEventListener("click", () => {
   customAlertBackdrop.classList.remove("show"); // ✅ göm med CSS-klass
 });
-
 
 // ===== Load countries + cities + flag from Firestore =====
 async function loadCountries() {
@@ -144,8 +144,6 @@ async function loadCountries() {
         foodCity.appendChild(opt);
       });
       foodCity.disabled = false;
-
-
     });
 
   } catch (err) {
@@ -175,8 +173,9 @@ addFoodForm.onsubmit = async e => {
   const user = auth.currentUser;
   if (!user) return;
 
+  // ✅ göm alla fel först
   titleError.textContent = "";
-  emojiError.classList.add("hidden"); // göm felmeddelandet
+  emojiError.classList.add("hidden");
   countryError.textContent = "";
   cityError.textContent = "";
 
@@ -191,10 +190,9 @@ addFoodForm.onsubmit = async e => {
   }
 
   if (!selectedEmoji) {
-    emojiError.classList.remove("hidden"); // visa felet med klass
+    emojiError.classList.remove("hidden"); // ✅ visa fel med klass
     hasError = true;
-}
-
+  }
 
   if (!foodCountry.value) {
     countryError.textContent = "Please select a country";
