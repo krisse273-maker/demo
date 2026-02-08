@@ -179,29 +179,36 @@ section.filters {
   background-color: #262d37;
   border: 2px solid #1c222b;
   border-radius: 12px;
-  padding: 0.75rem;        /* mindre padding än tidigare */
+  padding: 0.75rem;
   max-width: 450px;
   width: 100%;
   margin: 2rem auto;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* högst upp i listan*/
+  justify-content: flex-start; /* högst upp i listan */
   align-items: flex-start;  /* börja från toppen */
-  gap: 0.3rem;              /* mindre mellanrum mellan matposterna */
+  gap: 0.3rem;  /* mindre mellanrum mellan matposterna */
   box-shadow: 0 8px 16px rgba(0,0,0,0.4);
 }
 
 .my-food-list .food-item {
-  width: auto;           /* låt innehållet bestämma bredden */
-  max-width: 15ch;       /* max 15 tecken */
+  width: auto;  /* låt matpostens bredd vara automatisk */
+  max-width: 15ch;  /* max 15 tecken */
   padding: 0.2rem 0.3rem;
-  text-align: left;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   gap: 0.5rem;
-  overflow-wrap: break-word; /* bryt längre text */
+  text-align: left;
+}
+
+.my-food-list .food-item .food-info {
+  width: auto;           /* låt text-diven växa med innehållet */
+  max-width: 15ch;       /* max 15 tecken */
+  white-space: nowrap;   /* håll texten på samma rad */
+  overflow: hidden;      /* om texten blir för lång */
+  text-overflow: ellipsis; /* visa "..." om texten är för lång */
 }
 
 
@@ -266,7 +273,7 @@ section.filters {
   color: #cfd8dc;
   border-radius: 10px;
   border: 2px solid #1c222b;
-  padding: 0.75rem 1rem; /* <-- standard padding for global food */
+  padding: 0.75rem 1rem; /* standard padding för global matpost */
   text-align: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -277,9 +284,12 @@ section.filters {
   background-color: #3b4450;
 }
 
+
 .food-info {
-  flex: 1;
-  width: 100%;
+  width: auto;        /* låt texten ta så mycket plats som behövs */
+  white-space: nowrap; /* håll texten på samma rad */
+  overflow: hidden;    /* döljer överskjutande text */
+  text-overflow: ellipsis; /* ger ... om texten är för lång */
 }
 
 .delete-icon {
@@ -291,7 +301,8 @@ section.filters {
   transition: transform 0.15s;
 }
 
-.delete-icon:hover { transform: scale(1.5); }
+.delete-icon:hover { 
+transform: scale(1.5); }
 
 /* ===== INPUT & SELECT ===== */
 input, select {
@@ -421,6 +432,7 @@ footer {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
 
 
 
