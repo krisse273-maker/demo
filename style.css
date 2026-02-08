@@ -192,23 +192,21 @@ section.filters {
 }
 
 .my-food-list .food-item {
-  width: auto;  /* låt matpostens bredd vara automatisk */
-  max-width: 15ch;  /* max 15 tecken */
-  padding: 0.2rem 0.3rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   gap: 0.5rem;
-  text-align: left;
+  padding: 0.2rem 0.3rem;
+  width: 100%;
 }
 
-.my-food-list .food-item .food-info {
-  width: auto;           /* låt text-diven växa med innehållet */
-  max-width: 15ch;       /* max 15 tecken */
-  white-space: nowrap;   /* håll texten på samma rad */
-  overflow: hidden;      /* om texten blir för lång */
-  text-overflow: ellipsis; /* visa "..." om texten är för lång */
+.my-food-list .food-item .delete-icon {
+  cursor: pointer;
+  color: #f44336;
+  font-weight: bold;
+  font-size: 1.4rem;
+  transition: transform 0.15s;
 }
 
 
@@ -216,6 +214,10 @@ section.filters {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.my-food-list .food-item .delete-icon:hover { 
+  transform: scale(1.5); /* gör knappen större när man hovrar */
 }
 
 .my-food-list .filters,
@@ -432,6 +434,7 @@ footer {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
 
 
 
