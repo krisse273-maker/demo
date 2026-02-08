@@ -394,6 +394,13 @@ footer {
   box-shadow: 0 8px 20px rgba(0,0,0,0.7);   /* större skugga vid hover */
 }
 
+#error-message,
+#emojiError {
+  text-align: center;
+  width: 100%;
+}
+
+
 
 .spinner.hidden { display: none; }
 
@@ -407,6 +414,7 @@ footer {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
 
 
 
