@@ -72,20 +72,7 @@ emojiPicker.querySelectorAll("span").forEach(span => {
   };
 });
 
-// ===== TEST: Skapa ett land i Firestore om det inte finns =====
-async function setupTestCountry() {
-  const countryRef = db.collection("countries").doc("Afghanistan");
-  const doc = await countryRef.get();
-  if (!doc.exists) {
-    await countryRef.set({
-      country: "Afghanistan",
-      cities: ["Kabul", "Kandahar", "Herat", "Mazar-i-Sharif", "Jalalabad"]
-    });
-    console.log("Test country 'Afghanistan' skapad!");
-  }
-}
-
-// ===== Load countries + cities med flaggor från countriesnow.space API =====
+// ===== Load countries + cities från Firestore =====
 async function loadCountries() {
   // Rensa dropdowns
   foodCountry.textContent = "";
@@ -104,23 +91,9 @@ async function loadCountries() {
   foodCity.appendChild(defaultCity);
 
   try {
-    // Hämta länder + städer
-    const resCountries = await fetch("https://countriesnow.space/api/v0.1/countries");
-    const dataCountries = await resCountries.json();
-
-    // Hämta flaggor
-    const resFlags = await fetch("https://countriesnow.space/api/v0.1/countries/flag/images");
-    const dataFlags = await resFlags.json();
-
-    // Kombinera länder, städer och flaggor
-    countriesData = dataCountries.data.map(c => {
-      const flagObj = dataFlags.data.find(f => f.name === c.country);
-      return {
-        country: c.country,
-        cities: c.cities,
-        flag: flagObj ? flagObj.flag : ""
-      };
-    });
+    // Hämta alla countries-documents från Firestore
+    const snap = await db.collection("countries").orderBy("country").get();
+    countriesData = snap.docs.map(doc => doc.data());
 
     // Lägg till länder i dropdown
     countriesData.forEach(c => {
@@ -130,7 +103,7 @@ async function loadCountries() {
       foodCountry.appendChild(opt);
     });
 
-    // När ett land väljs: fyll city och visa flagga
+    // När ett land väljs: fyll city
     foodCountry.addEventListener('change', () => {
       const selectedCountry = countriesData.find(c => c.country === foodCountry.value);
 
@@ -143,7 +116,6 @@ async function loadCountries() {
 
       if (!selectedCountry) {
         foodCity.disabled = true;
-        foodCountry.style.backgroundImage = 'none';
         return;
       }
 
@@ -155,20 +127,10 @@ async function loadCountries() {
         foodCity.appendChild(opt);
       });
       foodCity.disabled = false;
-
-      // Visa flagga i select
-      if (selectedCountry.flag) {
-        foodCountry.style.backgroundImage = `url(${selectedCountry.flag})`;
-        foodCountry.style.backgroundSize = '20px 15px';
-        foodCountry.style.backgroundRepeat = 'no-repeat';
-        foodCountry.style.backgroundPosition = '5px center';
-      } else {
-        foodCountry.style.backgroundImage = 'none';
-      }
     });
 
   } catch (err) {
-    console.error("Failed to load countries or flags:", err);
+    console.error("Failed to load countries from Firestore:", err);
   }
 }
 
@@ -381,13 +343,10 @@ async function loadPublicFoods() {
 auth.onAuthStateChanged(user => {
   if (user) {
     setupUserListener();
-
-   (async () => {
-  // await setupTestCountry(); // <-- Kommentera bort detta!
-  await loadCountries();
-  loadFoodList();
-  loadPublicFoods();
-})();
-
+    (async () => {
+      await loadCountries(); // ✅ Läs alltid länder + städer från Firestore
+      loadFoodList();
+      loadPublicFoods();
+    })();
   }
 });
