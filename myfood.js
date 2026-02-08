@@ -147,13 +147,13 @@ async function loadCountries() {
 
       // Visa flagga
       if (selectedCountry.flag) {
-        foodCountry.style.backgroundImage = `url(${selectedCountry.flag})`;
-        foodCountry.style.backgroundSize = '20px 15px';
-        foodCountry.style.backgroundRepeat = 'no-repeat';
-        foodCountry.style.backgroundPosition = '5px center';
-      } else {
-        foodCountry.style.backgroundImage = 'none';
-      }
+  foodCountry.classList.add("flag");
+  foodCountry.dataset.flag = selectedCountry.flag; // lagra url i data-attribute
+} else {
+  foodCountry.classList.remove("flag");
+  delete foodCountry.dataset.flag;
+}
+
     });
 
   } catch (err) {
@@ -184,7 +184,7 @@ addFoodForm.onsubmit = async e => {
   if (!user) return;
 
   titleError.textContent = "";
-  emojiError.style.display = "none";
+  emojiError.classList.add("hidden"); // göm felmeddelandet
   countryError.textContent = "";
   cityError.textContent = "";
 
@@ -199,9 +199,10 @@ addFoodForm.onsubmit = async e => {
   }
 
   if (!selectedEmoji) {
-    emojiError.style.display = "block";
+    emojiError.classList.remove("hidden"); // visa felet med klass
     hasError = true;
-  }
+}
+
 
   if (!foodCountry.value) {
     countryError.textContent = "Please select a country";
