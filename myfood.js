@@ -72,14 +72,44 @@ emojiPicker.querySelectorAll("span").forEach(span => {
   };
 });
 
+// ===== User listener + Mute check =====
+function setupUserListener() {
+  const user = auth.currentUser;
+  if (!user) return;
+  if (userDocUnsubscribe) userDocUnsubscribe();
+
+  userDocUnsubscribe = db.collection("users").doc(user.uid)
+    .onSnapshot(doc => {
+      currentUserData = doc.data();
+      if (currentUserData?.banned) {
+        showCustomAlert("You are banned.");
+        auth.signOut().then(() => window.location.href = "../index.html");
+      }
+      if (currentUserData?.muteUntil) {
+        const muteUntilDate = currentUserData.muteUntil.toDate();
+        if (muteUntilDate > new Date()) {
+          showCustomAlert(`You are muted until ${muteUntilDate.toLocaleString()}`);
+        }
+      }
+    });
+}
+
+// ===== Custom Alert Function =====
+function showCustomAlert(msg) {
+  if (!customAlertBackdrop || !alertMessage) return;
+  alertMessage.textContent = msg;
+  customAlertBackdrop.classList.remove("hidden");
+}
+alertOkBtn?.addEventListener("click", () => {
+  customAlertBackdrop.classList.add("hidden");
+});
+
 // ===== Load countries + cities + flag from Firestore =====
 async function loadCountries() {
-  // Rensa dropdowns
   foodCountry.textContent = "";
   foodCity.textContent = "";
   foodCity.disabled = true;
 
-  // Default-optioner
   const defaultCountry = document.createElement("option");
   defaultCountry.value = "";
   defaultCountry.textContent = "Select Country";
@@ -91,11 +121,9 @@ async function loadCountries() {
   foodCity.appendChild(defaultCity);
 
   try {
-    // Hämta countries collection
     const snap = await db.collection("countries").orderBy("country").get();
     countriesData = snap.docs.map(doc => doc.data());
 
-    // Fyll country dropdown
     countriesData.forEach(c => {
       const opt = document.createElement("option");
       opt.value = c.country;
@@ -103,11 +131,9 @@ async function loadCountries() {
       foodCountry.appendChild(opt);
     });
 
-    // När ett land väljs, fyll city dropdown och visa flagga
     foodCountry.addEventListener('change', () => {
       const selectedCountry = countriesData.find(c => c.country === foodCountry.value);
 
-      // Rensa city
       foodCity.textContent = "";
       const defaultCityOption = document.createElement("option");
       defaultCityOption.value = "";
@@ -240,10 +266,61 @@ addFoodForm.onsubmit = async e => {
   loadPublicFoods();
 };
 
+// ===== Load Private Foods =====
+async function loadFoodList() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  foodListContainer.innerHTML = "";
+  const snap = await db.collection("foods").doc(user.uid).collection("items").orderBy("createdAt", "desc").get();
+
+  snap.forEach(docSnap => {
+    const data = docSnap.data();
+    const div = document.createElement("div");
+    div.className = "food-item";
+
+    const del = document.createElement("span");
+    del.textContent = "×";
+    del.className = "delete-icon";
+
+    del.onclick = async () => {
+      try {
+        const foodDocId = docSnap.id;
+        await db.collection("foods").doc(user.uid).collection("items").doc(foodDocId).delete();
+        await db.collection("publicFoods").doc(foodDocId).delete();
+        loadFoodList();
+        loadPublicFoods();
+      } catch (err) {
+        console.error("Failed to delete food:", err);
+        showCustomAlert("Could not delete this food. Try again.");
+      }
+    };
+
+    div.textContent = `${data.emoji} ${data.title}`;
+    div.appendChild(del);
+    foodListContainer.appendChild(div);
+  });
+}
+
+// ===== Load Public Foods =====
+async function loadPublicFoods() {
+  if (!publicFoodListContainer) return;
+
+  publicFoodListContainer.innerHTML = "";
+  const snap = await db.collection("publicFoods").orderBy("publishedAt", "desc").get();
+
+  snap.forEach(doc => {
+    const d = doc.data();
+    const div = document.createElement("div");
+    div.textContent = `${d.emoji} ${d.title} by ${d.userName}`;
+    publicFoodListContainer.appendChild(div);
+  });
+}
+
 // ===== Init =====
 auth.onAuthStateChanged(user => {
   if (user) {
-    setupUserListener();
+    setupUserListener(); // ✅ nu finns funktionen
     loadCountries();
     loadFoodList();
     loadPublicFoods();
