@@ -145,14 +145,6 @@ async function loadCountries() {
       });
       foodCity.disabled = false;
 
-      // Visa flagga
-      if (selectedCountry.flag) {
-  foodCountry.classList.add("flag");
-  foodCountry.dataset.flag = selectedCountry.flag; // lagra url i data-attribute
-} else {
-  foodCountry.classList.remove("flag");
-  delete foodCountry.dataset.flag;
-}
 
     });
 
