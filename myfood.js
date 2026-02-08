@@ -1,5 +1,5 @@
 // ===== Firebase setup =====
-const firebaseConfig = {
+const firebaseConfig = { 
   apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
   authDomain: "global-food-share.firebaseapp.com",
   projectId: "global-food-share",
@@ -56,11 +56,12 @@ emojiPickerBtn.onclick = () => {
 emojiPicker.querySelectorAll("span").forEach(span => {
   span.onclick = () => {
     selectedEmoji = span.textContent;
-    emojiPickerBtn.textContent = selectedEmoji;
+    emojiPickerBtn.textContent = `Select your food Emoji ${selectedEmoji}`;
     emojiPicker.classList.remove("show");
     emojiError.classList.add("hidden");
   };
 });
+
 
 // ===== User listener + Mute check =====
 function setupUserListener() {
