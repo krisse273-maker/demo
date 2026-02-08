@@ -170,7 +170,7 @@ section.filters {
   margin: 2rem auto;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.5rem; /* Private food list mellan rum på maten*/
   box-shadow: 0 8px 16px rgba(0,0,0,0.4);
 }
 
@@ -264,7 +264,7 @@ section.filters {
 
 /* ===== ONLY CHANGE: MAKE PRIVATE FOOD ITEMS LESS “FAT” ===== */
 .my-food-list .food-item {
-  padding: 0.4rem 0.6rem; /* <-- här är ändringen för smalare list-style */
+  padding: 0.2rem 0.3rem; /* <-- här är ändringen för smalare list-style */
 }
 
 /* ===== INPUT & SELECT ===== */
@@ -395,3 +395,4 @@ footer {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
