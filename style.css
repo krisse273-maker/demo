@@ -456,14 +456,6 @@ footer {
   animation: spin 1s linear infinite;
 }
 
-/* Container för knapparna under välkomsttext */
-header .header-buttons {
-  display: flex;
-  justify-content: center; /* centrera knapparna */
-  gap: 1rem;               /* mellanrum mellan Home och Logout */
-  margin-top: 2rem;        /* lite luft under välkomstmeddelandet */
-}
-
 /* ===== HEADER ===== */
 header {
   background-color: #262d37;
@@ -512,6 +504,7 @@ header .header-buttons {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
 
 
 
