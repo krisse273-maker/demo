@@ -133,7 +133,6 @@ section.filters {
 
 /* ===== FOOD LISTS & CONTAINERS ===== */
 .container, 
-.global-food-list, 
 .my-food-list, 
 .food-list {
   display: flex;
@@ -143,18 +142,60 @@ section.filters {
   padding: 1rem;
 }
 
+/* ===== GLOBAL FOOD LIST (INDEX) ===== */
+.global-food-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.global-food-list .food-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #2b3340;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  gap: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  width: 220px; /* kan justeras efter behov */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.global-food-list .food-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.global-food-list .food-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.global-food-list .title-emoji {
+  font-size: 1.5rem;
+}
+
+.global-food-list .food-details p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
 /* ===== MYFOOD.HTML SPECIFIC ===== */
-.my-food-list, #addFoodFormWrapper {
+#addFoodFormWrapper {
   background-color: #262d37;
   border: 2px solid #1c222b;
   border-radius: 15px;
-  padding: 1.5rem;
+  padding: 2rem;
   max-width: 450px;
   width: 100%;
   margin: 2rem auto;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1.5rem;
   box-shadow: 0 8px 16px rgba(0,0,0,0.4);
 }
 
@@ -336,4 +377,3 @@ footer {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
-
