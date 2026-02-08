@@ -397,9 +397,6 @@ body {
       text-align: center;
     }
 
-    .hidden {
-      display: none;
-    }
 
     .food-item {
   display: flex;
@@ -732,6 +729,7 @@ body {
 /* Hack: använd JS för att sätta selectens bakgrund */
 
   
+
 
 
 
