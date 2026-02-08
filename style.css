@@ -667,10 +667,48 @@ body {
   cursor: pointer;
 }
 
+/* ===== CUSTOM ALERT STYLING ===== */
+.alert-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none; /* göm alerten som default */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.alert-backdrop.show {
+  display: flex; /* visa alerten när klassen "show" läggs till */
+}
+
+.alert-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  min-width: 250px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+#alertOkBtn {
+  padding: 5px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #00c853;
+  color: white;
+  cursor: pointer;
+}
+
+
 
 /* Hack: använd JS för att sätta selectens bakgrund */
 
   
+
 
 
 
