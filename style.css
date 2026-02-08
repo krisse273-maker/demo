@@ -711,12 +711,41 @@ body {
   display: flex;
 }
 
+/* Felmeddelande */
+#error-message, #titleError, #emojiError, #countryError, #cityError {
+  color: red;
+}
+
+/* Validering av titel */
+.valid-title {
+  border: 2px solid #00c853 !important;
+}
+
+.error-title {
+  border: 2px solid red !important;
+}
+
+/* Shake-animation */
+.shake {
+  animation: shake 0.25s;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  75% { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
+}
+
+
 
 
 
 /* Hack: använd JS för att sätta selectens bakgrund */
 
   
+
 
 
 
