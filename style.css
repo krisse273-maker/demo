@@ -9,85 +9,109 @@
 body {
   background-color: #4caf50;
   color: #cfd8dc;
-  margin: 0;
-  padding: 0;
 }
 
 /* ===== HEADER ===== */
 header {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Centrerar horisontellt */
-  justify-content: center;
-  gap: 10px;
   background-color: #262d37;
   color: #cfd8dc;
-  padding: 2rem 1rem;
   text-align: center;
+  padding: 2rem 1rem;
   position: relative;
 }
 
 header h1 {
-  margin: 0;
-  color: #4caf50;
   font-size: 2rem;
+  color: #4caf50;
+  margin-bottom: 0.5rem;
 }
 
 header p {
-  margin-top: 0.5rem;
   font-size: 1.2rem;
-  color: #cfd8dc;
 }
 
 /* Header-knappar */
-#logoutBtn, #homeBtn, #myFoodBtn {
-  position: absolute;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-/* Placering */
 #logoutBtn {
+  position: absolute;
   right: 1rem;
   top: 50%;
   transform: translateY(-50%);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
   background-color: #f44336;
   color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
 }
 
 #logoutBtn:hover { background-color: #e53935; }
 
 #homeBtn {
+  position: absolute;
   left: 1rem;
   top: 50%;
   transform: translateY(-50%);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
   background-color: #4caf50;
   color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
 }
 
 #homeBtn:hover { background-color: #388e3c; }
 
 #myFoodBtn {
-  bottom: -2rem; /* ligger under header */
-  position: relative;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
   background-color: #4caf50;
-  color: white;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
 }
 
 #myFoodBtn:hover { background-color: #388e3c; }
 
+/* ===== ADMIN PANEL ===== */
+#adminPanel {
+  display: none;
+  max-width: 500px;
+  margin: 15px auto;
+}
+
+#adminPanel a {
+  display: block;
+  text-align: center;
+  padding: 16px;
+  background: #ff9800;
+  color: #1c222b;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: 0.2s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+#adminPanel a:hover {
+  background: #fb8c00;
+  transform: translateY(-2px);
+}
+
 /* ===== FILTERS SECTION ===== */
 section.filters {
-  max-width: 500px;
-  margin: 1rem auto;
-  padding: 1.5rem;
   background-color: #262d37;
   border-radius: 12px;
+  padding: 1.5rem;
   text-align: center;
+  margin: 2rem auto;
+  max-width: 500px;
   border: 2px solid black;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
@@ -111,7 +135,6 @@ section.filters {
   color: #cfd8dc;
 }
 
-/* Filter-knapp */
 #filterBtn {
   padding: 0.5rem 1rem;
   border-radius: 6px;
@@ -124,47 +147,54 @@ section.filters {
 
 #filterBtn:hover { background-color: #388e3c; }
 
-/* ===== FOOD LIST ===== */
-.global-food-list, .food-list, .my-food-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+/* ===== FOOD LISTS ===== */
+.container, 
+.global-food-list, 
+.my-food-list, 
+.food-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 1rem;
   padding: 1rem;
-  max-width: 700px;
-  margin: 2rem auto;
 }
 
 .food-item {
+  background-color: #2b3340;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  border: 2px solid #1c222b;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background-color: #2b3340;
-  color: #cfd8dc;
-  border-radius: 10px;
-  border: 2px solid #1c222b;
-  padding: 0.75rem 1rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex-direction: column;
 }
 
 .food-item:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 12px rgba(0,0,0,0.4);
+  background-color: #3b4450;
 }
 
-.food-info { flex: 1; }
+.food-info {
+  flex: 1;
+}
 
 .delete-icon {
   cursor: pointer;
   color: #f44336;
   font-weight: bold;
   font-size: 1.4rem;
-  margin-left: auto;
+  margin-top: 0.5rem;
   transition: transform 0.15s;
 }
 
 .delete-icon:hover { transform: scale(1.5); }
 
-/* ===== INPUT & SELECT STYLING ===== */
+/* ===== INPUT & SELECT ===== */
 input, select {
   background-color: #2b3340;
   color: #cfd8dc;
