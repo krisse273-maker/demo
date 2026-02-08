@@ -727,6 +727,33 @@ body {
   100% { transform: translateX(0); }
 }
 
+.dropdown-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px; /* lite mellanrum mellan dropdown och spinner */
+  position: relative;
+}
+
+.spinner {
+  border: 3px solid #cfd8dc;
+  border-top: 3px solid #4caf50;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+.spinner.hidden {
+  display: none; /* göm spinnern när data är laddad */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
 
 
 
@@ -734,6 +761,7 @@ body {
 /* Hack: använd JS för att sätta selectens bakgrund */
 
   
+
 
 
 
