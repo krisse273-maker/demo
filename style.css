@@ -360,6 +360,39 @@ footer {
   animation: spin 1s linear infinite;
 }
 
+.food-card {
+  background-color: #fff;      /* vit bakgrund */
+  border-radius: 12px;         /* rundade hörn */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* lätt skugga */
+  padding: 12px 16px;          /* lite inner-padding */
+  margin-bottom: 12px;         /* avstånd mellan korten */
+  transition: transform 0.2s;  /* liten hover-animation */
+}
+
+.food-card:hover {
+  transform: translateY(-2px); /* lyfter kortet lite vid hover */
+}
+
+.food-item {
+  display: flex;
+  justify-content: space-between; /* info + delete-knapp på samma rad */
+  align-items: center;
+}
+
+.food-info {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.delete-icon {
+  cursor: pointer;
+  color: #f44336; /* röd färg för delete */
+  font-weight: bold;
+  font-size: 18px;
+  margin-left: 12px;
+}
+
+
 .spinner.hidden { display: none; }
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -372,3 +405,4 @@ footer {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
