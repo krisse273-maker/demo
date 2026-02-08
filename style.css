@@ -612,7 +612,6 @@ body {
       color: #f44336;
       font-size: 0.9rem;
       margin: 0.25rem 0;
-      display: none;
     }
 
     .no-food {
@@ -735,6 +734,7 @@ body {
 /* Hack: använd JS för att sätta selectens bakgrund */
 
   
+
 
 
 
