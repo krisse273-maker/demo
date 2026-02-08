@@ -186,10 +186,11 @@ section.filters {
 /* ===== MYFOOD.HTML SPECIFIC ===== */
 #addFoodFormWrapper {
   background-color: #262d37;
-  border: 2px solid #1c222b;
+  border: 2px solid black;
   border-radius: 15px;
-  padding: 2rem;
-  max-width: 450px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* mjuk skugga */
+  max-width: 500px;
   width: 100%;
   margin: 2rem auto;
   display: flex;
@@ -414,6 +415,7 @@ footer {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
 
 
 
