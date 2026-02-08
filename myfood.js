@@ -36,16 +36,6 @@ const emojiError = document.getElementById("emojiError");
 const countryError = document.getElementById("countryError");
 const cityError = document.getElementById("cityError");
 
-titleError.style.color = "red";
-const style = document.createElement("style");
-style.textContent = `
-  .valid-title { border: 2px solid #00c853 !important; }
-  .error-title { border: 2px solid red !important; }
-  .shake { animation: shake 0.25s; }
-  @keyframes shake { 0%{transform:translateX(0);}25%{transform:translateX(-4px);}50%{transform:translateX(4px);}75%{transform:translateX(-4px);}100%{transform:translateX(0);} }
-`;
-document.head.appendChild(style);
-
 let selectedEmoji = "";
 let currentUserData = null;
 let userDocUnsubscribe = null;
