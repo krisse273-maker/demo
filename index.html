@@ -1,23 +1,24 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta http-equiv="Content-Security-Policy" content="
-    <meta http-equiv="Content-Security-Policy" content="
-  default-src 'self' https://*.googleapis.com https://*.gstatic.com https://firebasestorage.googleapis.com;
-  style-src 'self' https://fonts.googleapis.com;
-  script-src 'self' https://www.gstatic.com https://www.googleapis.com https://firebase.googleapis.com;
-  font-src 'self' https://fonts.gstatic.com;
-  connect-src 'self' https://countriesnow.space https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://www.gstatic.com;
-  img-src 'self' data:;
-  object-src 'none';
-  base-uri 'self';
-  frame-ancestors 'none';
-  form-action 'self';
-  upgrade-insecure-requests;
-">
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self' https://*.googleapis.com https://*.gstatic.com https://firebasestorage.googleapis.com;
+    style-src 'self' https://fonts.googleapis.com;
+    script-src 'self' https://www.gstatic.com https://www.googleapis.com https://firebase.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com;
+    connect-src 'self' https://countriesnow.space https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://www.gstatic.com;
+    img-src 'self' data:;
+    object-src 'none';
+    base-uri 'self';
+    frame-ancestors 'none';
+    form-action 'self';
+    upgrade-insecure-requests;
+  ">
+
   <title>Global Food Share</title>
 
   <link rel="stylesheet" href="style.css" />
@@ -93,15 +94,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
