@@ -1,119 +1,44 @@
-/* ===== BASIC RESET ===== */
+/* Basic Reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+  font-family: Arial, sans-serif;
 }
 
 body {
-  background-color: #4caf50;
-  color: #cfd8dc;
+  background-color: #f9f9f9;
+  color: #333;
 }
 
-/* ===== HEADER ===== */
 header {
-  background-color: #262d37;
-  color: #cfd8dc;
   text-align: center;
+  background-color: #4CAF50;
+  color: white;
   padding: 2rem 1rem;
-  position: relative;
 }
 
 header h1 {
-  font-size: 2rem;
-  color: #4caf50;
-  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
 }
 
 header p {
+  margin-top: 0.5rem;
   font-size: 1.2rem;
 }
 
-/* ===== HEADER BUTTONS ===== */
-#logoutBtn {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
-  background-color: #f44336;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
-}
-
-#logoutBtn:hover { background-color: #e53935; }
-
-#homeBtn {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
-  background-color: #4caf50;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
-}
-
-#homeBtn:hover { background-color: #388e3c; }
-
-#myFoodBtn {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
-  background-color: #4caf50;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
-}
-
-#myFoodBtn:hover { background-color: #388e3c; }
-
-/* ===== ADMIN PANEL ===== */
-#adminPanel {
-  display: none;
-  max-width: 500px;
-  margin: 15px auto;
-}
-
-#adminPanel a {
-  display: block;
-  text-align: center;
-  padding: 16px;
-  background: #ff9800;
-  color: #1c222b;
-  font-weight: 600;
-  text-decoration: none;
-  border-radius: 10px;
-  transition: 0.2s;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-
-#adminPanel a:hover {
-  background: #fb8c00;
-  transform: translateY(-2px);
-}
-
-/* ===== FILTERS SECTION ===== */
-section.filters {
-  background-color: #262d37;
-  border-radius: 12px;
-  padding: 1.5rem;
-  text-align: center;
+.filters {
+  max-width: 600px;
   margin: 2rem auto;
-  max-width: 500px;
-  border: 2px solid black;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  padding: 1rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.filters h2 {
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 .filter-group {
@@ -130,207 +55,168 @@ section.filters {
   width: 100%;
   padding: 0.5rem;
   border-radius: 6px;
-  border: 2px solid #1c222b;
-  background-color: #2b3340;
-  color: #cfd8dc;
+  border: 1px solid #ccc;
 }
 
-#filterBtn {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
-  background-color: #4caf50;
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-#filterBtn:hover { background-color: #388e3c; }
-
-/* ===== FOOD LISTS & CONTAINERS ===== */
-.container, 
-.global-food-list, 
-.my-food-list, 
-.food-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
-  padding: 1rem;
-}
-
-/* ===== MYFOOD.HTML SPECIFIC ===== */
-.my-food-list, #addFoodFormWrapper {
-  background-color: #262d37;
-  border: 2px solid #1c222b;
-  border-radius: 12px;
-  padding: 1.5rem;
-  max-width: 450px;
-  width: 100%;
-  margin: 2rem auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
-}
-
-#addFoodFormWrapper form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.my-food-list .filters,
-#addFoodFormWrapper .filters {
-  background-color: #262d37;
-  border: 2px solid #1c222b;
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.my-food-list .filters label,
-#addFoodFormWrapper .filters label {
-  display: block;
-  margin-bottom: 0.5rem;
-  text-align: left;
-}
-
-.my-food-list .filters select,
-.my-food-list .filters input,
-#addFoodFormWrapper .filters select,
-#addFoodFormWrapper .filters input {
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 2px solid #1c222b;
-  background-color: #2b3340;
-  color: #cfd8dc;
-}
-
-.my-food-list .filters #filterBtn,
-#addFoodFormWrapper .filters #filterBtn {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
-  background-color: #4caf50;
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.my-food-list .filters #filterBtn:hover,
-#addFoodFormWrapper .filters #filterBtn:hover {
-  background-color: #388e3c;
-}
-
-/* ===== FOOD ITEM ===== */
-.food-item {
-  flex-direction: column;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  background-color: #2b3340;
-  color: #cfd8dc;
-  border-radius: 10px;
-  border: 2px solid #1c222b;
-  padding: 0.75rem 1rem;
-  text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.food-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 12px rgba(0,0,0,0.4);
-  background-color: #3b4450;
-}
-
-.food-info {
-  flex: 1;
-  width: 100%;
-}
-
-.delete-icon {
-  cursor: pointer;
-  color: #f44336;
-  font-weight: bold;
-  font-size: 1.4rem;
-  margin-top: 0.5rem;
-  transition: transform 0.15s;
-}
-
-.delete-icon:hover { transform: scale(1.5); }
-
-/* ===== INPUT & SELECT ===== */
-input, select {
-  background-color: #2b3340;
-  color: #cfd8dc;
-  border: 2px solid #1c222b;
-  padding: 0.6rem 0.8rem;
-  border-radius: 6px;
-}
-
-input::placeholder { color: #90a4ae; }
-
-input:focus, select:focus { outline: none; border-color: #4caf50; }
-
-/* ===== BUTTONS ===== */
 button {
-  padding: 0.6rem 1rem;
-  border-radius: 6px;
-  border: none;
-  background-color: #4caf50;
+  background-color: #4CAF50;
   color: white;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 6px;
   cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
+  font-size: 1rem;
 }
 
-button:hover { background-color: #388e3c; }
+button:hover {
+  background-color: #45a049;
+}
 
-/* ===== EMOJI PICKER ===== */
-#emojiPicker {
-  display: none;
+.food-list {
+  max-width: 700px;
+  margin: 2rem auto;
+}
+
+.food-item {
   background-color: #262d37;
-  border: 2px solid #1c222b;
   border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  border: 2px solid #000;
+  box-shadow: 
+    0 8px 16px rgba(0, 0, 0, 0.3),
+    0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.food-item h3 {
+  margin-bottom: 0.5rem;
+}
+
+.food-item p {
+  margin-bottom: 0.5rem;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  margin-top: 2rem;
+  color: #666;
+}
+
+/* Emoji picker styles */
+#emojiPicker {
+  display: none; /* Döljer emoji-pickern som standard */
+  border: 1px solid #ccc;
   padding: 0.5rem;
+  border-radius: 12px;
+  display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 0.5rem;
+  pointer-events: auto; /* Gör att emoji-pickern kan ta emot klick */
 }
 
-#emojiPicker.show { display: flex; }
-
+/* Förbättra effekten för emoji-ikoner */
 #emojiPicker span {
   cursor: pointer;
-  font-size: 1.8rem;
-  transition: transform 0.1s;
+  font-size: 2rem; /* Ökad storlek för bättre synlighet */
+  transition: transform 0.1s; /* Smidig övergång när man hovrar */
 }
 
-#emojiPicker span:hover { transform: scale(1.4); }
+#emojiPicker span:hover {
+  transform: scale(1.4); /* Effekt vid hovring */
+}
 
-#emojiError { color: #f44336; font-size: 0.9rem; margin: 0.25rem 0; }
+.alert-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
 
-/* ===== ALERT BOX ===== */
+.alert-backdrop.hidden {
+  display: none;
+}
+
+.alert-box {
+  background: var(--card-bg, #ffffff);
+  color: var(--text-color, #111);
+  padding: 22px 26px;
+  border-radius: 14px;
+  max-width: 360px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+  animation: alertPop 0.25s ease-out;
+}
+
+.alert-box h3 {
+  margin-bottom: 10px;
+}
+
+.alert-box p {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.alert-box button {
+  margin-top: 18px;
+  padding: 9px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #ff4d4d;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.alert-box button:hover {
+  opacity: 0.9;
+}
+
+@keyframes alertPop {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.title-emoji {
+  font-size: 2rem;  /* justera storlek här om du vill större/mindre */
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+
+/* Lägg till detta i din style.css eller <style> i <head> */
 .alert-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: none;
-  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
   align-items: center;
-  z-index: 1000;
+  justify-content: center;
+  z-index: 9999;
 }
-
-.alert-backdrop.show { display: flex; }
-
+.hidden {
+  display: none;
+}
 .alert-box {
-  background: #262d37;
-  color: #cfd8dc;
+  background-color: #262d37; /* matchar din bakgrund */
+  color: #cfd8dc; /* textfärg */
   padding: 2rem;
   border-radius: 12px;
   border: 2px solid #1c222b;
@@ -339,7 +225,6 @@ button:hover { background-color: #388e3c; }
   text-align: center;
   box-shadow: 0 8px 16px rgba(0,0,0,0.4);
 }
-
 #alertOkBtn {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
@@ -348,40 +233,502 @@ button:hover { background-color: #388e3c; }
   background-color: #4caf50;
   color: #fff;
   cursor: pointer;
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
 }
+#alertOkBtn:hover {
+  background-color: #388e3c;
+}
 
-#alertOkBtn:hover { background-color: #388e3c; }
+section.filters {
+  border: 2px solid black; /* Svart outline */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Skugga */
+}
 
-/* ===== FOOTER ===== */
-footer {
-  text-align: center;
+.food-item {
+  background-color: #2b3340;
+  border-radius: 10px;
   padding: 1rem;
-  background-color: #262d37;
-  color: #cfd8dc;
-}
-
-/* ===== MISC ===== */
-.no-food {
-  color: #90a4ae;
   text-align: center;
-  font-style: italic;
+  border: 2px solid #000; /* Svart kant */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Skugga */
+  transition: all 0.3s ease; /* Lägg till transition för smidiga 
+  /* outline: 2px solid black; */ /* Kan tas bort om du vill */
 }
 
-.spinner {
-  border: 3px solid #cfd8dc;
-  border-top: 3px solid #4caf50;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  animation: spin 1s linear infinite;
+.food-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  background-color: #3b4450;
 }
 
-.spinner.hidden { display: none; }
+body {
+      background-color: #4caf50;
+      color: #cfd8dc;
+      font-family: 'Poppins', sans-serif;
+    }
 
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    header {
+      background-color: #262d37;
+      text-align: center;
+      padding: 1rem;
+      position: relative;
+    }
 
-.shake { animation: shake 0.25s; }
+    header h1 { color: #4caf50; }
+
+    #welcomeMsg { color: #cfd8dc; }
+
+    #logoutBtn {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: none;
+      background-color: #f44336;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    #myFoodBtn {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: none;
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    #adminPanel {
+      display: none;
+      max-width: 500px;
+      margin: 15px auto;
+    }
+
+    #adminPanel a {
+      display: block;
+      text-align: center;
+      padding: 16px;
+      background: #ff9800;
+      color: #1c222b;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 10px;
+      transition: 0.2s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    #adminPanel a:hover {
+      background: #fb8c00;
+      transform: translateY(-2px);
+    }
+
+    section.filters {
+      background-color: #262d37;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      margin: 1rem auto;
+      max-width: 500px;
+    }
+
+    select {
+      background-color: #2b3340;
+      color: #cfd8dc;
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      border-radius: 6px;
+    }
+
+    #filterBtn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: none;
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .global-food-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .food-item {
+      background-color: #2b3340;
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #262d37;
+    }
+
+    /* Stil för alert-box */
+    .alert-backdrop {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .alert-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 300px;
+      width: 80%;
+      text-align: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .food-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: #2b3340;
+  color: #cfd8dc;
+  border-radius: 10px;
+  border: 2px solid #1c222b;
+  padding: 0.75rem 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.food-info {
+  flex: 1; /* tar upp all plats mellan emoji och X */
+}
+
+.delete-icon {
+  cursor: pointer;
+  color: #f44336; /* rött */
+  font-weight: bold;
+  font-size: 1.4rem; /* lite större för tydlighet */
+  margin-left: auto; /* trycker den längst till höger */
+  transition: transform 0.15s;
+}
+
+.delete-icon:hover {
+  transform: scale(1.5); /* hover-effekt */
+}
+
+    body {
+      background-color: #4caf50;
+      color: #cfd8dc;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #262d37;
+      text-align: center;
+      padding: 1.5rem 1rem;
+      position: relative;
+    }
+
+    header h1 {
+      margin: 0;
+      color: #4caf50;
+      font-size: 2rem;
+    }
+
+    header p {
+      margin-top: 0.5rem;
+    }
+
+    #logoutBtn {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: none;
+      background-color: #f44336;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    #logoutBtn:hover { background-color: #e53935; }
+
+    #homeBtn {
+      margin-top: 0.8rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: none;
+      background-color: #4caf50;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    #homeBtn:hover { background-color: #388e3c; }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 2rem;
+      gap: 2rem;
+      justify-content: center;
+    }
+
+    .my-food-list {
+      background-color: #262d37;
+      border: 2px solid #1c222b;
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-height: 75vh;
+      overflow-y: auto;
+    }
+
+    #addFoodForm {
+      background-color: #262d37;
+      border: 2px solid #1c222b;
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-height: none;
+      overflow: visible;
+    }
+
+    .food-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background-color: #2b3340;
+      color: #cfd8dc;
+      border-radius: 10px;
+      border: 2px solid #1c222b;
+      padding: 0.75rem 1rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .food-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 12px rgba(0,0,0,0.4);
+    }
+
+    input,
+    select {
+      background-color: #2b3340;
+      color: #cfd8dc;
+      border: 2px solid #1c222b;
+      padding: 0.6rem 0.8rem;
+      border-radius: 6px;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    input::placeholder {
+      color: #90a4ae;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #4caf50;
+    }
+
+    button {
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      border: none;
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    button:hover { background-color: #388e3c; }
+
+    #emojiPickerBtn {
+      background-color: #2b3340;
+      color: #cfd8dc;
+      border: 2px solid #1c222b;
+      font-weight: normal;
+    }
+
+    #emojiPickerBtn:hover { background-color: #323b49; }
+
+    #emojiPicker {
+      display: none;
+      background-color: #262d37;
+      border: 2px solid #1c222b;
+      border-radius: 10px;
+      padding: 0.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    #emojiPicker span {
+      cursor: pointer;
+      font-size: 1.8rem;
+      transition: transform 0.1s;
+    }
+
+    #emojiPicker span:hover {
+      transform: scale(1.4);
+    }
+
+    #emojiError {
+      color: #f44336;
+      font-size: 0.9rem;
+      margin: 0.25rem 0;
+      display: none;
+    }
+
+    .no-food {
+      color: #90a4ae;
+      text-align: center;
+      font-style: italic;
+    }
+
+/* Ge select en generell padding för flagga */
+#foodCountry {
+  padding-left: 30px; /* plats för flagga */
+  background-repeat: no-repeat;
+  background-position: 5px center;
+  background-size: 20px 15px;
+}
+
+/* När ett land väljs, visa flagga */
+#foodCountry option[data-flag] {
+  /* Detta används som data-flag i JS, själva option får ej background i vissa browsers */
+}
+
+/* style.css */
+.alert-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none; /* tidigare hidden */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.alert-backdrop.show {
+  display: flex;
+}
+
+.alert-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  min-width: 250px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+#alertOkBtn {
+  padding: 5px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #00c853;
+  color: white;
+  cursor: pointer;
+}
+
+/* ===== CUSTOM ALERT STYLING ===== */
+.alert-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none; /* göm alerten som default */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.alert-backdrop.show {
+  display: flex; /* visa alerten när klassen "show" läggs till */
+}
+
+.alert-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  min-width: 250px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+#alertOkBtn {
+  padding: 5px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #00c853;
+  color: white;
+  cursor: pointer;
+}
+
+#emojiPicker {
+  display: none;
+}
+
+#emojiPicker.show {
+  display: flex;
+}
+
+/* Felmeddelande */
+#error-message, #titleError, #emojiError, #countryError, #cityError {
+  color: red;
+}
+
+/* Validering av titel */
+.valid-title {
+  border: 2px solid #00c853 !important;
+}
+
+.error-title {
+  border: 2px solid red !important;
+}
+
+/* Shake-animation */
+.shake {
+  animation: shake 0.25s;
+}
 
 @keyframes shake {
   0% { transform: translateX(0); }
@@ -390,4 +737,21 @@ footer {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
+
+
+
+
+/* Hack: använd JS för att sätta selectens bakgrund */
+
+  
+
+
+
+
+
+
+
+
+
 
