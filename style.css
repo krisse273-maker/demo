@@ -58,8 +58,6 @@ header p {
 
 #myFoodBtn {
   margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
   border: none;
   background-color: #4caf50;
   color: #fff;
@@ -488,6 +486,17 @@ header .header-buttons {
   margin-top: 2rem;        /* mellanrum mellan välkomstmeddelandet och knapparna */
 }
 
+/* Lägg till detta – styr knapparnas storlek och utseende */
+.header-buttons button {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
 
 
 .spinner.hidden { display: none; }
@@ -503,6 +512,7 @@ header .header-buttons {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
 
 
 
