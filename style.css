@@ -18,7 +18,7 @@ h1, h2 {
   color: #4caf50;
 }
 
-button, .food-item {
+button {
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s;
@@ -133,7 +133,6 @@ section.filters {
 
 /* ===== FOOD LISTS & CONTAINERS ===== */
 .container, 
-.my-food-list, 
 .food-list {
   display: flex;
   flex-wrap: wrap;
@@ -154,13 +153,13 @@ section.filters {
 .global-food-list .food-item {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
+  align-items: flex-start;
   background-color: #2b3340;
-  padding: 0.75rem 1rem;
   border-radius: 12px;
-  gap: 0.5rem;
+  padding: 1rem;
+  width: 250px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  width: 220px; /* kan justeras efter behov */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -173,6 +172,7 @@ section.filters {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .global-food-list .title-emoji {
@@ -180,8 +180,7 @@ section.filters {
 }
 
 .global-food-list .food-details p {
-  margin: 0;
-  font-size: 0.9rem;
+  margin: 0.2rem 0;
 }
 
 /* ===== MYFOOD.HTML SPECIFIC ===== */
@@ -197,6 +196,23 @@ section.filters {
   flex-direction: column;
   gap: 1.5rem;
   box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+  align-items: center;
+  justify-content: flex-start;
+}
+
+#addFoodFormWrapper form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#addFoodFormWrapper .filters {
+  width: 100%;
+}
+
+#addFoodFormWrapper button {
+  align-self: center;
 }
 
 .my-food-list .food-item {
@@ -342,27 +358,6 @@ footer {
   width: 20px;
   height: 20px;
   animation: spin 1s linear infinite;
-}
-
-/* ===== MYFOOD FORM CENTERING ===== */
-#addFoodFormWrapper {
-  align-items: center; /* centrera horisontellt */
-  justify-content: flex-start; /* börja uppifrån */
-}
-
-#addFoodFormWrapper form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-#addFoodFormWrapper .filters {
-  width: 100%;
-}
-
-#addFoodFormWrapper button {
-  align-self: center; /* centrera knappen i form */
 }
 
 .spinner.hidden { display: none; }
