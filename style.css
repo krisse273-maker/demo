@@ -185,19 +185,23 @@ section.filters {
   margin: 2rem auto;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start; /* högst upp i listan*/
   align-items: flex-start;  /* börja från toppen */
   gap: 0.3rem;              /* mindre mellanrum mellan matposterna */
   box-shadow: 0 8px 16px rgba(0,0,0,0.4);
 }
 
 .my-food-list .food-item {
-  padding: 0.2rem 0.3rem !important;   /* smalare */
-  width: 100%;              /* fyller hela bredden */
-  text-align: left;         /* vänsterjustera text */
-  flex-direction: row;      /* mat + delete-knapp på samma rad */
+  width: auto;           /* låt innehållet bestämma bredden */
+  max-width: 15ch;       /* max 15 tecken */
+  padding: 0.2rem 0.3rem;
+  text-align: left;
+  display: flex;
+  flex-direction: row;
   justify-content: space-between;
-  align-items: center;      /* snyggt centrerat vertikalt */
-  gap: 0.5rem;              /* lucka mellan text och delete-knapp */
+  align-items: center;
+  gap: 0.5rem;
+  overflow-wrap: break-word; /* bryt längre text */
 }
 
 
@@ -417,5 +421,6 @@ footer {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
 
 
