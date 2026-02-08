@@ -102,6 +102,12 @@ section.filters {
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
+/* Rubrik och text vit */
+section.filters h2,
+section.filters p {
+  color: white;
+}
+
 .filter-group {
   margin-bottom: 1rem;
 }
@@ -127,6 +133,7 @@ section.filters {
   border: none;
   background-color: #4caf50;
   color: white;
+  margin-top: 0.5rem; /* lägg till lite avstånd ovanför */
 }
 
 #filterBtn:hover { background-color: #388e3c; }
@@ -415,6 +422,7 @@ footer {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
 
 
 
