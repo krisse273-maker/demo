@@ -703,11 +703,21 @@ body {
   cursor: pointer;
 }
 
+#emojiPicker {
+  display: none;
+}
+
+#emojiPicker.show {
+  display: flex;
+}
+
+
 
 
 /* Hack: använd JS för att sätta selectens bakgrund */
 
   
+
 
 
 
