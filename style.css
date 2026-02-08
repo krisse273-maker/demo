@@ -43,35 +43,15 @@ header p {
 
 /* ===== HEADER BUTTONS ===== */
 #logoutBtn {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
   background-color: #f44336;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
+  color: white;
 }
 
 #logoutBtn:hover { background-color: #e53935; }
 
 #homeBtn {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
   background-color: #4caf50;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
+  color: white;
 }
 
 #homeBtn:hover { background-color: #388e3c; }
@@ -469,6 +449,14 @@ footer {
   font-style: italic;
 }
 
+/* Container för knapparna under välkomsttext */
+header .header-buttons {
+  display: flex;
+  justify-content: center; /* centrera knapparna */
+  gap: 1rem;               /* mellanrum mellan Home och Logout */
+  margin-top: 1rem;        /* lite luft under välkomstmeddelandet */
+}
+
 .spinner {
   border: 3px solid #cfd8dc;
   border-top: 3px solid #4caf50;
@@ -491,6 +479,7 @@ footer {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
 
 
 
