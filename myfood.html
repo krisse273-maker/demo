@@ -22,9 +22,6 @@
   upgrade-insecure-requests;
 ">
 
-
-
-
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -42,47 +39,50 @@
   <div class="container">
     <div class="my-food-list"></div>
 
-    <form id="addFoodForm">
-      <label for="foodTitle">Food Name</label>
-      <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="15" required />
-      <p class="error-message" id="titleError"></p>
+    <!-- NY WRAPPER DIV START -->
+    <div id="addFoodFormWrapper">
+      <form id="addFoodForm">
+        <label for="foodTitle">Food Name</label>
+        <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="15" required />
+        <p class="error-message" id="titleError"></p>
 
-      <button type="button" id="emojiPickerBtn" aria-haspopup="true" aria-expanded="false">Select your food Emoji</button>
-      <div id="emojiPicker" aria-hidden="true">
-        <span>🍔</span><span>🍟</span><span>🌭</span><span>🥪</span>
-        <span>🥗</span><span>🍣</span><span>🍤</span><span>🍜</span>
-        <span>🍝</span><span>🍲</span><span>🍛</span><span>🥩</span>
-        <span>🍗</span><span>🍳</span><span>🥚</span><span>🍰</span>
-        <span>🧁</span><span>🍦</span><span>🍩</span><span>🍪</span>
-        <span>🍫</span><span>🍿</span><span>🥯</span><span>🥖</span>
-        <span>🥙</span><span>🥬</span><span>🥒</span><span>🥕</span>
-        <span>🌽</span><span>🍅</span><span>🧂</span><span>🍹</span>
-        <span>🍺</span><span>🍷</span><span>🥤</span><span>🐟</span>
-        <span>🦪</span><span>🦐</span><span>🦑</span>
-      </div>
-      <p class="error-message hidden" id="emojiError">Please choose an emoji!</p>
+        <button type="button" id="emojiPickerBtn" aria-haspopup="true" aria-expanded="false">Select your food Emoji</button>
+        <div id="emojiPicker" aria-hidden="true">
+          <span>🍔</span><span>🍟</span><span>🌭</span><span>🥪</span>
+          <span>🥗</span><span>🍣</span><span>🍤</span><span>🍜</span>
+          <span>🍝</span><span>🍲</span><span>🍛</span><span>🥩</span>
+          <span>🍗</span><span>🍳</span><span>🥚</span><span>🍰</span>
+          <span>🧁</span><span>🍦</span><span>🍩</span><span>🍪</span>
+          <span>🍫</span><span>🍿</span><span>🥯</span><span>🥖</span>
+          <span>🥙</span><span>🥬</span><span>🥒</span><span>🥕</span>
+          <span>🌽</span><span>🍅</span><span>🧂</span><span>🍹</span>
+          <span>🍺</span><span>🍷</span><span>🥤</span><span>🐟</span>
+          <span>🦪</span><span>🦐</span><span>🦑</span>
+        </div>
+        <p class="error-message hidden" id="emojiError">Please choose an emoji!</p>
 
- <label for="foodCountry">Country</label>
-<div class="dropdown-wrapper"><!-- NY WRAPPER START -->
-  <select id="foodCountry" required disabled><!-- sätt disabled initialt -->
-    <option value="">Select Country</option>
-  </select>
-  <div id="countrySpinner" class="spinner"></div><!-- SPINNER -->
-</div><!-- NY WRAPPER SLUT -->
-<p class="error-message" id="countryError"></p>
+        <label for="foodCountry">Country</label>
+        <div class="dropdown-wrapper"><!-- NY WRAPPER START -->
+          <select id="foodCountry" required disabled><!-- sätt disabled initialt -->
+            <option value="">Select Country</option>
+          </select>
+          <div id="countrySpinner" class="spinner"></div><!-- SPINNER -->
+        </div><!-- NY WRAPPER SLUT -->
+        <p class="error-message" id="countryError"></p>
 
+        <label for="foodCity">City</label>
+        <select id="foodCity" disabled required>
+          <option value="">Select City</option>
+        </select>
+        <p class="error-message" id="cityError"></p>
 
-      <label for="foodCity">City</label>
-      <select id="foodCity" disabled required>
-        <option value="">Select City</option>
-      </select>
-      <p class="error-message" id="cityError"></p>
+        <button type="submit">Add Food</button>
+      </form>
+    </div>
+    <!-- NY WRAPPER DIV SLUT -->
 
-      <button type="submit">Add Food</button>
-    </form>
   </div>
 
-  <!-- CUSTOM MUTE ALERT -->
   <!-- CUSTOM MUTE ALERT -->
 <div id="customAlertBackdrop" class="alert-backdrop">
   <div class="alert-box">
@@ -92,43 +92,5 @@
   </div>
 </div>
 
-
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
