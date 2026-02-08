@@ -219,7 +219,7 @@ section.filters {
 .my-food-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1rem;
   width: 100%;
   max-width: 500px;
   margin: 1rem auto;
@@ -370,13 +370,21 @@ footer {
 
 .my-food-container {
   background-color: #262d37; /* mörk bakgrund */
-  border-radius: 12px;
-  padding: 1rem;
+  border: 2px solid #000;          /* svart outline */
+  border-radius: 15px;             /* rundade hörn */
+  padding: 1.5rem;                 /* inre padding */
   max-width: 520px;
   margin: 1rem auto;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5); /* snygg skugga */
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.my-food-container:hover {
+  transform: translateY(-2px);              /* liten hover-effekt */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.7);   /* större skugga vid hover */
 }
 
 
@@ -392,4 +400,5 @@ footer {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
 
