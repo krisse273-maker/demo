@@ -1,5 +1,5 @@
 /* ===== BASIC RESET ===== */
-* {
+* {  
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -235,7 +235,7 @@ section.filters {
   color: #cfd8dc;
   border-radius: 10px;
   border: 2px solid #1c222b;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1rem; /* <-- standard padding for global food */
   text-align: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -261,6 +261,11 @@ section.filters {
 }
 
 .delete-icon:hover { transform: scale(1.5); }
+
+/* ===== ONLY CHANGE: MAKE PRIVATE FOOD ITEMS LESS “FAT” ===== */
+.my-food-list .food-item {
+  padding: 0.4rem 0.6rem; /* <-- här är ändringen för smalare list-style */
+}
 
 /* ===== INPUT & SELECT ===== */
 input, select {
@@ -390,5 +395,3 @@ footer {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
-
-
