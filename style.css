@@ -303,6 +303,27 @@ footer {
   animation: spin 1s linear infinite;
 }
 
+/* ===== MYFOOD FORM CENTERING ===== */
+#addFoodFormWrapper {
+  align-items: center; /* centrera horisontellt */
+  justify-content: flex-start; /* börja uppifrån */
+}
+
+#addFoodFormWrapper form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#addFoodFormWrapper .filters {
+  width: 100%;
+}
+
+#addFoodFormWrapper button {
+  align-self: center; /* centrera knappen i form */
+}
+
 .spinner.hidden { display: none; }
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -315,3 +336,4 @@ footer {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
