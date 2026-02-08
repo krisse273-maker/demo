@@ -50,15 +50,15 @@ homeBtn.onclick = () => window.location.href = "../index.html";
 
 // ===== Emoji picker =====
 emojiPickerBtn.onclick = () => {
-  emojiPicker.classList.toggle("show"); // ✅ använd klass, inte style.display
+  emojiPicker.classList.toggle("show");
 };
 
 emojiPicker.querySelectorAll("span").forEach(span => {
   span.onclick = () => {
     selectedEmoji = span.textContent;
     emojiPickerBtn.textContent = selectedEmoji;
-    emojiPicker.classList.remove("show");      // ✅ göm pickern med klass
-    emojiError.classList.add("hidden");        // ✅ göm valideringsfel med klass
+    emojiPicker.classList.remove("show");
+    emojiError.classList.add("hidden");
   };
 });
 
@@ -88,25 +88,21 @@ function setupUserListener() {
 function showCustomAlert(msg) {
   if (!customAlertBackdrop || !alertMessage) return;
   alertMessage.textContent = msg;
-  customAlertBackdrop.classList.add("show");    // ✅ visa med CSS-klass
+  customAlertBackdrop.classList.add("show");
 }
 
 alertOkBtn?.addEventListener("click", () => {
-  customAlertBackdrop.classList.remove("show"); // ✅ göm med CSS-klass
+  customAlertBackdrop.classList.remove("show");
 });
 
 // ===== Load countries + cities + flag from Firestore =====
-// ===== Load countries + cities + flag from Firestore (med spinner) =====
 async function loadCountries() {
-  // ✅ Hitta spinnern
   const spinner = document.getElementById("countrySpinner");
 
-  // ✅ Visa spinner och disable dropdown medan vi laddar
   spinner.classList.remove("hidden");
   foodCountry.disabled = true;
   foodCity.disabled = true;
 
-  // ✅ Töm dropdowns och lägg till default-options
   foodCountry.textContent = "";
   foodCity.textContent = "";
 
@@ -121,7 +117,6 @@ async function loadCountries() {
   foodCity.appendChild(defaultCity);
 
   try {
-    // ✅ Hämta länder från Firestore
     const snap = await db.collection("countries").orderBy("country").get();
     countriesData = snap.docs.map(doc => doc.data());
 
@@ -132,13 +127,9 @@ async function loadCountries() {
       foodCountry.appendChild(opt);
     });
 
-    // ✅ Enable dropdown nu när data är laddad
     foodCountry.disabled = false;
-
-    // ✅ När länderna är laddade, göm spinnern
     spinner.classList.add("hidden");
 
-    // ===== Country change event =====
     foodCountry.addEventListener('change', () => {
       const selectedCountry = countriesData.find(c => c.country === foodCountry.value);
 
@@ -165,12 +156,9 @@ async function loadCountries() {
 
   } catch (err) {
     console.error("Failed to load countries from Firestore:", err);
-
-    // ✅ Om något går fel, göm spinner ändå
     spinner.classList.add("hidden");
   }
 }
-
 
 // ===== Validation =====
 function validateTitle(title) {
@@ -194,7 +182,6 @@ addFoodForm.onsubmit = async e => {
   const user = auth.currentUser;
   if (!user) return;
 
-  // ✅ göm alla fel först
   titleError.textContent = "";
   emojiError.classList.add("hidden");
   countryError.textContent = "";
@@ -212,7 +199,7 @@ addFoodForm.onsubmit = async e => {
 
   if (!selectedEmoji) {
     emojiError.textContent = "You need to select an emoji";
-    emojiError.classList.remove("hidden"); //  visa fel med klass
+    emojiError.classList.remove("hidden");
     hasError = true;
   }
 
@@ -265,7 +252,7 @@ addFoodForm.onsubmit = async e => {
   foodTitle.classList.remove("valid-title", "error-title", "shake");
   emojiPickerBtn.textContent = "Select your food Emoji";
   selectedEmoji = "";
-  emojiError.classList.add("hidden"); // göm fel efter submit
+  emojiError.classList.add("hidden");
 
   loadFoodList();
   loadPublicFoods();
@@ -277,10 +264,16 @@ async function loadFoodList() {
   if (!user) return;
 
   foodListContainer.innerHTML = "";
+
+  // ✅ Skapa EN div för alla matposter
+  const allItemsDiv = document.createElement("div");
+  allItemsDiv.className = "my-food-items";
+
   const snap = await db.collection("foods").doc(user.uid).collection("items").orderBy("createdAt", "desc").get();
 
   snap.forEach(docSnap => {
     const data = docSnap.data();
+
     const div = document.createElement("div");
     div.className = "food-item";
 
@@ -301,24 +294,19 @@ async function loadFoodList() {
       }
     };
 
-const info = document.createElement("div");
-info.className = "food-info";
-info.textContent = `${data.emoji} ${data.title}`;
+    const info = document.createElement("div");
+    info.className = "food-info";
+    info.textContent = `${data.emoji} ${data.title}`;
 
-div.appendChild(info);
-div.appendChild(del);
+    div.appendChild(info);
+    div.appendChild(del);
 
-const card = document.createElement("div");
-card.className = "food-card";
-
-card.appendChild(div);
-foodListContainer.appendChild(card);
-
-
+    allItemsDiv.appendChild(div); // ✅ alla matposter in i samma div
   });
+
+  foodListContainer.appendChild(allItemsDiv); // ✅ en div i container
 }
 
-// ===== Load Public Foods =====
 // ===== Load Public Foods =====
 async function loadPublicFoods() {
   if (!publicFoodListContainer) return;
@@ -341,11 +329,10 @@ async function loadPublicFoods() {
   });
 }
 
-
 // ===== Init =====
 auth.onAuthStateChanged(user => {
   if (user) {
-    setupUserListener(); // ✅ nu finns funktionen
+    setupUserListener();
     loadCountries();
     loadFoodList();
     loadPublicFoods();
