@@ -104,29 +104,45 @@ header p {
   transform: translateY(-2px);
 }
 
-/* ===== FILTERS SECTION ===== */
-section.filters {
-  background-color: #262d37;
+/* ===== MYFOOD LIST & FILTERS ===== */
+.my-food-list {
+  background-color: #262d37; /* mörk bakgrund */
+  border: 2px solid #1c222b; /* kant */
   border-radius: 12px;
   padding: 1.5rem;
-  text-align: center;
+  max-width: 450px;
+  width: 100%;
   margin: 2rem auto;
-  max-width: 500px;
-  border: 2px solid black;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 75vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
 }
 
-.filter-group {
+/* Filter-sektion inuti myfood */
+.my-food-list .filters {
+  background-color: #262d37;
+  border: 2px solid #1c222b;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.my-food-list .filters .filter-group {
   margin-bottom: 1rem;
 }
 
-.filter-group label {
+.my-food-list .filters label {
   display: block;
   margin-bottom: 0.5rem;
+  text-align: left;
 }
 
-.filter-group select,
-.filter-group input {
+.my-food-list .filters select,
+.my-food-list .filters input {
   width: 100%;
   padding: 0.5rem;
   border-radius: 6px;
@@ -135,7 +151,7 @@ section.filters {
   color: #cfd8dc;
 }
 
-#filterBtn {
+.my-food-list .filters #filterBtn {
   padding: 0.5rem 1rem;
   border-radius: 6px;
   border: none;
@@ -145,32 +161,23 @@ section.filters {
   font-weight: 600;
 }
 
-#filterBtn:hover { background-color: #388e3c; }
-
-/* ===== FOOD LISTS ===== */
-.container, 
-.global-food-list, 
-.my-food-list, 
-.food-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
-  padding: 1rem;
+.my-food-list .filters #filterBtn:hover {
+  background-color: #388e3c;
 }
 
+/* ===== FOOD ITEMS ===== */
 .food-item {
-  background-color: #2b3340;
-  border-radius: 10px;
-  padding: 1rem;
-  text-align: center;
-  border: 2px solid #1c222b;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
   align-items: center;
   gap: 0.75rem;
   flex-direction: column;
+  background-color: #2b3340;
+  color: #cfd8dc;
+  border-radius: 10px;
+  border: 2px solid #1c222b;
+  padding: 0.75rem 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-align: center;
 }
 
 .food-item:hover {
@@ -181,6 +188,7 @@ section.filters {
 
 .food-info {
   flex: 1;
+  width: 100%;
 }
 
 .delete-icon {
