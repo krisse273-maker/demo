@@ -7,8 +7,18 @@
 }
 
 body {
-  background-color: #4caf50;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
   color: #cfd8dc;
+}
+
+button, .food-item {
+  font-weight: 600; /* Smidigare vikt för knappar och matposter */
+}
+
+h1, h2 {
+  font-weight: 700;  /* Gör rubriker fetare för mer kontrast */
+  color: #4caf50;
 }
 
 /* ===== HEADER ===== */
@@ -178,8 +188,8 @@ section.filters {
 .my-food-list {
   background-color: #262d37;
   border: 2px solid #1c222b;
-  border-radius: 12px;
-  padding: 0.75rem;
+  border-radius: 15px;  /* Öka hörnens rundning */
+  padding: 1rem;        /* Lite mer luft runt om */
   max-width: 450px;
   width: 100%;
   margin: 2rem auto;
@@ -187,8 +197,9 @@ section.filters {
   flex-direction: column;
   justify-content: flex-start; /* högst upp i listan */
   align-items: flex-start;  /* börja från toppen */
-  gap: 0.3rem;  /* mindre mellanrum mellan matposterna */
-  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+  gap: 0.4rem;  /* lite större mellanrum mellan matposterna */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);  /* Mer subtil skugga */
+  transition: transform 0.3s ease;  /* Övergång för transformering */
 }
 
 .my-food-list .food-item {
@@ -197,37 +208,54 @@ section.filters {
   justify-content: space-between;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.2rem 0.3rem;
+  padding: 0.5rem 1rem;
   width: 100%;
+  background-color: #2b3340;
+  border-radius: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smidigare hover-effekt */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
 
 .my-food-list .food-item .delete-icon {
   cursor: pointer;
   color: #f44336;
   font-weight: bold;
-  font-size: 1.4rem;
-  transition: transform 0.15s;
+  font-size: 1.6rem;
+  transition: transform 0.2s ease;
 }
 
+.my-food-list .food-item:hover {
+  background-color: #3b4450;
+  transform: translateY(-5px); /* Lyfter upp matposten vid hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);  /* Ökad skugga på hover */
+}
+
+.my-food-list .food-item .food-info {
+  flex: 1;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+  text-overflow: ellipsis;
+}
 
 #addFoodFormWrapper form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;  /* Mer utrymme mellan fälten */
 }
 
-.my-food-list .food-item .delete-icon:hover { 
-  transform: scale(1.5); /* gör knappen större när man hovrar */
+.my-food-list .food-item .delete-icon:hover {
+  transform: scale(1.5);
 }
 
 .my-food-list .filters,
 #addFoodFormWrapper .filters {
-  background-color: #262d37;
-  border: 2px solid #1c222b;
+  background-color: #2b3340;
   border-radius: 12px;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1rem;
-  text-align: center;
+  padding: 1.2rem 1.5rem;
+  text-align: left;
+  border: 2px solid #1c222b;
 }
 
 .my-food-list .filters label,
@@ -242,11 +270,37 @@ section.filters {
 #addFoodFormWrapper .filters select,
 #addFoodFormWrapper .filters input {
   width: 100%;
-  padding: 0.5rem;
-  border-radius: 6px;
+  padding: 0.8rem;
+  border-radius: 8px;  /* Runda hörn på inputs */
   border: 2px solid #1c222b;
-  background-color: #2b3340;
+  background-color: #262d37;
   color: #cfd8dc;
+  transition: border-color 0.3s ease; /* Smidig övergång för border */
+}
+
+#addFoodFormWrapper .filters select:focus,
+#addFoodFormWrapper .filters input:focus {
+  border-color: #4caf50; /* Grön kant vid fokus */
+}
+
+#addFoodFormWrapper button {
+  padding: 0.8rem 1.2rem;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 10px;
+  border: none;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+#addFoodFormWrapper .filters label {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+#addFoodFormWrapper button:hover {
+  background-color: #388e3c; /* Mörkare grön vid hover */
 }
 
 .my-food-list .filters #filterBtn,
@@ -314,6 +368,8 @@ input, select {
   padding: 0.6rem 0.8rem;
   border-radius: 6px;
 }
+
+
 
 input::placeholder { color: #90a4ae; }
 
@@ -434,6 +490,7 @@ footer {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
 
 
 
