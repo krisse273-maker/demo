@@ -8,19 +8,19 @@
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-  <meta http-equiv="Content-Security-Policy" content="
+<meta http-equiv="Content-Security-Policy" content="
   default-src 'self' https://*.googleapis.com https://*.gstatic.com https://firebasestorage.googleapis.com;
   style-src 'self' https://fonts.googleapis.com;
   script-src 'self' https://www.gstatic.com https://www.googleapis.com https://firebase.googleapis.com;
   font-src 'self' https://fonts.gstatic.com;
-  connect-src 'self' https://countriesnow.space https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://www.gstatic.com;
+  connect-src 'self' https://countriesnow.space https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://www.gstatic.com;
   img-src 'self' data: https://upload.wikimedia.org;
-    object-src 'none';
-base-uri 'self';
-frame-ancestors 'none';
-form-action 'self';
+  object-src 'none';
+  base-uri 'self';
+  frame-ancestors 'none';
+  form-action 'self';
+">
 
-" />
 
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -89,6 +89,7 @@ form-action 'self';
 
 </body>
 </html>
+
 
 
 
