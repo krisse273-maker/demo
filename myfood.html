@@ -61,11 +61,15 @@
       </div>
       <p class="error-message hidden" id="emojiError">Please choose an emoji!</p>
 
-      <label for="foodCountry">Country</label>
-      <select id="foodCountry" required>
-        <option value="">Select Country</option>
-      </select>
-      <p class="error-message" id="countryError"></p>
+ <label for="foodCountry">Country</label>
+<div class="dropdown-wrapper"><!-- NY WRAPPER START -->
+  <select id="foodCountry" required disabled><!-- sätt disabled initialt -->
+    <option value="">Select Country</option>
+  </select>
+  <div id="countrySpinner" class="spinner"></div><!-- SPINNER -->
+</div><!-- NY WRAPPER SLUT -->
+<p class="error-message" id="countryError"></p>
+
 
       <label for="foodCity">City</label>
       <select id="foodCity" disabled required>
@@ -90,6 +94,7 @@
 
 </body>
 </html>
+
 
 
 
