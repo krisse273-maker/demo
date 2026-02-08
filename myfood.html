@@ -46,47 +46,56 @@
       <div class="my-food-list"></div>
     </div>
 
-    <!-- NY WRAPPER DIV START -->
-    <div id="addFoodFormWrapper">
-      <form id="addFoodForm">
-        <label for="foodTitle">Food Name</label>
-        <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="15" required />
-        <p class="error-message" id="titleError"></p>
+<!-- NY WRAPPER DIV START -->
+<div id="addFoodFormWrapper">
+  <form id="addFoodForm">
 
-        <button type="button" id="emojiPickerBtn" aria-haspopup="true" aria-expanded="false">Select your food Emoji</button>
-        <div id="emojiPicker" aria-hidden="true">
-          <span>🍔</span><span>🍟</span><span>🌭</span><span>🥪</span>
-          <span>🥗</span><span>🍣</span><span>🍤</span><span>🍜</span>
-          <span>🍝</span><span>🍲</span><span>🍛</span><span>🥩</span>
-          <span>🍗</span><span>🍳</span><span>🥚</span><span>🍰</span>
-          <span>🧁</span><span>🍦</span><span>🍩</span><span>🍪</span>
-          <span>🍫</span><span>🍿</span><span>🥯</span><span>🥖</span>
-          <span>🥙</span><span>🥬</span><span>🥒</span><span>🥕</span>
-          <span>🌽</span><span>🍅</span><span>🧂</span><span>🍹</span>
-          <span>🍺</span><span>🍷</span><span>🥤</span><span>🐟</span>
-          <span>🦪</span><span>🦐</span><span>🦑</span>
-        </div>
-        <p class="error-message hidden" id="emojiError">Please choose an emoji!</p>
-
-        <label for="foodCountry">Country</label>
-        <div class="dropdown-wrapper"><!-- NY WRAPPER START -->
-          <select id="foodCountry" required disabled><!-- sätt disabled initialt -->
-            <option value="">Select Country</option>
-          </select>
-          <div id="countrySpinner" class="spinner"></div><!-- SPINNER -->
-        </div><!-- NY WRAPPER SLUT -->
-        <p class="error-message" id="countryError"></p>
-
-        <label for="foodCity">City</label>
-        <select id="foodCity" disabled required>
-          <option value="">Select City</option>
-        </select>
-        <p class="error-message" id="cityError"></p>
-
-        <button type="submit">Add Food</button>
-      </form>
+    <!-- 1️⃣ Emoji knapp längst upp -->
+    <button type="button" id="emojiPickerBtn" aria-haspopup="true" aria-expanded="false">
+      Select your food Emoji
+    </button>
+    <div id="emojiPicker" aria-hidden="true">
+      <span>🍔</span><span>🍟</span><span>🌭</span><span>🥪</span>
+      <span>🥗</span><span>🍣</span><span>🍤</span><span>🍜</span>
+      <span>🍝</span><span>🍲</span><span>🍛</span><span>🥩</span>
+      <span>🍗</span><span>🍳</span><span>🥚</span><span>🍰</span>
+      <span>🧁</span><span>🍦</span><span>🍩</span><span>🍪</span>
+      <span>🍫</span><span>🍿</span><span>🥯</span><span>🥖</span>
+      <span>🥙</span><span>🥬</span><span>🥒</span><span>🥕</span>
+      <span>🌽</span><span>🍅</span><span>🧂</span><span>🍹</span>
+      <span>🍺</span><span>🍷</span><span>🥤</span><span>🐟</span>
+      <span>🦪</span><span>🦐</span><span>🦑</span>
     </div>
-    <!-- NY WRAPPER DIV SLUT -->
+    <p class="error-message hidden" id="emojiError" style="text-align:center;">Please choose an emoji!</p>
+
+    <!-- 2️⃣ Food Name -->
+    <label for="foodTitle">Food Name</label>
+    <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="15" required />
+    <p class="error-message" id="titleError"></p>
+
+    <!-- 3️⃣ Country -->
+    <label for="foodCountry">Country</label>
+    <div class="dropdown-wrapper">
+      <select id="foodCountry" required disabled>
+        <option value="">Select Country</option>
+      </select>
+      <div id="countrySpinner" class="spinner"></div>
+    </div>
+    <p class="error-message" id="countryError"></p>
+
+    <!-- 4️⃣ City -->
+    <label for="foodCity">City</label>
+    <select id="foodCity" disabled required>
+      <option value="">Select City</option>
+    </select>
+    <p class="error-message" id="cityError"></p>
+
+    <!-- 5️⃣ Submit -->
+    <button type="submit">Add Food</button>
+  </form>
+</div>
+<!-- NY WRAPPER DIV SLUT -->
+
 
   </div>
 
@@ -101,6 +110,7 @@
 
 </body>
 </html>
+
 
 
 
