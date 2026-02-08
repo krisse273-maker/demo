@@ -480,6 +480,15 @@ body.myfood #welcomeMsg {
   text-align: center;  /* säkerställ centering */
 }
 
+/* Container för knapparna under välkomsttext på alla sidor */
+header .header-buttons {
+  display: flex;
+  justify-content: center; /* centrera knapparna */
+  gap: 1rem;               /* mellanrum mellan Home och Logout */
+  margin-top: 2rem;        /* mellanrum mellan välkomstmeddelandet och knapparna */
+}
+
+
 
 .spinner.hidden { display: none; }
 
@@ -494,6 +503,7 @@ body.myfood #welcomeMsg {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
 
 
 
