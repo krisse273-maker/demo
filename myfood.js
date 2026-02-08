@@ -190,7 +190,8 @@ addFoodForm.onsubmit = async e => {
   }
 
   if (!selectedEmoji) {
-    emojiError.classList.remove("hidden"); // ✅ visa fel med klass
+    emojiError.textContent = "You need to select an emoji";
+    emojiError.classList.remove("hidden"); //  visa fel med klass
     hasError = true;
   }
 
@@ -243,6 +244,7 @@ addFoodForm.onsubmit = async e => {
   foodTitle.classList.remove("valid-title", "error-title", "shake");
   emojiPickerBtn.textContent = "Select your food Emoji";
   selectedEmoji = "";
+  emojiError.classList.add("hidden"); // göm fel efter submit
 
   loadFoodList();
   loadPublicFoods();
