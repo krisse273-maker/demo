@@ -7,136 +7,96 @@
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
   font-size: 1rem;
   color: #cfd8dc;
   background-color: #4caf50; 
 }
 
 button, .food-item {
-  font-weight: 600; /* Smidigare vikt för knappar och matposter */
+  font-weight: 600;
 }
 
 h1, h2 {
-  font-weight: 700;  /* Gör rubriker fetare för mer kontrast */
+  font-weight: 700;
   color: #4caf50;
 }
 
 /* ===== HEADER ===== */
 header {
+  display: flex;
+  flex-direction: column;   /* rubrik → meddelande → knappar */
+  align-items: center;
   background-color: #262d37;
   color: #cfd8dc;
-  text-align: center;
   padding: 2rem 1rem;
-  position: relative;
+  text-align: center;
 }
 
+/* Rubrik */
 header h1 {
   font-size: 2rem;
   color: #4caf50;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem;   /* luft till välkomstmeddelande */
 }
 
-header p {
-  font-size: 1.2rem;
+/* Välkomstmeddelande */
+header p#welcomeMsg {
+  margin: 0.5rem 0 2rem 0;  /* top 0.5rem, bottom 2rem */
+  text-align: center;
 }
 
-/* ===== HEADER BUTTONS ===== */
-#logoutBtn {
-  background-color: #f44336;
+/* Knappar under välkomstmeddelande */
+header .header-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* ===== HEADER BUTTONS STYLING ===== */
+#homeBtn, #logoutBtn, #myFoodBtn {
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  border: none;
   color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
 }
 
-#logoutBtn:hover { background-color: #e53935; }
-
-#homeBtn {
-  background-color: #4caf50;
-  color: white;
-}
-
+#homeBtn { background-color: #4caf50; }
 #homeBtn:hover { background-color: #388e3c; }
 
-#myFoodBtn {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
-  background-color: #4caf50;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
-}
+#logoutBtn { background-color: #f44336; }
+#logoutBtn:hover { background-color: #e53935; }
 
+#myFoodBtn { background-color: #4caf50; }
 #myFoodBtn:hover { background-color: #388e3c; }
 
-/* ===== ADMIN PANEL ===== */
-#adminPanel {
-  display: none;
-  max-width: 500px;
-  margin: 15px auto;
-}
-
-#adminPanel a {
-  display: block;
-  text-align: center;
-  padding: 16px;
-  background: #ff9800;
-  color: #1c222b;
-  font-weight: 600;
-  text-decoration: none;
-  border-radius: 10px;
-  transition: 0.2s;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-
-#adminPanel a:hover {
-  background: #fb8c00;
-  transform: translateY(-2px);
-}
-
-/* ===== FILTERS SECTION ===== */
-section.filters {
-  background-color: #262d37;
-  border-radius: 12px;
-  padding: 1.5rem;
-  text-align: center;
-  margin: 2rem auto;
-  max-width: 500px;
-  border: 2px solid black;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.filter-group {
-  margin-bottom: 1rem;
-}
-
-.filter-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-.filter-group select,
-.filter-group input {
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 2px solid #1c222b;
+/* ===== INPUT & SELECT ===== */
+input, select {
   background-color: #2b3340;
   color: #cfd8dc;
+  border: 2px solid #1c222b;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
 }
 
-#filterBtn {
-  padding: 0.5rem 1rem;
+input::placeholder { color: #90a4ae; }
+input:focus, select:focus { outline: none; border-color: #4caf50; }
+
+/* ===== BUTTONS (GENERAL) ===== */
+button {
+  padding: 0.6rem 1rem;
   border-radius: 6px;
   border: none;
   background-color: #4caf50;
   color: white;
   cursor: pointer;
   font-weight: 600;
+  transition: 0.2s;
 }
 
-#filterBtn:hover { background-color: #388e3c; }
+button:hover { background-color: #388e3c; }
 
 /* ===== FOOD LISTS & CONTAINERS ===== */
 .container, 
@@ -150,7 +110,6 @@ section.filters {
   padding: 1rem;
 }
 
-/* ===== MYFOOD.HTML SPECIFIC ===== */
 .my-food-list, #addFoodFormWrapper {
   background-color: #262d37;
   border: 2px solid #1c222b;
@@ -161,156 +120,21 @@ section.filters {
   margin: 2rem auto;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem; /* Private food list mellan rum på maten*/
-  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
-}
-
-/* ===== MYFOOD.HTML SPECIFIC ===== */
-.my-food-list {
-  background-color: #262d37;
-  border: 2px solid #1c222b;
-  border-radius: 15px;  /* Öka hörnens rundning */
-  padding: 1rem;        /* Lite mer luft runt om */
-  max-width: 450px;
-  width: 100%;
-  margin: 2rem auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start; /* högst upp i listan */
-  align-items: flex-start;  /* börja från toppen */
-  gap: 0.4rem;  /* lite större mellanrum mellan matposterna */
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);  /* Mer subtil skugga */
-  transition: transform 0.3s ease;  /* Övergång för transformering */
-}
-
-.my-food-list .food-item {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  width: 100%;
-  background-color: #2b3340;
-  border-radius: 12px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smidigare hover-effekt */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-
-.my-food-list .food-item .delete-icon {
-  cursor: pointer;
-  color: #f44336;
-  font-weight: bold;
-  font-size: 1.6rem;
-  transition: transform 0.2s ease;
-}
-
-.my-food-list .food-item:hover {
-  background-color: #3b4450;
-  transform: translateY(-5px); /* Lyfter upp matposten vid hover */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);  /* Ökad skugga på hover */
-}
-
-.my-food-list .food-item .food-info {
-  flex: 1;
-  min-width: 0;
-  white-space: normal;
-  overflow-wrap: break-word;
-  text-overflow: ellipsis;
-}
-
-#addFoodFormWrapper form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;  /* Mer utrymme mellan fälten */
-}
-
-.my-food-list .food-item .delete-icon:hover {
-  transform: scale(1.5);
-}
-
-.my-food-list .filters,
-#addFoodFormWrapper .filters {
-  background-color: #2b3340;
-  border-radius: 12px;
-  padding: 1.2rem 1.5rem;
-  text-align: left;
-  border: 2px solid #1c222b;
-}
-
-.my-food-list .filters label,
-#addFoodFormWrapper .filters label {
-  display: block;
-  margin-bottom: 0.5rem;
-  text-align: left;
-}
-
-.my-food-list .filters select,
-.my-food-list .filters input,
-#addFoodFormWrapper .filters select,
-#addFoodFormWrapper .filters input {
-  width: 100%;
-  padding: 0.8rem;
-  border-radius: 8px;  /* Runda hörn på inputs */
-  border: 2px solid #1c222b;
-  background-color: #262d37;
-  color: #cfd8dc;
-  transition: border-color 0.3s ease; /* Smidig övergång för border */
-}
-
-#addFoodFormWrapper .filters select:focus,
-#addFoodFormWrapper .filters input:focus {
-  border-color: #4caf50; /* Grön kant vid fokus */
-}
-
-#addFoodFormWrapper button {
-  padding: 0.8rem 1.2rem;
-  background-color: #4caf50;
-  color: white;
-  border-radius: 10px;
-  border: none;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
-}
-
-#addFoodFormWrapper .filters label {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-#addFoodFormWrapper button:hover {
-  background-color: #388e3c; /* Mörkare grön vid hover */
-}
-
-.my-food-list .filters #filterBtn,
-#addFoodFormWrapper .filters #filterBtn {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
-  background-color: #4caf50;
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.my-food-list .filters #filterBtn:hover,
-#addFoodFormWrapper .filters #filterBtn:hover {
-  background-color: #388e3c;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
 }
 
 /* ===== FOOD ITEM ===== */
 .food-item {
-  flex-direction: column;
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 0.75rem;
   background-color: #2b3340;
   color: #cfd8dc;
   border-radius: 10px;
   border: 2px solid #1c222b;
-  padding: 0.75rem 1rem; /* standard padding för global matpost */
+  padding: 0.75rem 1rem;
   text-align: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -321,12 +145,11 @@ section.filters {
   background-color: #3b4450;
 }
 
-
 .food-info {
-  width: auto;        /* låt texten ta så mycket plats som behövs */
-  white-space: nowrap; /* håll texten på samma rad */
-  overflow: hidden;    /* döljer överskjutande text */
-  text-overflow: ellipsis; /* ger ... om texten är för lång */
+  width: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .delete-icon {
@@ -339,36 +162,8 @@ section.filters {
 }
 
 .delete-icon:hover { 
-transform: scale(1.5); }
-
-/* ===== INPUT & SELECT ===== */
-input, select {
-  background-color: #2b3340;
-  color: #cfd8dc;
-  border: 2px solid #1c222b;
-  padding: 0.6rem 0.8rem;
-  border-radius: 6px;
+  transform: scale(1.5); 
 }
-
-
-
-input::placeholder { color: #90a4ae; }
-
-input:focus, select:focus { outline: none; border-color: #4caf50; }
-
-/* ===== BUTTONS ===== */
-button {
-  padding: 0.6rem 1rem;
-  border-radius: 6px;
-  border: none;
-  background-color: #4caf50;
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
-}
-
-button:hover { background-color: #388e3c; }
 
 /* ===== EMOJI PICKER ===== */
 #emojiPicker {
@@ -391,7 +186,13 @@ button:hover { background-color: #388e3c; }
 
 #emojiPicker span:hover { transform: scale(1.4); }
 
-#emojiError { color: #f44336; font-size: 0.9rem; margin: 0.25rem 0; }
+/* ===== FOOTER ===== */
+footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: #262d37;
+  color: #cfd8dc;
+}
 
 /* ===== ALERT BOX ===== */
 .alert-backdrop {
@@ -433,77 +234,3 @@ button:hover { background-color: #388e3c; }
 }
 
 #alertOkBtn:hover { background-color: #388e3c; }
-
-/* ===== FOOTER ===== */
-footer {
-  text-align: center;
-  padding: 1rem;
-  background-color: #262d37;
-  color: #cfd8dc;
-}
-
-/* ===== MISC ===== */
-.no-food {
-  color: #90a4ae;
-  text-align: center;
-  font-style: italic;
-}
-
-.spinner {
-  border: 3px solid #cfd8dc;
-  border-top: 3px solid #4caf50;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  animation: spin 1s linear infinite;
-}
-
-/* Container för knapparna under välkomsttext */
-header .header-buttons {
-  display: flex;
-  justify-content: center; /* centrera knapparna */
-  gap: 1rem;               /* mellanrum mellan Home och Logout */
-  margin-top: 2rem;        /* lite luft under välkomstmeddelandet */
-}
-
-/* ===== HEADER ===== */
-header {
-  background-color: #262d37;
-  color: #cfd8dc;
-  text-align: center;
-  padding: 2rem 1rem;
-  position: relative;
-}
-
-body.myfood #welcomeMsg {
-  margin-bottom: 2rem; /* lägger mer luft under texten */
-  text-align: center;  /* säkerställ centering */
-}
-
-
-.spinner.hidden { display: none; }
-
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-.shake { animation: shake 0.25s; }
-
-@keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  50% { transform: translateX(4px); }
-  75% { transform: translateX(-4px); }
-  100% { transform: translateX(0); }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
