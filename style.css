@@ -618,19 +618,6 @@ body {
       font-style: italic;
     }
 
-/* Ge select en generell padding för flagga */
-#foodCountry {
-  padding-left: 30px; /* plats för flagga */
-  background-repeat: no-repeat;
-  background-position: 5px center;
-  background-size: 20px 15px;
-}
-
-/* När ett land väljs, visa flagga */
-#foodCountry option[data-flag] {
-  /* Detta används som data-flag i JS, själva option får ej background i vissa browsers */
-}
-
 /* style.css */
 .alert-backdrop {
   position: fixed;
@@ -745,6 +732,7 @@ body {
 /* Hack: använd JS för att sätta selectens bakgrund */
 
   
+
 
 
 
