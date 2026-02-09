@@ -232,6 +232,20 @@ addFoodForm.onsubmit = async e => {
   const foodId = foodRef.id;
   const now = firebase.firestore.Timestamp.now();
 
+  const file = document.getElementById("foodImage").files[0];
+if (!file) {
+    alert("Please select an image of the food");
+    return;
+}
+  
+// 1. Ladda upp bilden till Firebase Storage
+const storageRef = firebase.storage().ref("foodImages/" + user.uid + "_" + Date.now());
+await storageRef.put(file);
+  
+  // 2. Hämta download URL
+const imageUrl = await storageRef.getDownloadURL();
+  
+  // 3. fooddata
   const foodData = {
     title,
     emoji: selectedEmoji,
@@ -241,13 +255,15 @@ addFoodForm.onsubmit = async e => {
     ownerId: user.uid,
     userName: user.displayName || user.email,
     createdAt: now,
+    status: "pending",    // NYTT
+    imageUrl: imageUrl    // NYTT
+    
   };
 
-  await foodRef.set(foodData);
-  await db.collection("publicFoods").doc(foodId).set({
-    ...foodData,
-    publishedAt: now,
-  });
+// Spara i privat lista (My Food)
+await foodRef.set(foodData);
+
+// publicFoods skickas först efter admin-godkännande
 
   addFoodForm.reset();
   foodTitle.classList.remove("valid-title", "error-title", "shake");
