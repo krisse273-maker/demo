@@ -13,7 +13,14 @@
   style-src 'self' https://fonts.googleapis.com;
   script-src 'self' https://www.gstatic.com https://www.googleapis.com https://firebase.googleapis.com;
   font-src 'self' https://fonts.gstatic.com;
-  connect-src 'self' https://countriesnow.space https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://www.gstatic.com;
+  connect-src 'self' 
+    https://countriesnow.space 
+    https://firestore.googleapis.com 
+    https://identitytoolkit.googleapis.com 
+    https://securetoken.googleapis.com 
+    https://www.googleapis.com 
+    https://www.gstatic.com 
+    https://firebasestorage.googleapis.com;
   img-src 'self' data:;
   object-src 'none';
   base-uri 'self';
@@ -21,6 +28,8 @@
   form-action 'self';
   upgrade-insecure-requests;
 ">
+
+
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -117,6 +126,7 @@
 
 </body>
 </html>
+
 
 
 
