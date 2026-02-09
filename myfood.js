@@ -254,6 +254,7 @@ addFoodForm.onsubmit = async e => {
     );
 
     const data = await res.json();
+    console.log("Cloudinary response:", data); // <-- Lägg den här
     const imageUrl = data.secure_url; // ✅ Cloudinary-bild-URL
 
     // ===== Firestore save =====
