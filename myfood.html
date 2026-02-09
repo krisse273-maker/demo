@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="/style.css?v=2.6.8">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-  <meta http-equiv="Content-Security-Policy" content="
+<meta http-equiv="Content-Security-Policy" content="
     default-src 'self' https://*.googleapis.com https://*.gstatic.com https://firebasestorage.googleapis.com;
     style-src 'self' https://fonts.googleapis.com;
     script-src 'self' https://www.gstatic.com https://www.googleapis.com https://firebase.googleapis.com;
@@ -20,14 +20,16 @@
       https://securetoken.googleapis.com 
       https://www.googleapis.com 
       https://www.gstatic.com 
-      https://res.cloudinary.com;
-    img-src 'self' data: https://res.cloudinary.com;
+      https://res.cloudinary.com 
+      https://api.cloudinary.com;
+    img-src 'self' data:;
     object-src 'none';
     base-uri 'self';
     frame-ancestors 'none';
     form-action 'self';
     upgrade-insecure-requests;
-  ">
+">
+
 
   <!-- Firebase SDK (modul-version) används direkt i myfood.js -->
   <script type="module" src="myfood.js?v=4.2.1"></script>
@@ -113,3 +115,4 @@
   </div>
 </body>
 </html>
+
