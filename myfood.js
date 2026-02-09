@@ -2,7 +2,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js";
 import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, query, orderBy, deleteDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-storage.js";
 
 // ===== Firebase config =====
 const firebaseConfig = { 
@@ -18,7 +17,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
 // ===== DOM Elements =====
 const emojiPickerBtn = document.getElementById("emojiPickerBtn");
@@ -234,7 +232,7 @@ addFoodForm.onsubmit = async e => {
 
   if (hasError) return;
 
-  // ===== Firebase Storage Upload =====
+  // ===== Cloudinary Upload =====
   const file = document.getElementById("foodImage").files[0];
   if (!file) {
     alert("Please select an image of the food");
@@ -242,10 +240,21 @@ addFoodForm.onsubmit = async e => {
   }
 
   try {
-    const fileName = `foodImages/${user.uid}_${Date.now()}_${file.name}`;
-    const storageRef = ref(storage, fileName);
-    await uploadBytes(storageRef, file);               // ✅ Modern SDK upload
-    const imageUrl = await getDownloadURL(storageRef); // ✅ Hämta URL
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "myfood_upload"); // byt mot ditt preset
+    formData.append("folder", "foodImages");
+
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dpjbq1hfk/image/upload", // byt ut mot ditt cloud name
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await res.json();
+    const imageUrl = data.secure_url; // ✅ Cloudinary-bild-URL
 
     // ===== Firestore save =====
     const foodRef = doc(collection(doc(collection(db, "foods"), user.uid), "items"));
@@ -275,7 +284,7 @@ addFoodForm.onsubmit = async e => {
     loadPublicFoods();
 
   } catch (err) {
-    console.error("Image upload failed:", err);
+    console.error("Cloudinary upload failed:", err);
     alert("Image upload failed. Check console.");
   }
 };
