@@ -1,4 +1,10 @@
 // ===== Firebase setup =====
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, query, orderBy, deleteDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-storage.js";
+
+// ===== Firebase config =====
 const firebaseConfig = { 
   apiKey: "AIzaSyCrN3PoqcVs2AbEPbHjfM92_35Uaa1uAYw",
   authDomain: "global-food-share.firebaseapp.com",
@@ -9,9 +15,10 @@ const firebaseConfig = {
   measurementId: "G-S1G7JY0TH5",
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
 // ===== DOM Elements =====
 const emojiPickerBtn = document.getElementById("emojiPickerBtn");
@@ -62,27 +69,26 @@ emojiPicker.querySelectorAll("span").forEach(span => {
   };
 });
 
-
 // ===== User listener + Mute check =====
 function setupUserListener() {
   const user = auth.currentUser;
   if (!user) return;
   if (userDocUnsubscribe) userDocUnsubscribe();
 
-  userDocUnsubscribe = db.collection("users").doc(user.uid)
-    .onSnapshot(doc => {
-      currentUserData = doc.data();
-      if (currentUserData?.banned) {
-        showCustomAlert("You are banned.");
-        auth.signOut().then(() => window.location.href = "../index.html");
+  const userDocRef = doc(db, "users", user.uid);
+  userDocUnsubscribe = onSnapshot(userDocRef, docSnap => {
+    currentUserData = docSnap.data();
+    if (currentUserData?.banned) {
+      showCustomAlert("You are banned.");
+      auth.signOut().then(() => window.location.href = "../index.html");
+    }
+    if (currentUserData?.muteUntil) {
+      const muteUntilDate = currentUserData.muteUntil.toDate();
+      if (muteUntilDate > new Date()) {
+        showCustomAlert(`You are muted until ${muteUntilDate.toLocaleString()}`);
       }
-      if (currentUserData?.muteUntil) {
-        const muteUntilDate = currentUserData.muteUntil.toDate();
-        if (muteUntilDate > new Date()) {
-          showCustomAlert(`You are muted until ${muteUntilDate.toLocaleString()}`);
-        }
-      }
-    });
+    }
+  });
 }
 
 // ===== Custom Alert Function =====
@@ -96,7 +102,7 @@ alertOkBtn?.addEventListener("click", () => {
   customAlertBackdrop.classList.remove("show");
 });
 
-// ===== Load countries + cities + flag from Firestore =====
+// ===== Load countries + cities =====
 async function loadCountries() {
   const spinner = document.getElementById("countrySpinner");
 
@@ -118,7 +124,7 @@ async function loadCountries() {
   foodCity.appendChild(defaultCity);
 
   try {
-    const snap = await db.collection("countries").orderBy("country").get();
+    const snap = await getDocs(query(collection(db, "countries"), orderBy("country")));
     countriesData = snap.docs.map(doc => doc.data());
 
     countriesData.forEach(c => {
@@ -228,51 +234,50 @@ addFoodForm.onsubmit = async e => {
 
   if (hasError) return;
 
-  const foodRef = db.collection("foods").doc(user.uid).collection("items").doc();
-  const foodId = foodRef.id;
-  const now = firebase.firestore.Timestamp.now();
-
+  // ===== Firebase Storage Upload =====
   const file = document.getElementById("foodImage").files[0];
-if (!file) {
+  if (!file) {
     alert("Please select an image of the food");
     return;
-}
-  
-// 1. Ladda upp bilden till Firebase Storage
-const storageRef = firebase.storage().ref("foodImages/" + user.uid + "_" + Date.now());
-await storageRef.put(file);
-  
-  // 2. Hämta download URL
-const imageUrl = await storageRef.getDownloadURL();
-  
-  // 3. fooddata
-  const foodData = {
-    title,
-    emoji: selectedEmoji,
-    country: foodCountry.value.trim(),
-    city: foodCity.value.trim(),
-    type: "food",
-    ownerId: user.uid,
-    userName: user.displayName || user.email,
-    createdAt: now,
-    status: "pending",    // NYTT
-    imageUrl: imageUrl    // NYTT
-    
-  };
+  }
 
-// Spara i privat lista (My Food)
-await foodRef.set(foodData);
+  try {
+    const fileName = `foodImages/${user.uid}_${Date.now()}_${file.name}`;
+    const storageRef = ref(storage, fileName);
+    await uploadBytes(storageRef, file);               // ✅ Modern SDK upload
+    const imageUrl = await getDownloadURL(storageRef); // ✅ Hämta URL
 
-// publicFoods skickas först efter admin-godkännande
+    // ===== Firestore save =====
+    const foodRef = doc(collection(doc(collection(db, "foods"), user.uid), "items"));
+    const now = Timestamp.now();
+    const foodData = {
+      title,
+      emoji: selectedEmoji,
+      country: foodCountry.value.trim(),
+      city: foodCity.value.trim(),
+      type: "food",
+      ownerId: user.uid,
+      userName: user.displayName || user.email,
+      createdAt: now,
+      status: "pending",
+      imageUrl
+    };
 
-  addFoodForm.reset();
-  foodTitle.classList.remove("valid-title", "error-title", "shake");
-  emojiPickerBtn.textContent = "Select your food Emoji";
-  selectedEmoji = "";
-  emojiError.classList.add("hidden");
+    await setDoc(foodRef, foodData);
 
-  loadFoodList();
-  loadPublicFoods();
+    addFoodForm.reset();
+    foodTitle.classList.remove("valid-title", "error-title", "shake");
+    emojiPickerBtn.textContent = "Select your food Emoji";
+    selectedEmoji = "";
+    emojiError.classList.add("hidden");
+
+    loadFoodList();
+    loadPublicFoods();
+
+  } catch (err) {
+    console.error("Image upload failed:", err);
+    alert("Image upload failed. Check console.");
+  }
 };
 
 // ===== Load Private Foods =====
@@ -281,16 +286,13 @@ async function loadFoodList() {
   if (!user) return;
 
   foodListContainer.innerHTML = "";
-
-  // ✅ Skapa EN div för alla matposter
   const allItemsDiv = document.createElement("div");
   allItemsDiv.className = "my-food-items";
 
-  const snap = await db.collection("foods").doc(user.uid).collection("items").orderBy("createdAt", "desc").get();
+  const snap = await getDocs(query(collection(doc(collection(db, "foods"), user.uid), "items"), orderBy("createdAt", "desc")));
 
   snap.forEach(docSnap => {
     const data = docSnap.data();
-
     const div = document.createElement("div");
     div.className = "food-item";
 
@@ -301,8 +303,8 @@ async function loadFoodList() {
     del.onclick = async () => {
       try {
         const foodDocId = docSnap.id;
-        await db.collection("foods").doc(user.uid).collection("items").doc(foodDocId).delete();
-        await db.collection("publicFoods").doc(foodDocId).delete();
+        await deleteDoc(doc(collection(doc(collection(db, "foods"), user.uid), "items"), foodDocId));
+        await deleteDoc(doc(db, "publicFoods", foodDocId));
         loadFoodList();
         loadPublicFoods();
       } catch (err) {
@@ -317,11 +319,10 @@ async function loadFoodList() {
 
     div.appendChild(info);
     div.appendChild(del);
-
-    allItemsDiv.appendChild(div); // ✅ alla matposter in i samma div
+    allItemsDiv.appendChild(div);
   });
 
-  foodListContainer.appendChild(allItemsDiv); // ✅ en div i container
+  foodListContainer.appendChild(allItemsDiv);
 }
 
 // ===== Load Public Foods =====
@@ -329,11 +330,10 @@ async function loadPublicFoods() {
   if (!publicFoodListContainer) return;
 
   publicFoodListContainer.innerHTML = "";
-  const snap = await db.collection("publicFoods").orderBy("publishedAt", "desc").get();
+  const snap = await getDocs(query(collection(db, "publicFoods"), orderBy("publishedAt", "desc")));
 
-  snap.forEach(doc => {
-    const d = doc.data();
-
+  snap.forEach(docSnap => {
+    const d = docSnap.data();
     const div = document.createElement("div");
     div.className = "food-item";
 
