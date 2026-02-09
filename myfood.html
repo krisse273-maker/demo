@@ -8,164 +8,108 @@
   <link rel="stylesheet" href="/style.css?v=2.6.8">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-<meta http-equiv="Content-Security-Policy" content="
-  default-src 'self' https://*.googleapis.com https://*.gstatic.com https://firebasestorage.googleapis.com;
-  style-src 'self' https://fonts.googleapis.com;
-  script-src 'self' https://www.gstatic.com https://www.googleapis.com https://firebase.googleapis.com;
-  font-src 'self' https://fonts.gstatic.com;
-  connect-src 'self' 
-    https://countriesnow.space 
-    https://firestore.googleapis.com 
-    https://identitytoolkit.googleapis.com 
-    https://securetoken.googleapis.com 
-    https://www.googleapis.com 
-    https://www.gstatic.com 
-    https://firebasestorage.googleapis.com;
-  img-src 'self' data:;
-  object-src 'none';
-  base-uri 'self';
-  frame-ancestors 'none';
-  form-action 'self';
-  upgrade-insecure-requests;
-">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self' https://*.googleapis.com https://*.gstatic.com https://firebasestorage.googleapis.com;
+    style-src 'self' https://fonts.googleapis.com;
+    script-src 'self' https://www.gstatic.com https://www.googleapis.com https://firebase.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com;
+    connect-src 'self' 
+      https://countriesnow.space 
+      https://firestore.googleapis.com 
+      https://identitytoolkit.googleapis.com 
+      https://securetoken.googleapis.com 
+      https://www.googleapis.com 
+      https://www.gstatic.com 
+      https://firebasestorage.googleapis.com;
+    img-src 'self' data:;
+    object-src 'none';
+    base-uri 'self';
+    frame-ancestors 'none';
+    form-action 'self';
+    upgrade-insecure-requests;
+  ">
 
-
-
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-  <script defer src="myfood.js?v=4.2.1"></script>
+  <!-- Firebase SDK (modul-version) används direkt i myfood.js -->
+  <script type="module" src="myfood.js?v=4.2.1"></script>
 </head>
 
 <body>
   <header>
     <h1>🌍 Global Food Share</h1>
     <p id="welcomeMsg">Welcome! Here’s your food list.</p>
-    
-    <!--flytta knappar hit -->
-  <div class="header-buttons">
-    <button id="homeBtn">Home</button>
-    <button id="logoutBtn">Log Out</button>
-  </div>
-</header>
+
+    <div class="header-buttons">
+      <button id="homeBtn">Home</button>
+      <button id="logoutBtn">Log Out</button>
+    </div>
+  </header>
 
   <div class="container">
-    <!--NY WRAPPER DIV RUNT FOOD LIST -->
     <div class="my-food-container">
       <div class="my-food-list"></div>
     </div>
 
-<!-- NY WRAPPER DIV START -->
-<div id="addFoodFormWrapper">
-  <form id="addFoodForm">
+    <div id="addFoodFormWrapper">
+      <form id="addFoodForm">
 
-    <!-- 1️⃣ Emoji knapp längst upp -->
-    <button type="button" id="emojiPickerBtn" aria-haspopup="true" aria-expanded="false">
-      Select your food Emoji
-    </button>
-    <div id="emojiPicker" aria-hidden="true">
-      <span>🍔</span><span>🍟</span><span>🌭</span><span>🥪</span>
-      <span>🥗</span><span>🍣</span><span>🍤</span><span>🍜</span>
-      <span>🍝</span><span>🍲</span><span>🍛</span><span>🥩</span>
-      <span>🍗</span><span>🍳</span><span>🥚</span><span>🍰</span>
-      <span>🧁</span><span>🍦</span><span>🍩</span><span>🍪</span>
-      <span>🍫</span><span>🍿</span><span>🥯</span><span>🥖</span>
-      <span>🥙</span><span>🥬</span><span>🥒</span><span>🥕</span>
-      <span>🌽</span><span>🍅</span><span>🧂</span><span>🍹</span>
-      <span>🍺</span><span>🍷</span><span>🥤</span><span>🐟</span>
-      <span>🦪</span><span>🦐</span><span>🦑</span>
-    </div>
-    
+        <!-- Emoji Picker -->
+        <button type="button" id="emojiPickerBtn" aria-haspopup="true" aria-expanded="false">
+          Select your food Emoji
+        </button>
+        <div id="emojiPicker" aria-hidden="true">
+          <span>🍔</span><span>🍟</span><span>🌭</span><span>🥪</span>
+          <span>🥗</span><span>🍣</span><span>🍤</span><span>🍜</span>
+          <span>🍝</span><span>🍲</span><span>🍛</span><span>🥩</span>
+          <span>🍗</span><span>🍳</span><span>🥚</span><span>🍰</span>
+          <span>🧁</span><span>🍦</span><span>🍩</span><span>🍪</span>
+          <span>🍫</span><span>🍿</span><span>🥯</span><span>🥖</span>
+          <span>🥙</span><span>🥬</span><span>🥒</span><span>🥕</span>
+          <span>🌽</span><span>🍅</span><span>🧂</span><span>🍹</span>
+          <span>🍺</span><span>🍷</span><span>🥤</span><span>🐟</span>
+          <span>🦪</span><span>🦐</span><span>🦑</span>
+        </div>
         <p class="error-message hidden" id="emojiError">Please choose an emoji!</p>
 
-    <!-- 2️⃣ Food Name -->
-    <label for="foodTitle">Food Name</label>
-    <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="15" required />
-    <p class="error-message" id="titleError"></p>
+        <!-- Food Name -->
+        <label for="foodTitle">Food Name</label>
+        <input type="text" id="foodTitle" name="title" placeholder="Food Name" maxlength="15" required />
+        <p class="error-message" id="titleError"></p>
 
-    <!-- 3️⃣ Country -->
-    <label for="foodCountry">Country</label>
-    <div class="dropdown-wrapper">
-      <select id="foodCountry" required disabled>
-        <option value="">Select Country</option>
-      </select>
-      <div id="countrySpinner" class="spinner"></div>
+        <!-- Country -->
+        <label for="foodCountry">Country</label>
+        <div class="dropdown-wrapper">
+          <select id="foodCountry" required disabled>
+            <option value="">Select Country</option>
+          </select>
+          <div id="countrySpinner" class="spinner"></div>
+        </div>
+        <p class="error-message" id="countryError"></p>
+
+        <!-- City -->
+        <label for="foodCity">City</label>
+        <select id="foodCity" disabled required>
+          <option value="">Select City</option>
+        </select>
+        <p class="error-message" id="cityError"></p>
+
+        <!-- Food Image -->
+        <label for="foodImage">Upload Food Image</label>
+        <input type="file" id="foodImage" accept="image/*" required />
+        <p class="error-message" id="imageError"></p>
+
+        <!-- Submit -->
+        <button type="submit">Add Food</button>
+      </form>
     </div>
-    <p class="error-message" id="countryError"></p>
-
-    <!-- 4️⃣ City -->
-    <label for="foodCity">City</label>
-    <select id="foodCity" disabled required>
-      <option value="">Select City</option>
-    </select>
-    <p class="error-message" id="cityError"></p>
-
-    <!-- 4.1️⃣ Food Image -->
-<label for="foodImage">Upload Food Image</label>
-<input type="file" id="foodImage" accept="image/*" required />
-<p class="error-message" id="imageError"></p>
-
-    <!-- 5️⃣ Submit -->
-    <button type="submit">Add Food</button>
-  </form>
-</div>
-<!-- NY WRAPPER DIV SLUT -->
-
-
   </div>
 
   <!-- CUSTOM MUTE ALERT -->
-<div id="customAlertBackdrop" class="alert-backdrop">
-  <div class="alert-box">
-    <h3>⚠️ You are muted</h3>
-    <p id="alertMessage"></p>
-    <button id="alertOkBtn">OK</button>
+  <div id="customAlertBackdrop" class="alert-backdrop">
+    <div class="alert-box">
+      <h3>⚠️ You are muted</h3>
+      <p id="alertMessage"></p>
+      <button id="alertOkBtn">OK</button>
+    </div>
   </div>
-</div>
-
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
