@@ -36,7 +36,9 @@ app.use(express.json()); // <-- parse JSON automatically
 app.post("/validate-transfer", async (req, res) => {
   console.log("==== NY REQUEST ====");
   console.log("REQ.HEADERS:", req.headers);
-  console.log("REQ.BODY:", req.body);
+
+  // 🔹 debug: kolla hela req.body
+  console.log("REQ.BODY TYPE:", typeof req.body, req.body);
 
   // ✅ Kontrollera auth-header
   const authHeader = req.headers.authorization;
@@ -52,10 +54,12 @@ app.post("/validate-transfer", async (req, res) => {
     const receiverId = decodedToken.uid;
     console.log("Decoded Firebase token UID:", receiverId);
 
-    // 🔑 Plocka alla fält från body
-    const { postId, donorId, chatId, timestamp } = req.body;
+    // 🔑 Plocka alla fält från body, inklusive type
+    const { postId, donorId, chatId, timestamp, type } = req.body;
 
-    if (!postId || !donorId || !chatId || !timestamp) {
+    // ✅ Kontrollera att alla fält finns
+    if (!postId || !donorId || !chatId || !timestamp || !type) {
+      console.error("❌ Saknas data:", { postId, donorId, chatId, timestamp, type });
       return res.status(400).json({ success: false, error: "Saknar data" });
     }
 
@@ -95,6 +99,7 @@ app.post("/validate-transfer", async (req, res) => {
         receiverId,
         chatId,
         timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        type,
         status: "completed"
       });
 
