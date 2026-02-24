@@ -1,7 +1,6 @@
 require('dotenv').config(); // Laddar .env
 const express = require("express");
 const cors = require("cors");
-const bodyParser = require("body-parser");
 const admin = require("firebase-admin");
 
 // ========================
@@ -24,13 +23,21 @@ admin.initializeApp({
 
 const db = admin.firestore();
 const app = express();
+
+// ========================
+// Middleware
+// ========================
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json()); // <-- native express JSON parser
 
 // ========================
 // POST endpoint: QR-validering med säker token + transaction
 // ========================
 app.post("/validate-transfer", async (req, res) => {
+  console.log("==== NY REQUEST ====");
+  console.log("REQ.HEADERS:", req.headers);
+  console.log("REQ.BODY:", req.body);
+
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ success: false, error: "Unauthorized" });
@@ -42,24 +49,26 @@ app.post("/validate-transfer", async (req, res) => {
     // 🔐 Verifiera token
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const receiverId = decodedToken.uid;
+    console.log("Decoded Firebase token UID:", receiverId);
 
     const { postId, donorId } = req.body;
     if (!postId || !donorId) {
+      console.log("❌ Saknar postId eller donorId i request body!");
       return res.status(400).json({ success: false, error: "Saknar data" });
     }
 
     // 🔄 Transaction för atomisk uppdatering
     await db.runTransaction(async (t) => {
       const validationRef = db.collection("validations").doc(postId);
-      const postRef = db.collection("publicFoods").doc(postId); // posten ska finnas här
+      const postRef = db.collection("publicFoods").doc(postId);
       const receiverRef = db.collection("users").doc(receiverId);
       const donorRef = db.collection("users").doc(donorId);
 
       const validationSnap = await t.get(validationRef);
-      if (validationSnap.exists) throw new Error("Redan validerad");
+      if (validationSnap.exists()) throw new Error("Redan validerad");
 
       const postSnap = await t.get(postRef);
-      if (!postSnap.exists) throw new Error("Posten finns inte");
+      if (!postSnap.exists()) throw new Error("Posten finns inte");
 
       const postData = postSnap.data();
       if (postData.ownerId !== donorId) throw new Error("Donor äger inte posten");
@@ -78,6 +87,7 @@ app.post("/validate-transfer", async (req, res) => {
       t.update(donorRef, { points: admin.firestore.FieldValue.increment(2) });
     });
 
+    console.log("✅ Transfer validerad framgångsrikt!");
     return res.json({ success: true });
 
   } catch (err) {
@@ -91,4 +101,3 @@ app.post("/validate-transfer", async (req, res) => {
 // ========================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
