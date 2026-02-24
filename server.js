@@ -52,13 +52,25 @@ app.post("/validate-transfer", async (req, res) => {
     const receiverId = decodedToken.uid;
     console.log("Decoded Firebase token UID:", receiverId);
 
-    // 🔑 Använd body direkt (ingen JSON.parse behövs)
-    const { postId, donorId } = req.body;
+    // 🔑 Plocka alla fält från body
+    const { postId, donorId, chatId, timestamp } = req.body;
 
-    if (!postId || !donorId) {
-      console.log("❌ Saknar postId eller donorId!", req.body);
+    if (!postId || !donorId || !chatId || !timestamp) {
       return res.status(400).json({ success: false, error: "Saknar data" });
     }
+
+    // ⏱ Kontrollera giltighetstid (10 minuter)
+    const tenMinutes = 10 * 60 * 1000;
+    if (Date.now() - timestamp > tenMinutes) {
+      return res.status(400).json({ success: false, error: "QR-koden har gått ut" });
+    }
+
+    // Kontrollera att mottagaren inte scannar sin egen QR
+    if (receiverId === donorId) {
+      return res.status(400).json({ success: false, error: "Kan inte scanna egen QR" });
+    }
+
+    console.log("ChatId:", chatId);
 
     // 🔄 Transaction för atomisk uppdatering
     await db.runTransaction(async (t) => {
@@ -81,6 +93,7 @@ app.post("/validate-transfer", async (req, res) => {
         postId,
         donorId,
         receiverId,
+        chatId,
         timestamp: admin.firestore.FieldValue.serverTimestamp(),
         status: "completed"
       });
