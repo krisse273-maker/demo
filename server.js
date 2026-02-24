@@ -36,7 +36,15 @@ app.use(express.json()); // <-- native express JSON parser
 app.post("/validate-transfer", async (req, res) => {
   console.log("==== NY REQUEST ====");
   console.log("REQ.HEADERS:", req.headers);
-  console.log("REQ.BODY:", req.body);
+  console.log("REQ.BODY (raw):", req.body);
+
+  // ✅ Säkerställ att body är ett objekt
+  let bodyData;
+  try {
+    bodyData = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+  } catch (e) {
+    return res.status(400).json({ success: false, error: "Ogiltig JSON" });
+  }
 
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -51,9 +59,9 @@ app.post("/validate-transfer", async (req, res) => {
     const receiverId = decodedToken.uid;
     console.log("Decoded Firebase token UID:", receiverId);
 
-    const { postId, donorId } = req.body;
+    const { postId, donorId } = bodyData;
     if (!postId || !donorId) {
-      console.log("❌ Saknar postId eller donorId i request body!");
+      console.log("❌ Saknar postId eller donorId i request body!", bodyData);
       return res.status(400).json({ success: false, error: "Saknar data" });
     }
 
@@ -101,3 +109,4 @@ app.post("/validate-transfer", async (req, res) => {
 // ========================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
