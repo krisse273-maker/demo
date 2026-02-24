@@ -38,7 +38,11 @@ app.post("/validate-transfer", async (req, res) => {
   console.log("REQ.HEADERS:", req.headers);
 
   // 🔹 debug: kolla hela req.body
-  console.log("REQ.BODY TYPE:", typeof req.body, req.body);
+  console.log("==== DEBUG RAW BODY ====");
+  console.log("typeof req.body:", typeof req.body);
+  console.log("req.body:", req.body);
+  console.log("req.body keys:", Object.keys(req.body));
+  console.log("=========================");
 
   // ✅ Kontrollera auth-header
   const authHeader = req.headers.authorization;
