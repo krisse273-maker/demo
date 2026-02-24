@@ -28,59 +28,61 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // ========================
-// POST endpoint: QR-validering med säker token
+// POST endpoint: QR-validering med säker token + transaction
 // ========================
 app.post("/validate-transfer", async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ success: false, error: "Unauthorized" });
+  }
+
+  const idToken = authHeader.split("Bearer ")[1];
+
   try {
-    // 🔐 1. Hämta Authorization header
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ success: false, error: "Unauthorized" });
-    }
-
-    const idToken = authHeader.split("Bearer ")[1];
-
-    // 🔥 2. Verifiera Firebase ID token
+    // 🔐 Verifiera token
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const receiverId = decodedToken.uid; // ← korrekt receiver
+    const receiverId = decodedToken.uid;
 
     const { postId, donorId } = req.body;
-
     if (!postId || !donorId) {
       return res.status(400).json({ success: false, error: "Saknar data" });
     }
 
-    // 🔎 3. Kontrollera om redan validerad
-    const validationRef = db.collection("validations").doc(postId);
-    const validationSnap = await validationRef.get();
+    // 🔄 Transaction för atomisk uppdatering
+    await db.runTransaction(async (t) => {
+      const validationRef = db.collection("validations").doc(postId);
+      const postRef = db.collection("posts").doc(postId); // posten ska finnas här
+      const receiverRef = db.collection("users").doc(receiverId);
+      const donorRef = db.collection("users").doc(donorId);
 
-    if (validationSnap.exists) {
-      return res.json({ success: false, error: "Redan validerad" });
-    }
+      const validationSnap = await t.get(validationRef);
+      if (validationSnap.exists) throw new Error("Redan validerad");
 
-    // 🔥 4. Skapa validering
-    await validationRef.set({
-      postId,
-      donorId,
-      receiverId,
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      status: "completed"
-    });
+      const postSnap = await t.get(postRef);
+      if (!postSnap.exists) throw new Error("Posten finns inte");
 
-    // 🔥 5. Uppdatera poäng
-    await db.collection("users").doc(receiverId).update({
-      points: admin.firestore.FieldValue.increment(1) // Hämtare = 1p
-    });
+      const postData = postSnap.data();
+      if (postData.ownerId !== donorId) throw new Error("Donor äger inte posten");
 
-    await db.collection("users").doc(donorId).update({
-      points: admin.firestore.FieldValue.increment(2) // Skänkare = 2p
+      // 🔥 Skapa validering
+      t.set(validationRef, {
+        postId,
+        donorId,
+        receiverId,
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        status: "completed"
+      });
+
+      // 🔥 Uppdatera poäng atomiskt
+      t.update(receiverRef, { points: admin.firestore.FieldValue.increment(1) });
+      t.update(donorRef, { points: admin.firestore.FieldValue.increment(2) });
     });
 
     return res.json({ success: true });
 
-  } catch (error) {
-    console.error("Validation error:", error);
-    return res.status(401).json({ success: false, error: "Invalid token eller serverfel" });
+  } catch (err) {
+    console.error("Validation error:", err);
+    return res.status(400).json({ success: false, error: err.message || "Invalid request" });
   }
 });
 
