@@ -51,7 +51,7 @@ app.post("/validate-transfer", async (req, res) => {
     // 🔄 Transaction för atomisk uppdatering
     await db.runTransaction(async (t) => {
       const validationRef = db.collection("validations").doc(postId);
-      const postRef = db.collection("posts").doc(postId); // posten ska finnas här
+      const postRef = db.collection("publicFoods").doc(postId); // posten ska finnas här
       const receiverRef = db.collection("users").doc(receiverId);
       const donorRef = db.collection("users").doc(donorId);
 
@@ -91,3 +91,4 @@ app.post("/validate-transfer", async (req, res) => {
 // ========================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
