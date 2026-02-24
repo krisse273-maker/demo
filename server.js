@@ -1,10 +1,12 @@
-require('dotenv').config(); // <-- Laddar .env
+require('dotenv').config(); // Laddar .env
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const admin = require("firebase-admin");
 
+// ========================
 // Init Firebase Admin med .env
+// ========================
 admin.initializeApp({
   credential: admin.credential.cert({
     type: process.env.FIREBASE_TYPE,
@@ -21,20 +23,34 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
-
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// POST endpoint för QR-validering
+// ========================
+// POST endpoint: QR-validering med säker token
+// ========================
 app.post("/validate-transfer", async (req, res) => {
-  const { postId, donorId, receiverId } = req.body;
-
-  if (!postId || !donorId || !receiverId) {
-    return res.status(400).json({ success: false, error: "Saknar data" });
-  }
-
   try {
+    // 🔐 1. Hämta Authorization header
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ success: false, error: "Unauthorized" });
+    }
+
+    const idToken = authHeader.split("Bearer ")[1];
+
+    // 🔥 2. Verifiera Firebase ID token
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const receiverId = decodedToken.uid; // ← korrekt receiver
+
+    const { postId, donorId } = req.body;
+
+    if (!postId || !donorId) {
+      return res.status(400).json({ success: false, error: "Saknar data" });
+    }
+
+    // 🔎 3. Kontrollera om redan validerad
     const validationRef = db.collection("validations").doc(postId);
     const validationSnap = await validationRef.get();
 
@@ -42,7 +58,7 @@ app.post("/validate-transfer", async (req, res) => {
       return res.json({ success: false, error: "Redan validerad" });
     }
 
-    // Skapa validation
+    // 🔥 4. Skapa validering
     await validationRef.set({
       postId,
       donorId,
@@ -51,21 +67,25 @@ app.post("/validate-transfer", async (req, res) => {
       status: "completed"
     });
 
-    // Lägg till poäng hos receiver (hämtare = 1p)
-    const receiverRef = db.collection("users").doc(receiverId);
-    await receiverRef.update({ points: admin.firestore.FieldValue.increment(1) });
+    // 🔥 5. Uppdatera poäng
+    await db.collection("users").doc(receiverId).update({
+      points: admin.firestore.FieldValue.increment(1) // Hämtare = 1p
+    });
 
-    // Lägg till poäng hos donor (skänkare = 2p)
-    const donorRef = db.collection("users").doc(donorId);
-    await donorRef.update({ points: admin.firestore.FieldValue.increment(2) });
+    await db.collection("users").doc(donorId).update({
+      points: admin.firestore.FieldValue.increment(2) // Skänkare = 2p
+    });
 
     return res.json({ success: true });
+
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ success: false, error: "Server error" });
+    console.error("Validation error:", error);
+    return res.status(401).json({ success: false, error: "Invalid token eller serverfel" });
   }
 });
 
-// Starta server på port från .env, default 3000
+// ========================
+// Starta server
+// ========================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
