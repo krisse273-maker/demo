@@ -91,7 +91,7 @@ app.post("/validate-transfer", async (req, res) => {
       if (validationSnap.exists) throw new Error("Redan validerad");
 
       const postSnap = await t.get(postRef);
-      if (!postSnap.exists()) throw new Error("Posten finns inte");
+      if (!postSnap.exists) throw new Error("Posten finns inte");
 
       const postData = postSnap.data();
       if (postData.ownerId !== donorId) throw new Error("Donor äger inte posten");
@@ -126,4 +126,5 @@ app.post("/validate-transfer", async (req, res) => {
 // ========================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
 
